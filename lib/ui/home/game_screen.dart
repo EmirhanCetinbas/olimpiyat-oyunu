@@ -11,7 +11,6 @@ import '../theme/theme.dart';
 import 'bottom_nav.dart';
 import 'race_strip.dart';
 import 'rewards_menu.dart';
-import 'skill_move.dart';
 import 'toast_overlay.dart';
 import 'top_bar.dart';
 import 'upgrade_grid.dart';
@@ -163,7 +162,6 @@ class _GameBody extends StatelessWidget {
                   SizedBox(height: 7),
                   RepaintBoundary(child: Stadium()),
                   RaceStrip(),
-                  SkillMove(),
                   UpgradeGrid(),
                 ],
               ),

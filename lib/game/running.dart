@@ -36,7 +36,7 @@ extension RunningLogic on GameController {
     liveTagHidden = false;
     timerText = b == 'hurdles' || b == 'swim' ? '◴ 00:00' : '3';
     raceStatus = 'Hazırlan… 3, 2, 1!';
-    if (b == 'sprint') offerMove('sprint', 2.4, 'Çıkış yap!');
+    if (b == 'sprint') offerMove('sprint', 3.4, 'Çıkış yap!', target: 3 / 3.4);
     beep(400);
     _changed();
     return const UpgradeResult(true);

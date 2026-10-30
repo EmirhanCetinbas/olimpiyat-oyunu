@@ -5,6 +5,7 @@ import '../../game/format.dart';
 import '../components/components.dart';
 import '../theme/theme.dart';
 import 'field.dart';
+import 'skill_overlay.dart';
 
 /// `<section class="stadium">`: yarış başlığı ve canlı saha.
 class Stadium extends StatelessWidget {
@@ -42,6 +43,17 @@ class Stadium extends StatelessWidget {
                 _RaceHead(c),
                 const RaceField(layer: FieldLayer.above),
               ],
+            ),
+            // Zamanlama hamlesi yalnız sahanın üstünde (başlık şeridinin altında).
+            Positioned.fill(
+              child: Column(
+                children: [
+                  Visibility(visible: false, maintainSize: true, maintainAnimation: true, maintainState: true, child: _RaceHead(c)),
+                  Expanded(
+                    child: Stack(children: [SkillOverlay(c: c)]),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

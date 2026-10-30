@@ -114,9 +114,13 @@ class ArcheryRound {
 
 /// Zamanlama düğmesi (moves.js `activeMove`).
 class ActiveMove {
-  ActiveMove(this.kind, this.duration);
+  ActiveMove(this.kind, this.duration, {this.target = .5});
   final String kind;
   final double duration;
+
+  /// Kusursuz anın süre içindeki yeri (0–1): yarıştaki gerçek ana denk gelir
+  /// (ör. 100 m'de "BAŞLA!", uzun atlamada tahta, engelli koşuda engel).
+  final double target;
   double elapsed = 0;
   bool tapped = false;
   double quality = 0;

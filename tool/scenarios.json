@@ -738,6 +738,55 @@
           "daily-rewards"
         ]
       ]
+    },
+    {
+      "name": "sprint-move-perfect",
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          2.95
+        ],
+        [
+          "tapMove"
+        ],
+        [
+          "advance",
+          0.1
+        ]
+      ]
+    },
+    {
+      "name": "hurdles-move",
+      "state": {
+        "branch": "hurdles"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          10.1
+        ]
+      ]
+    },
+    {
+      "name": "longjump-move",
+      "state": {
+        "branch": "longjump"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          1.6
+        ]
+      ]
     }
   ]
 }

@@ -79,6 +79,8 @@ void runStep(GameController c, String action, Object? arg) {
       c.state.daily = c.now;
     case 'keepToast':
       break;
+    case 'tapMove':
+      c.tapMove();
     default:
       throw ArgumentError('Bilinmeyen eylem: $action');
   }

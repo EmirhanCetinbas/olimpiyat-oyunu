@@ -331,6 +331,35 @@ void main() {
     expect(game.beginRace().ok, false);
   });
 
+  test('timing moves: perfect moment matches the race, bonus applies on tap', () {
+    game.state.auto = false;
+    // 100 m: kusursuz an "BAŞLA!" (geri sayım bitişi).
+    game.beginRace();
+    final move = game.activeMove!;
+    expect(move.target * move.duration, closeTo(3, .001));
+    // 3 sn geri sayım + bir kare (kayan nokta payı).
+    for (var i = 0; i < 181; i++) {
+      game.tick(1 / 60);
+    }
+    expect(game.race!.phase, 'running');
+    expect(game.activeMove, isNotNull, reason: 'hamle BAŞLA! anını kapsar');
+    expect(game.tapMove(), true);
+    expect(game.moveQuality(), greaterThan(.9));
+    expect(game.moveFeedback, 'MÜKEMMEL!');
+    game.tick(1 / 60);
+    expect(game.race!.manualBonus, greaterThan(.05), reason: 'bonus dokunulduğu an uygulanır');
+    expect(game.activeMove, isNull);
+
+    // Erken dokunuş ve kaçırılan hamle geri bildirimi.
+    game.offerMove('weights', 1, 'Kaldır!');
+    game.tickMove(.05);
+    game.tapMove();
+    expect(game.moveFeedback, 'ERKEN!');
+    game.offerMove('weights', 1, 'Kaldır!');
+    game.tickMove(1);
+    expect(game.moveFeedback, 'KAÇTI!');
+  });
+
   test('save and reload keeps progress', () {
     game.upgrade(0);
     game.save();

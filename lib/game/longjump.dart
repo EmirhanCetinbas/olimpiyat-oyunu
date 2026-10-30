@@ -95,7 +95,7 @@ extension LongJumpLogic on GameController {
         if (r.ids[j.turn] != state.selected) {
           j.duration = 3;
         } else {
-          offerMove('longjump', j.duration, 'Sıçra!');
+          offerMove('longjump', j.duration, 'Sıçra!', target: .88);
         }
         raceStatus = '${animals[r.ids[j.turn]].name} yaklaşıyor · ${j.turn + 1}/6';
       } else if (j.phase == 'runup') {

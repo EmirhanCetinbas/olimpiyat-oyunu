@@ -2,8 +2,11 @@ part of 'controller.dart';
 
 /// moves.js: zamanlama düğmesi ve üç yarışlık kupa.
 extension MovesLogic on GameController {
-  void offerMove(String kind, double duration, String label) {
-    activeMove = ActiveMove(kind, duration);
+  /// Kusursuz pencere: hedefin iki yanında sürenin %15'i (kalite > .7).
+  static const perfectWindow = .15;
+
+  void offerMove(String kind, double duration, String label, {double target = .5}) {
+    activeMove = ActiveMove(kind, duration, target: target);
     skillMoveHidden = false;
     skillButtonText = label;
     skillMeter = 0;
@@ -16,27 +19,47 @@ extension MovesLogic on GameController {
 
   double moveQuality() => activeMove?.quality ?? 0;
 
+  /// Sahaya ya da hamle düğmesine dokunuş: kalite hedefe uzaklıkla düşer.
   bool tapMove() {
     final move = activeMove;
     if (move == null || move.tapped || paused) return false;
     final t = move.elapsed / move.duration;
-    move.quality = max(0, 1 - (t - .5).abs() * 2);
+    move.quality = max(0, 1 - (t - move.target).abs() * 2);
     move.tapped = true;
     skillButtonText = move.quality > .7 ? 'MÜKEMMEL!' : 'HAMLE!';
+    showMoveFeedback(
+      move.quality > .7
+          ? 'MÜKEMMEL!'
+          : move.quality > .35
+          ? 'İYİ!'
+          : t < move.target
+          ? 'ERKEN!'
+          : 'GEÇ!',
+      move.quality > .7,
+    );
     beep(720 + move.quality * 260, .08);
     _changed();
     return true;
   }
 
   void tickMove(double dt) {
+    if (moveFeedbackTime > 0) moveFeedbackTime = max(0, moveFeedbackTime - dt);
     final move = activeMove;
     if (move == null) return;
     move.elapsed = min(move.duration, move.elapsed + dt);
     skillMeter = move.elapsed / move.duration;
     if (move.elapsed >= move.duration) {
+      if (!move.tapped) showMoveFeedback('KAÇTI!', false);
       move.tapped = true;
       skillMoveHidden = true;
     }
+  }
+
+  /// Sahada kısa süre görünen sonuç yazısı.
+  void showMoveFeedback(String text, bool perfect) {
+    moveFeedback = text;
+    moveFeedbackPerfect = perfect;
+    moveFeedbackTime = .9;
   }
 
   void recordTournament(String branch, int place) {

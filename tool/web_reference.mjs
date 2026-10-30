@@ -70,6 +70,7 @@ const actions = {
   spinUsed: () => 'state.spinDate=todayKey()',
   dailyClaimed: () => 'state.daily=Date.now()',
   keepToast: () => 'window.__keepToast=true',
+  tapMove: () => 'tapMove()',
 };
 const settle = () => evaluate(`(async()=>{await document.fonts.ready;await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));await new Promise(r=>setTimeout(r,250));})()`);
 

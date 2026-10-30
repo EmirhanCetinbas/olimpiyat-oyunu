@@ -100,6 +100,9 @@ class GameController extends ChangeNotifier {
   bool skillMoveHidden = true;
   String skillButtonText = 'Hamle!';
   double skillMeter = 0;
+  String moveFeedback = '';
+  bool moveFeedbackPerfect = false;
+  double moveFeedbackTime = 0;
   List<int> runnerIds = [];
   List<RunnerPos> runnerPos = [];
   double weightBarTop = 66;
@@ -385,8 +388,9 @@ class GameController extends ChangeNotifier {
           if (state.branch == 'sprint') timerText = '${max(1, r.countdown.ceil())}';
           if (r.countdown.ceil() != prev) beep(500);
           if (r.countdown <= 0) {
-            r.manualBonus = state.branch == 'sprint' ? moveQuality() * .06 : 0;
-            clearMove();
+            // 100 m çıkış hamlesi "BAŞLA!" anını kapsar; sonucu yarış içinde uygulanır.
+            r.manualBonus = 0;
+            if (state.branch != 'sprint') clearMove();
             r.moveOffered = false;
             r.phase = 'running';
             r.elapsed = 0;
@@ -396,12 +400,19 @@ class GameController extends ChangeNotifier {
           }
         } else {
           r.elapsed += dt;
-          if (stopwatchBranch && !r.moveOffered && r.progress[r.playerLane] > .4) {
+          if (stopwatchBranch && !r.moveOffered && r.progress[r.playerLane] > (state.branch == 'hurdles' ? .55 : .4)) {
             r.moveOffered = true;
-            offerMove(state.branch, 1.5, state.branch == 'hurdles' ? 'Engeli geç!' : 'Güçlü kulaç!');
+            if (state.branch == 'hurdles') {
+              // Kusursuz an: oyuncunun .64'teki engele varacağı tahmini an.
+              final eta = (.64 - r.progress[r.playerLane]) / (r.speeds[r.playerLane] / 100);
+              offerMove('hurdles', 1.5, 'Engeli geç!', target: (eta / 1.5).clamp(.25, .8));
+            } else {
+              offerMove('swim', 1.5, 'Güçlü kulaç!');
+            }
           }
           final move = activeMove;
-          if (move != null && move.elapsed >= move.duration) {
+          // Dokunulduğu an (ya da süre bitince) bonus uygulanır.
+          if (move != null && move.tapped) {
             r.manualBonus = moveQuality() * .06;
             clearMove();
           }
