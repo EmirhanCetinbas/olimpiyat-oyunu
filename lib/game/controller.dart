@@ -177,33 +177,51 @@ class GameController extends ChangeNotifier {
 
   int income() => (passiveIncome() * (now < state.boostUntil ? 2 : 1)).round();
 
+  /// Yükseltme kartındaki değer: yükseltmenin yarıştaki gerçek, birikmiş etkisi
+  /// (yarış formüllerindeki katsayılarla aynı; bkz. running/longjump/weights/archery).
   String statValue(int i, [int next = 0]) {
-    final lv = upgradeLevels[i] + next;
+    final lv = upgradeLevels[i] + next, n = lv - 1;
+    String pct(num v) => '+%${trNumber(v, 1)}';
     switch (state.branch) {
-      case 'archery':
-        return '+${trNumber((lv - 1) * const [1.4, .8, .9, .6][i], 1)}%';
-      case 'weights':
-        return '+${trNumber((lv - 1) * const [2.5, .8, .9, 1][i], 1)}%';
+      case 'sprint':
+        final income = sprintUpgrades[i].income;
+        if (income != null) return '+₺${fmt(income * lv * (1 + campusRank('stadium', i - 4) * .05))}/sn';
+        return pct(n * const [2, 1, 1.5, 2][i]);
+      case 'hurdles':
+        // Engel Ritmi: engelin üstünde korunan hız oranı.
+        if (i == 0) return '%${trNumber(min(96, 55 + n * 2.5), 1)}';
+        return pct(n * const [0, 1, 1.2, 2][i]);
+      case 'swim':
+        return pct(n * const [2, 1.2, 1.5, 1.7][i]);
       case 'longjump':
-        return '+${trNumber((lv - 1) * const [.7, .9, 1.6, 1.1][i], 1)}%';
+        return pct(n * const [.7, .9, 1.6, 1.1][i]);
+      case 'weights':
+        // Kilo yüzdesi (Temel Güç, Son Hamle) ya da başarı şansı puanı (Kavrama, Denge).
+        return pct(n * const [2.5, .8, .9, 1][i]);
+      case 'archery':
+        // Üç okun toplamına ortalama eklenen puan: isabet × 2 (Nişan, Rüzgâr, Son Atış), güç × 4 (Yay).
+        return '+${trNumber(n * const [.084, .096, .054, .036][i], 2)} puan';
     }
-    final income = activeUpgrades[i].income;
-    if (income != null) return '+₺${fmt(income * lv)}/sn';
-    return '${20 + lv * 2}%';
+    return '';
   }
 
   int _levelSum(List<int> l) => l.fold(0, (sum, n) => sum + n - 1);
 
-  int get power => switch (state.branch) {
-    'longjump' => 100 + _levelSum(state.longJumpLevels) * 12,
-    'archery' => 100 + _levelSum(state.archeryLevels) * 12,
-    'weights' => 100 + _levelSum(state.weightLevels) * 12,
-    _ =>
-      100 +
-          _levelSum(state.levels.sublist(0, 4)) * 12 +
-          (state.equipmentStars.reduce((a, b) => a + b) + state.equipmentLegacy) * 10 +
-          (state.camp - 1) * 10,
-  };
+  String get _campusKey => state.branch == 'longjump' ? 'jump' : state.branch;
+
+  /// Takım gücü: seçili branşın yükseltmelerinden, kampüs kademelerinden ve
+  /// o branşta gerçekten etkili ekipman yıldızlarından oluşan gelişim puanı.
+  int get power {
+    final levels = upgradeLevels;
+    final branchLevels = state.branch == 'sprint' ? levels.sublist(0, 4) : levels;
+    final equipment = switch (state.branch) {
+      'sprint' => state.equipmentStars.reduce((a, b) => a + b) + state.equipmentLegacy,
+      'hurdles' || 'swim' => state.equipmentStars[0] + state.equipmentLegacy,
+      _ => 0,
+    };
+    final campus = [0, 1, 2].fold(0, (n, i) => n + campusRank(_campusKey, i));
+    return 100 + _levelSum(branchLevels) * 12 + equipment * 10 + campus * 10;
+  }
 
   String get roundText {
     switch (state.branch) {
@@ -232,7 +250,7 @@ class GameController extends ChangeNotifier {
       case 'swim':
         return '${race?.place ?? 1} / 6';
     }
-    return '${state.races + 1}';
+    return 'YARIŞ ${state.races + 1}';
   }
 
   String get boostText {

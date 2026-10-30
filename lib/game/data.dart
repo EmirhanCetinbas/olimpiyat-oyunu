@@ -18,17 +18,19 @@ class Animal {
   final String name;
   final String art;
   final double speed;
+
+  /// Gerçek etki: koşu, engelli, yüzme hızında ve uzun atlama mesafesinde çarpan ([speed]).
   final String trait;
   final int unlock;
 }
 
 const animals = [
-  Animal('Çita', 'cheetah', 1.04, 'Hızlı çıkış · +%4 hız', 0),
-  Animal('Rakun', 'raccoon', 1.02, 'Teknik koşu · +%2 hız', 2),
-  Animal('Ayı', 'bear', 1.015, 'Güçlü finiş · +%1,5 hız', 4),
-  Animal('Tavşan', 'rabbit', 1.045, 'Atik adımlar · +%4,5 hız', 7),
-  Animal('Kaplumbağa', 'turtle', 1.03, 'İstikrarlı tempo · +%3 hız', 10),
-  Animal('Tilki', 'fox', 1.05, 'Akıllı sprint · +%5 hız', 15),
+  Animal('Çita', 'cheetah', 1.04, '+%4 hız', 0),
+  Animal('Rakun', 'raccoon', 1.02, '+%2 hız', 2),
+  Animal('Ayı', 'bear', 1.015, '+%1,5 hız', 4),
+  Animal('Tavşan', 'rabbit', 1.045, '+%4,5 hız', 7),
+  Animal('Kaplumbağa', 'turtle', 1.03, '+%3 hız', 10),
+  Animal('Tilki', 'fox', 1.05, '+%5 hız', 15),
 ];
 
 class UpgradeDef {
@@ -49,16 +51,16 @@ const sprintUpgrades = [
   UpgradeDef('Bilet', 'ticket', 2100, 'Bilet değerini yükseltir. Her seviye saniyelik geliri ₺18 artırır.', income: 18),
 ];
 const hurdleUpgrades = [
-  UpgradeDef('Engel Ritmi', 'speed', 900, 'Engelleri geçerken hız kaybını azaltır.'),
-  UpgradeDef('Atlayış Tekniği', 'shoe', 1100, 'Engellerin ardından daha hızlı toparlanır.'),
-  UpgradeDef('Dayanıklılık', 'stamina', 750, 'Yarışın ikinci yarısında temponu korur.'),
-  UpgradeDef('Finiş Temposu', 'finish', 950, 'Son engelden sonra finiş sprintini güçlendirir.'),
+  UpgradeDef('Engel Ritmi', 'speed', 900, 'Engelin üstünde korunan hız %55; her seviye +%2,5 (en çok %96).'),
+  UpgradeDef('Atlayış Tekniği', 'shoe', 1100, 'Her seviye yarış boyunca hızı %1 artırır.'),
+  UpgradeDef('Dayanıklılık', 'stamina', 750, 'Yarışın ikinci yarısında her seviye hızı %1,2 artırır.'),
+  UpgradeDef('Finiş Temposu', 'finish', 950, 'Son engelden sonra her seviye hızı %2 artırır.'),
 ];
 const swimUpgrades = [
-  UpgradeDef('Çıkış Dalışı', 'swim-dive', 950, 'İlk 25 metrede güçlü bir dalışla hız kazanır.'),
-  UpgradeDef('Kulaç Gücü', 'swim-paw', 1100, 'Patisiyle attığı kulaçlar tüm yarış boyunca hızı artırır.'),
-  UpgradeDef('Nefes Kontrolü', 'swim-breath', 900, 'Yarışın ikinci yarısında temposunu korur.'),
-  UpgradeDef('Su Direnci', 'swim-wave', 1000, 'Suda daha rahat ilerler ve son bölümde hızlanır.'),
+  UpgradeDef('Çıkış Dalışı', 'swim-dive', 950, 'İlk 25 metrede her seviye hızı %2 artırır.'),
+  UpgradeDef('Kulaç Gücü', 'swim-paw', 1100, 'Yarış boyunca her seviye hızı %1,2 artırır.'),
+  UpgradeDef('Nefes Kontrolü', 'swim-breath', 900, 'Son 50 metrede her seviye hızı %1,5 artırır.'),
+  UpgradeDef('Su Direnci', 'swim-wave', 1000, 'Son 25 metrede her seviye hızı %1,7 artırır.'),
 ];
 const longJumpUpgrades = [
   UpgradeDef('Çıkış Hızı', 'jump-start', 950, 'Hızlı yaklaşma ile mesafeyi artırır; her seviye +%0,7 mesafe bonusu.'),
@@ -78,25 +80,26 @@ const weightUpgrades = [
   ),
 ];
 const archeryUpgrades = [
-  UpgradeDef('Nişan Alma', 'archery-aim', 1000, 'Her seviye isabeti artırır.'),
-  UpgradeDef('Yay Gücü', 'archery-bow', 1100, 'Her seviye ok gücünü artırır.'),
-  UpgradeDef('Rüzgâr Okuma', 'archery-wind', 950, 'Rüzgâr etkisini azaltıp isabeti artırır.'),
-  UpgradeDef('Son Atış', 'archery-last', 1200, 'Son nişan düzeltmesiyle isabeti artırır.'),
+  UpgradeDef('Nişan Alma', 'archery-aim', 1000, 'Her seviye üç okun toplamına ortalama +0,08 puan ekler.'),
+  UpgradeDef('Yay Gücü', 'archery-bow', 1100, 'Her seviye üç okun toplamına ortalama +0,10 puan ekler.'),
+  UpgradeDef('Rüzgâr Okuma', 'archery-wind', 950, 'Her seviye üç okun toplamına ortalama +0,05 puan ekler.'),
+  UpgradeDef('Son Atış', 'archery-last', 1200, 'Her seviye üç okun toplamına ortalama +0,04 puan ekler.'),
 ];
 
 class EquipmentItem {
-  const EquipmentItem(this.name, this.effect, this.bonus, this.base);
+  const EquipmentItem(this.name, this.effects, this.base);
   final String name;
-  final String effect;
-  final double bonus;
+
+  /// Yıldız başına gerçek etki: (nerede, yüzde).
+  final List<(String, double)> effects;
   final int base;
 }
 
 const equipmentItems = [
-  EquipmentItem('Yarış Ayakkabısı', 'Genel hız', 3, 2000),
-  EquipmentItem('Çıkış Bloğu', 'İlk 25 m hızı', 4, 1800),
-  EquipmentItem('Koşu Forması', 'Son 50 m temposu', 2.5, 2200),
-  EquipmentItem('Sprint Bilekliği', 'Son 20 m hızı', 4, 2000),
+  EquipmentItem('Yarış Ayakkabısı', [('100 m hızı', 3), ('Engelli hızı', 2), ('Yüzme hızı', 1.2)], 2000),
+  EquipmentItem('Çıkış Bloğu', [('100 m, ilk 25 m hızı', 4)], 1800),
+  EquipmentItem('Koşu Forması', [('100 m, son 50 m hızı', 2.5)], 2200),
+  EquipmentItem('Sprint Bilekliği', [('100 m, son 20 m hızı', 4)], 2000),
 ];
 
 class Prize {
@@ -145,21 +148,37 @@ double specialty(String branch, int id) {
   return values[id];
 }
 
+/// Uzmanlık ve gerçek etkisi: hızda/mesafede/kiloda çarpan; okçulukta her oka eklenen puan.
 String specialtyLabel(int id) {
   final labels = [
     for (final entry in specialties.entries)
-      if (entry.value[id] > 1) branchLabel(entry.key),
+      if (entry.value[id] > 1)
+        entry.key == 'archery'
+            ? '${branchLabel(entry.key)} +${_tr2((entry.value[id] - 1) * 4)} puan/ok'
+            : '${branchLabel(entry.key)} +%${_tr1((entry.value[id] - 1) * 100)}',
   ];
   return labels.isEmpty ? 'Çok yönlü' : labels.join(', ');
 }
 
+String _tr1(double v) => _trim(v.toStringAsFixed(1));
+String _tr2(double v) => _trim(v.toStringAsFixed(2));
+String _trim(String v) => v.replaceAll(RegExp(r'\.?0+$'), '').replaceAll('.', ',');
+
 class CampusRow {
-  const CampusRow(this.name, this.effect, this.amount, this.base, this.icon);
+  const CampusRow(this.name, this.effect, this.amount, this.base, this.icon, {this.unit = '%'});
   final String name;
   final String effect;
-  final int amount;
+
+  /// Kademe başına gerçek etki ([unit] cinsinden).
+  final double amount;
   final int base;
   final String icon;
+
+  /// '%' (yüzde) ya da 'puan' (okçulukta oka eklenen puan).
+  final String unit;
+
+  /// Verilen kademe sayısındaki toplam etki, ör. "+%2,5" ya da "+0,64 puan".
+  String format(int ranks) => unit == '%' ? '+%${_tr1(amount * ranks)}' : '+${_tr2(amount * ranks)} puan';
 }
 
 class CampusFacility {
@@ -187,9 +206,9 @@ const campusFacilities = [
     25,
     [6, 11, 36, 14],
     [
-      CampusRow('Çıkış Hızı', 'İlk 25 m', 1, 2, 'shoe'),
+      CampusRow('Çıkış Hızı', 'İlk 25 m hızı', 1, 2, 'shoe'),
       CampusRow('Sprint Gücü', 'Genel hız', 1, 3, 'speed'),
-      CampusRow('Finiş Gücü', 'Son 20 m', 1, 3, 'finish'),
+      CampusRow('Finiş Gücü', 'Son 20 m hızı', 1, 3, 'finish'),
     ],
   ),
   CampusFacility(
@@ -201,9 +220,9 @@ const campusFacilities = [
     26,
     [63, 11, 29, 12],
     [
-      CampusRow('Engel Ritmi', 'Engeller arası hız', 1, 2, 'speed'),
-      CampusRow('Atlayış Tekniği', 'Engel kaybı', 1, 3, 'shoe'),
-      CampusRow('Finiş Temposu', 'Son bölüm hız', 1, 3, 'finish'),
+      CampusRow('Engel Ritmi', 'Engel üstünde hız', 2.5, 2, 'speed'),
+      CampusRow('Atlayış Tekniği', 'Genel hız', 1, 3, 'shoe'),
+      CampusRow('Finiş Temposu', 'Son engelden sonra hız', 1, 3, 'finish'),
     ],
   ),
   CampusFacility(
@@ -215,9 +234,9 @@ const campusFacilities = [
     47,
     [2, 29, 27, 16],
     [
-      CampusRow('Çıkış Tepkisi', 'İlk 25 m', 1, 2, 'shoe'),
+      CampusRow('Çıkış Tepkisi', 'İlk 25 m hızı', 1, 2, 'shoe'),
       CampusRow('Kulaç Gücü', 'Genel hız', 1, 3, 'speed'),
-      CampusRow('Nefes Kontrolü', 'Son 25 m', 1, 3, 'stamina'),
+      CampusRow('Nefes Kontrolü', 'Son 50 m hızı', 1, 3, 'stamina'),
     ],
   ),
   CampusFacility(
@@ -230,7 +249,7 @@ const campusFacilities = [
     [34, 28, 40, 21],
     [
       CampusRow('Tribün Kapasitesi', 'Tribün geliri', 5, 2, 'team'),
-      CampusRow('Bilet Geliri', 'Bilet kazancı', 5, 3, 'ticket'),
+      CampusRow('Bilet Geliri', 'Bilet geliri', 5, 3, 'ticket'),
       CampusRow('Sponsorluk', 'Yarış ödülü', 3, 3, 'trophy'),
     ],
   ),
@@ -243,9 +262,9 @@ const campusFacilities = [
     66,
     [4, 54, 30, 12],
     [
-      CampusRow('Koşu Hızı', 'Yaklaşma', 1, 2, 'shoe'),
-      CampusRow('Sıçrama Gücü', 'Atlayış', 1, 3, 'speed'),
-      CampusRow('İniş Tekniği', 'Mesafe', 1, 3, 'finish'),
+      CampusRow('Koşu Hızı', 'Atlama mesafesi', 1, 2, 'shoe'),
+      CampusRow('Sıçrama Gücü', 'Atlama mesafesi', 1, 3, 'speed'),
+      CampusRow('İniş Tekniği', 'Atlama mesafesi', 1, 3, 'finish'),
     ],
   ),
   CampusFacility(
@@ -257,9 +276,9 @@ const campusFacilities = [
     70,
     [39, 55, 25, 14],
     [
-      CampusRow('Temel Güç', 'Kaldırış', 1, 2, 'stamina'),
-      CampusRow('Denge', 'Başarı şansı', 1, 3, 'medal'),
-      CampusRow('Son Hamle', 'Final güç', 1, 3, 'finish'),
+      CampusRow('Temel Güç', 'Kaldırılan kilo', 1, 2, 'stamina'),
+      CampusRow('Denge', 'Başarı şansı', .9, 3, 'medal'),
+      CampusRow('Son Hamle', 'Kaldırılan kilo', .6, 3, 'finish'),
     ],
   ),
   CampusFacility(
@@ -271,9 +290,9 @@ const campusFacilities = [
     66,
     [76, 52, 18, 14],
     [
-      CampusRow('Nişan Tekniği', 'İsabet', 1, 2, 'medal'),
-      CampusRow('Yay Gücü', 'Atış puanı', 1, 3, 'stamina'),
-      CampusRow('Odaklanma', 'Son atış', 1, 3, 'finish'),
+      CampusRow('Nişan Tekniği', 'Her oka', .32, 2, 'medal', unit: 'puan'),
+      CampusRow('Yay Gücü', 'Her oka', .3, 3, 'stamina', unit: 'puan'),
+      CampusRow('Odaklanma', '3. oka', .42, 3, 'finish', unit: 'puan'),
     ],
   ),
 ];

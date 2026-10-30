@@ -90,7 +90,8 @@ class InventoryPanel extends StatelessWidget {
       ItemCard(
         leading: _emoji('🎫'),
         title: 'Antrenman kartları',
-        small: '${cards.isEmpty ? 'Henüz yok' : cards} · Sonraki ilgili yarışta otomatik kullanılır',
+        small:
+            '${cards.isEmpty ? 'Henüz yok' : cards} · İlgili branşın sonraki yarışında otomatik: hız/mesafe/kilo +%3, okçulukta her oka +1 puan',
       ),
       ItemCard(
         leading: _emoji('✨'),
@@ -148,9 +149,11 @@ class EquipmentCard extends StatelessWidget {
               children: [
                 Text(item.name, style: gameText(compact ? 12 : 13, color: GameColors.ink, height: 1.15)),
                 _Stars(stars, size: compact ? 17 : 19),
+                // Mevcut yıldızlarla gerçek etki; yıldız yoksa bir yıldızın etkisi.
                 Text(
-                  '${item.effect}: +%${trNumber(stars * item.bonus, 3)}',
-                  style: gameText(11, color: const Color(0xFF58738A), height: 1.2),
+                  [for (final (where, perStar) in item.effects) '$where +%${trNumber(perStar * (stars == 0 ? 1 : stars), 1)}'].join(' · ') +
+                      (stars == 0 ? ' (1 yıldızda)' : ''),
+                  style: gameText(11.5, color: GameColors.slate, height: 1.2),
                 ),
               ],
             ),
@@ -182,17 +185,23 @@ class _Stars extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) => Text(
-    '${'★' * stars}${'☆' * (3 - stars)}',
-    semanticsLabel: '$stars / 3 yıldız',
-    style: TextStyle(
-      fontSize: size,
-      height: 1.05,
-      letterSpacing: 1,
-      color: const Color(0xFFFFBF20),
-      shadows: [
-        ...outlineShadows(const Color(0xFF8B5012), .7),
-        const Shadow(color: Color(0xFF6D4A08), offset: Offset(0, 1)),
+  Widget build(BuildContext context) => Semantics(
+    label: '$stars / 3 yıldız',
+    excludeSemantics: true,
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Dolu yıldız altın, boş yıldız gri: kaç yıldız olduğu bir bakışta okunur.
+        for (var i = 0; i < 3; i++)
+          Text(
+            '★',
+            style: TextStyle(
+              fontSize: size,
+              height: 1.05,
+              color: i < stars ? const Color(0xFFFFBF20) : const Color(0xFFCBD3D8),
+              shadows: outlineShadows(i < stars ? const Color(0xFF8B5012) : const Color(0xFF8C99A3), .7),
+            ),
+          ),
       ],
     ),
   );

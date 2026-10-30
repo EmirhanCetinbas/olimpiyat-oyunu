@@ -123,7 +123,6 @@ class CampusUpgradeRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final compact = ScreenMetrics.of(context).compact;
     final maxed = rank >= 5;
-    final sign = row.amount < 0 ? '−' : '+';
     return ListRow(
       children: [
         Art(row.icon, width: compact ? 32 : 38, height: compact ? 32 : 38),
@@ -138,13 +137,13 @@ class CampusUpgradeRow extends StatelessWidget {
                   children: [
                     TextSpan(text: '${row.effect} '),
                     TextSpan(
-                      text: '$sign%${row.amount.abs() * (rank + 1)}',
+                      text: maxed ? row.format(rank) : row.format(rank + 1),
                       style: gameText(13, color: GameColors.greenShade),
                     ),
                   ],
                 ),
               ),
-              Text('$rank/5 · Mevcut: $sign%${row.amount.abs() * rank}', style: gameText(11, color: GameColors.slate, height: 1.2)),
+              Text('$rank/5 · Mevcut: ${rank == 0 ? 'yok' : row.format(rank)}', style: gameText(11, color: GameColors.slate, height: 1.2)),
             ],
           ),
         ),

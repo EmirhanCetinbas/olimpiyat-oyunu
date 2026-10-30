@@ -14,7 +14,9 @@ class InfoPanel extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       PanelText(c.activeUpgrades[index].desc),
-      const PanelText.muted('Yükseltmelerin yarış etkisi bir sonraki yarışta uygulanır. Karttaki yüzde, antrenman gelişimini gösterir.'),
+      const PanelText.muted(
+        'Karttaki değer, yükseltmenin yarıştaki gerçek ve birikmiş etkisidir. Yeni seviye bir sonraki yarışta uygulanır.',
+      ),
     ],
   );
 }

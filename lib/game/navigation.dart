@@ -55,15 +55,11 @@ extension NavigationLogic on GameController {
         modal = const ModalSpec('settings', 'Ayarlar', style: ModalStyle.settings);
       case 'team':
         modal = const ModalSpec('team', 'Hayvan Takımın');
-      case 'league':
-        modal = const ModalSpec('league', 'Çaylaklar Ligi');
       case 'tournament':
         modal = const ModalSpec('tournament', 'Üç Yarışlık Kupa');
       case 'equipment':
         inventoryTab = 'equipment';
         openPanel('inventory');
-      case 'camp':
-        modal = const ModalSpec('camp', 'Antrenman Kampı');
       case 'shop':
         modal = const ModalSpec('shop', 'Mağaza');
       case 'branches':

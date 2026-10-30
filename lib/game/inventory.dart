@@ -45,18 +45,6 @@ extension InventoryLogic on GameController {
     if (buyEquipment(i, useParts: useParts)) openPanel('inventory');
   }
 
-  int campCost() => (2500 * pow(1.5, state.camp - 1)).round();
-
-  void buyCamp() {
-    if (state.money >= campCost()) {
-      state.money -= campCost();
-      state.camp++;
-      save();
-      update();
-      openPanel(activeModal == 'campus' ? 'campus' : 'camp');
-    }
-  }
-
   void useBoostToken() {
     if (state.boostTokens > 0) {
       state.boostTokens--;

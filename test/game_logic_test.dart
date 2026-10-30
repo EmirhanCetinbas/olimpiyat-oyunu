@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pati_sampiyonlari/game/controller.dart';
+import 'package:pati_sampiyonlari/game/data.dart';
 import 'package:pati_sampiyonlari/game/race.dart';
 
 void main() {
@@ -358,6 +359,32 @@ void main() {
     game.offerMove('weights', 1, 'Kaldır!');
     game.tickMove(1);
     expect(game.moveFeedback, 'KAÇTI!');
+  });
+
+  test('displayed values are the real effects', () {
+    // 100 m Başlangıç Hızı: seviye başına ilk 25 m'de %2.
+    expect(game.statValue(0), '+%0');
+    expect(game.statValue(0, 1), '+%2');
+    game.state.levels[0] = 6;
+    expect(game.statValue(0), '+%10');
+    // Gelir: seviye × ₺12/sn, kampüs tribün çarpanıyla.
+    expect(game.statValue(4), '+₺12/sn');
+    game.selectBranch('hurdles');
+    expect(game.statValue(0), '%55', reason: 'engelde korunan hız');
+    expect(game.statValue(0, 20), '%96', reason: 'en çok %96');
+    // Takım gücü seçili branşın seviyelerinden gelir, 100 m seviyeleri karışmaz.
+    expect(game.power, 100);
+    game.state.hurdleLevels[1] = 3;
+    expect(game.power, 124);
+    game.selectBranch('archery');
+    expect(game.statValue(1, 1), '+0,1 puan');
+    // Kampüs satırları gerçek katsayıyla yazar.
+    final hurdleRitm = campusFacilities.firstWhere((f) => f.id == 'hurdles').rows[0];
+    expect(hurdleRitm.format(2), '+%5');
+    final archeryLast = campusFacilities.firstWhere((f) => f.id == 'archery').rows[2];
+    expect(archeryLast.format(1), '+0,42 puan');
+    expect(specialtyLabel(0), '100 metre +%6');
+    expect(specialtyLabel(5), 'Yüzme +%4, Uzun atlama +%4, Okçuluk +0,24 puan/ok');
   });
 
   test('save and reload keeps progress', () {
