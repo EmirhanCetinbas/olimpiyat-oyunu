@@ -22,8 +22,8 @@ class _ProfilePanelState extends State<ProfilePanel> {
   }
 
   OutlineInputBorder _border(Color color) => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8),
-    borderSide: BorderSide(color: color, width: 2),
+    borderRadius: BorderRadius.circular(14),
+    borderSide: BorderSide(color: color, width: 2.5),
   );
 
   @override
@@ -33,25 +33,32 @@ class _ProfilePanelState extends State<ProfilePanel> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const PanelText('Takımının adı'),
-        Padding(
-          padding: const EdgeInsets.only(top: 4, bottom: 10),
-          child: TextField(
-            controller: _name,
-            maxLength: 24,
-            style: gameText(14, color: GameColors.ink),
-            decoration: InputDecoration(
-              counterText: '',
-              isDense: true,
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.all(8),
-              semanticCounterText: 'Takım adı',
-              enabledBorder: _border(const Color(0xFF89A79A)),
-              focusedBorder: _border(const Color(0xFFFFCA39)),
+        // Ad alanı ve Kaydet tek satırda.
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _name,
+                maxLength: 24,
+                style: gameText(16, color: GameColors.ink),
+                textInputAction: TextInputAction.done,
+                onSubmitted: c.saveName,
+                decoration: InputDecoration(
+                  counterText: '',
+                  isDense: true,
+                  filled: true,
+                  fillColor: GameColors.row,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                  semanticCounterText: 'Takım adı',
+                  enabledBorder: _border(GameColors.ink),
+                  focusedBorder: _border(GameColors.blue),
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: 9),
+            ActionButton('Kaydet', onTap: () => c.saveName(_name.text)),
+          ],
         ),
-        ActionButton('Kaydet', onTap: () => c.saveName(_name.text)),
         StatGrid([('${c.level}', 'Seviye'), ('${c.state.races}', 'Yarış'), ('${c.state.wins}', 'Zafer')]),
         PanelText.muted(
           c.storageOK

@@ -63,22 +63,23 @@ class _ChestChoice extends StatelessWidget {
   Widget build(BuildContext context) => Pressable(
     onTap: onTap,
     semanticLabel: '${index + 1}. çantayı aç',
-    child: GBox(
-      constraints: const BoxConstraints(minHeight: 112),
-      gradient: vGradient(const [Color(0xFFFFF8DB), Color(0xFFFFCC63)]),
-      borderColor: const Color(0xFF122C3D),
-      borderWidth: 3,
-      radius: 14,
-      insets: const [Inset(Colors.white, dy: 3)],
-      shadows: const [BoxShadow(color: Color(0x44142D36), offset: Offset(0, 4))],
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const EmojiArt('🎁', size: 39),
-          const SizedBox(height: 4),
-          Text('${index + 1}. Çanta', style: gameText(11, color: GameColors.ink)),
-        ],
+    child: SizedBox(
+      height: 118,
+      child: RaisedSurface(
+        color: const Color(0xFFFFD45C),
+        shade: const Color(0xFFB27A12),
+        radius: 18,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const EmojiArt('🎁', size: 42),
+              const SizedBox(height: 6),
+              Text('${index + 1}. Çanta', style: gameText(14, color: GameColors.ink, height: 1)),
+            ],
+          ),
+        ),
       ),
     ),
   );

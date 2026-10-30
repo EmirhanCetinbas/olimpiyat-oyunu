@@ -13,55 +13,35 @@ class RaceCall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final branch = c.state.branch;
-    final compact = const {'hurdles', 'swim', 'longjump', 'weights'}.contains(branch);
-    final button = RaisedButton(c.startText, onTap: c.beginRace, height: compact ? 36 : 46, fontSize: compact ? 15 : 20);
-    if (compact) {
-      final row = Row(mainAxisAlignment: MainAxisAlignment.center, children: [button]);
-      Widget band(double top) => Positioned(
-        top: layout.y(top),
-        left: layout.x(15),
-        right: layout.x(15),
-        child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 30), child: row),
-      );
-      return switch (branch) {
-        'longjump' => band(36),
-        'weights' => band(42),
-        _ => Positioned(
-          bottom: 0,
-          left: layout.x(4),
-          right: layout.x(4),
-          child: SizedBox(height: 35, child: row),
-        ),
-      };
-    }
-    final label = Pill(
-      c.raceCallText,
-      style: gameText(13, color: GameColors.ink, height: 1.1),
-      color: const Color(0xF2FFFBED),
-      borderColor: GameColors.ink,
-      borderWidth: 2,
-      radius: 12,
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
+    // Tüm branşlarda aynı yer: sahanın ortasında bilgi etiketi + başlat düğmesi.
+    // 100 m ve okçulukta stadyum zaten bulanık; diğer arenalarda hafif karartma sporcuların üstünü örtmeden odak verir.
+    final blurred = branch == 'sprint' || branch == 'archery';
+    final label = ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: layout.width * .82),
+      child: Pill(
+        c.raceCallText,
+        style: gameText(13.5, color: GameColors.ink, height: 1.15),
+        textAlign: TextAlign.center,
+        color: const Color(0xF5FFFBED),
+        borderColor: GameColors.ink,
+        borderWidth: 2,
+        radius: 12,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      ),
     );
-    final content = Column(mainAxisSize: MainAxisSize.min, children: [label, const SizedBox(height: 8), button]);
-    if (branch == 'archery') {
-      return Positioned.fill(
-        child: ColoredBox(
-          color: const Color(0x18071D27),
-          // CSS yüzde padding'i genişliğe göredir.
-          child: Padding(
-            padding: EdgeInsets.only(top: layout.x(37)),
-            child: Align(alignment: Alignment.topCenter, child: content),
+    return Positioned.fill(
+      child: ColoredBox(
+        color: blurred ? Colors.transparent : const Color(0x40071D27),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              label,
+              const SizedBox(height: 10),
+              RaisedButton(c.startText, onTap: c.beginRace, height: 46, fontSize: 20),
+            ],
           ),
         ),
-      );
-    }
-    return Positioned.fill(
-      child: Stack(
-        children: [
-          Positioned.fill(child: blurLayer(.5, const Color(0x24071D27))),
-          Center(child: content),
-        ],
       ),
     );
   }

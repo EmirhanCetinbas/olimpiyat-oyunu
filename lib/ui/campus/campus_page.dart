@@ -87,8 +87,6 @@ class _CampusTop extends StatelessWidget {
   const _CampusTop(this.c);
   final GameController c;
 
-  static const _shadow = [BoxShadow(color: Color(0x50102438), offset: Offset(0, 3))];
-
   @override
   Widget build(BuildContext context) {
     final narrow = MediaQuery.sizeOf(context).width <= 350;
@@ -99,17 +97,17 @@ class _CampusTop extends StatelessWidget {
         Pressable(
           onTap: c.closeCampus,
           semanticLabel: 'Oyuna dön',
-          child: GBox(
+          minTapSize: minTapTarget,
+          child: SizedBox(
             width: side,
             height: side,
-            gradient: vGradient(const [Color(0xFFFFFEF1), Color(0xFFFFEDCB)]),
-            borderColor: const Color(0xFF092337),
-            borderWidth: 3,
-            radius: 23,
-            shadows: _shadow,
-            insets: const [Inset(Colors.white, dy: 2)],
-            alignment: Alignment.center,
-            child: Text('←', style: gameText(29, color: GameColors.text, height: 1)),
+            child: RaisedSurface.cream(
+              radius: side / 2,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 3),
+                child: Icon(Icons.arrow_back_rounded, color: GameColors.ink, size: side * .62),
+              ),
+            ),
           ),
         ),
         gap,
@@ -118,24 +116,29 @@ class _CampusTop extends StatelessWidget {
         Pressable(
           onTap: () => c.toast('Başlangıçta 8 SP; tamamlanan her 5 yarışta +1 SP.'),
           semanticLabel: 'Skill puanı hakkında',
-          child: GBox(
-            gradient: vGradient(const [Color(0xFF173F5C), Color(0xFF08283E)]),
-            borderColor: const Color(0xFF092337),
-            borderWidth: 3,
-            radius: 23,
-            shadows: _shadow,
-            insets: const [Inset(Color(0xFF6A9CAA), dy: 2)],
-            padding: const EdgeInsets.all(8),
-            child: Text.rich(
-              TextSpan(
-                style: gameText(narrow ? 12 : 14, color: Colors.white),
-                children: [
-                  const TextSpan(
-                    text: '★',
-                    style: TextStyle(color: Color(0xFFFFCD36)),
+          child: SizedBox(
+            height: side,
+            child: RaisedSurface(
+              color: GameColors.navy,
+              shade: GameColors.navyShade,
+              radius: side / 2,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 3),
+                child: Center(
+                  widthFactor: 1,
+                  child: Text.rich(
+                    TextSpan(
+                      style: gameText(narrow ? 13 : 15, color: Colors.white, height: 1),
+                      children: [
+                        const TextSpan(
+                          text: '★',
+                          style: TextStyle(color: GameColors.sparkle),
+                        ),
+                        TextSpan(text: ' ${c.state.skillPoints} SP'),
+                      ],
+                    ),
                   ),
-                  TextSpan(text: ' ${c.state.skillPoints} SP'),
-                ],
+                ),
               ),
             ),
           ),

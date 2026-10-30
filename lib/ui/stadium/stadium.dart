@@ -72,9 +72,11 @@ class _RaceHead extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hurdle = c.state.branch == 'hurdles';
+    // Koyu şerit: tüm branşlarda aynı, sahne görselinin üstünde de okunur.
     return Container(
       constraints: const BoxConstraints(minHeight: 46),
       padding: const EdgeInsets.all(4),
+      color: const Color(0xFF15392F),
       child: Row(
         children: [
           Expanded(
@@ -87,10 +89,7 @@ class _RaceHead extends StatelessWidget {
                   const Art('bank', width: 25, height: 25),
                   Text(
                     fmt(c.state.money),
-                    style: gameText(
-                      15,
-                      shadows: const [Shadow(color: Colors.white, offset: Offset(0, 1), blurRadius: 2)],
-                    ),
+                    style: gameText(16, color: Colors.white, shadows: _darkShadow),
                   ),
                 ],
               ),

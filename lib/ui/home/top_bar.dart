@@ -222,7 +222,7 @@ class _BoostButton extends StatelessWidget {
       disabledSaturation: 1,
       disabledOpacity: 1,
       child: SizedBox(
-        height: 38,
+        height: 42,
         child: enabled
             ? RaisedSurface(color: GameColors.blue, shade: GameColors.blueShade, radius: 14, child: label)
             : RaisedSurface.locked(radius: 14, child: label),
