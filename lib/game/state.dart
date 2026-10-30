@@ -49,12 +49,15 @@ class PendingChest {
 }
 
 class Tournament {
-  Tournament(this.branch, this.attempts, this.podiums);
+  Tournament(this.branch, this.attempts, this.podiums, [List<int>? places]) : places = places ?? [];
   String branch;
   int attempts;
   int podiums;
 
-  Map<String, dynamic> toJson() => {'branch': branch, 'attempts': attempts, 'podiums': podiums};
+  /// Kupa yarışlarındaki sıralar (sırasıyla); eski kayıtlarda boş olabilir.
+  final List<int> places;
+
+  Map<String, dynamic> toJson() => {'branch': branch, 'attempts': attempts, 'podiums': podiums, 'places': places};
 }
 
 int _int(dynamic v, [int fallback = 0]) {
@@ -154,7 +157,12 @@ class GameState {
     s.bestArchery = _int(raw['bestArchery']).clamp(0, 1 << 31);
     final t = raw['tournament'];
     if (t is Map && branches.contains(t['branch'])) {
-      s.tournament = Tournament(t['branch'] as String, _int(t['attempts']).clamp(0, 3), _int(t['podiums']).clamp(0, 3));
+      s.tournament = Tournament(
+        t['branch'] as String,
+        _int(t['attempts']).clamp(0, 3),
+        _int(t['podiums']).clamp(0, 3),
+        t['places'] is List ? [for (final p in (t['places'] as List).take(3)) _int(p, 6)] : [],
+      );
     }
     s.tournamentCups = _int(raw['tournamentCups']).clamp(0, 1 << 31);
     s.weightRisk = raw['weightRisk'] == 'record' ? 'record' : 'safe';

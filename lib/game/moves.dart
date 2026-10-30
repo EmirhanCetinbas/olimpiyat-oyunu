@@ -66,6 +66,7 @@ extension MovesLogic on GameController {
     final t = state.tournament;
     if (t == null || t.branch != branch || t.attempts >= 3) return;
     t.attempts++;
+    t.places.add(place);
     if (place <= 3) t.podiums++;
     if (t.attempts == 3) {
       final won = t.podiums >= 2;

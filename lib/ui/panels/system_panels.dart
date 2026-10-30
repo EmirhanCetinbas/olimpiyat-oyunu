@@ -3,24 +3,6 @@ import 'package:flutter/material.dart';
 import '../../game/controller.dart';
 import '../components/components.dart';
 
-/// Yükseltme açıklaması (kartlardaki "i").
-class InfoPanel extends StatelessWidget {
-  const InfoPanel(this.c, this.index, {super.key});
-  final GameController c;
-  final int index;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      PanelText(c.activeUpgrades[index].desc),
-      const PanelText.muted(
-        'Karttaki değer, yükseltmenin yarıştaki gerçek ve birikmiş etkisidir. Yeni seviye bir sonraki yarışta uygulanır.',
-      ),
-    ],
-  );
-}
-
 /// Ayarlar > Destek.
 class SupportPanel extends StatelessWidget {
   const SupportPanel(this.c, {super.key});

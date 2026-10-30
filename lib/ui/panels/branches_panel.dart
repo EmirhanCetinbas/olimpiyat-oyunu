@@ -43,12 +43,10 @@ class BranchesPanel extends StatelessWidget {
             children: [
               Art(art, width: 36, height: 36, emojiSize: 28),
               RowTitle(name),
-              ActionButton(
-                c.state.branch == id ? 'Seçili' : 'Oyna',
-                tone: c.state.branch == id ? ButtonTone.cream : ButtonTone.green,
-                onTap: c.state.branch == id ? null : () => c.selectBranch(id),
-                enabled: c.race == null && c.state.branch != id,
-              ),
+              if (c.state.branch == id)
+                const SelectedTag()
+              else
+                ActionButton('Oyna', onTap: () => c.selectBranch(id), enabled: c.race == null),
             ],
           ),
       ],

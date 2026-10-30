@@ -144,3 +144,27 @@ class RewardKindIcon extends StatelessWidget {
     _ => RewardIcon('gift', size: size),
   };
 }
+
+/// Seçili durum etiketi (düğme yerine; dokunulacak bir şey yok).
+class SelectedTag extends StatelessWidget {
+  const SelectedTag({super.key, this.label = 'Seçili'});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.fromLTRB(8, 5, 10, 5),
+    decoration: BoxDecoration(
+      color: const Color(0xFFDDF5CF),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: GameColors.greenShade, width: 2),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.check_rounded, size: 16, color: GameColors.greenShade),
+        const SizedBox(width: 2),
+        Text(label, style: gameText(13.5, color: GameColors.greenShade, height: 1.1)),
+      ],
+    ),
+  );
+}

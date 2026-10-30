@@ -150,14 +150,19 @@ double specialty(String branch, int id) {
 
 /// Uzmanlık ve gerçek etkisi: hızda/mesafede/kiloda çarpan; okçulukta her oka eklenen puan.
 String specialtyLabel(int id) {
-  final labels = [
+  final labels = specialtyTags(id);
+  return labels.isEmpty ? 'Çok yönlü' : labels.join(', ');
+}
+
+/// Uzmanlıklar ayrı etiketler olarak (kartlarda çip).
+List<String> specialtyTags(int id) {
+  return [
     for (final entry in specialties.entries)
       if (entry.value[id] > 1)
         entry.key == 'archery'
             ? '${branchLabel(entry.key)} +${_tr2((entry.value[id] - 1) * 4)} puan/ok'
             : '${branchLabel(entry.key)} +%${_tr1((entry.value[id] - 1) * 100)}',
   ];
-  return labels.isEmpty ? 'Çok yönlü' : labels.join(', ');
 }
 
 String _tr1(double v) => _trim(v.toStringAsFixed(1));

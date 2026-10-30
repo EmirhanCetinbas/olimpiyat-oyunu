@@ -29,7 +29,6 @@ Widget panelContent(GameController c, ModalSpec spec) => switch (spec.key) {
   'tournament' => TournamentPanel(c),
   'shop' => ShopPanel(c),
   'branches' => BranchesPanel(c),
-  'info' => InfoPanel(c, spec.arg as int),
   'support' => SupportPanel(c),
   'reset' => ResetPanel(c),
   _ => const SizedBox.shrink(),

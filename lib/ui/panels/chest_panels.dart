@@ -38,18 +38,40 @@ class ChestsPanel extends StatelessWidget {
       );
     }
     final s = c.state;
-    Widget chestRow(String name, int count, String type) => ListRow(
-      children: [
-        RowTitle('$name ×$count'),
-        ActionButton('Aç', onTap: () => c.pressOpenChest(type), enabled: count >= 1),
-      ],
-    );
+    final toNext = 5 - s.races % 5;
     return Column(
       children: [
-        const PanelText('Çantaların envanterde. Her 5 yarışta yeni bir Spor Çantası kazanırsın.'),
-        chestRow('Spor Çantası', s.chests, 'normal'),
-        chestRow('Kupa Çantası', s.cupChests, 'cup'),
-        chestRow('Şampiyon Çantası', s.championChests, 'champion'),
+        Row(
+          children: [
+            Expanded(
+              child: _ChestTile(type: 'normal', count: s.chests, onOpen: () => c.pressOpenChest('normal')),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _ChestTile(type: 'cup', count: s.cupChests, onOpen: () => c.pressOpenChest('cup')),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _ChestTile(type: 'champion', count: s.championChests, onOpen: () => c.pressOpenChest('champion')),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Sonraki Spor Çantası: her 5 yarışta bir.
+        Row(
+          children: [
+            Expanded(
+              child: GameProgressBar(value: (5 - toNext) / 5, label: 'Sonraki çanta', height: 14),
+            ),
+            const SizedBox(width: 8),
+            Text('${5 - toNext}/5 yarış', style: gameText(13, color: GameColors.ink, height: 1)),
+          ],
+        ),
+        const SizedBox(height: 6),
+        PanelText.muted(
+          'Sonraki Spor Çantası $toNext yarış sonra. Kupa Çantası kupadan, Şampiyon Çantası başarımlardan gelir.',
+          align: TextAlign.center,
+        ),
       ],
     );
   }
@@ -128,6 +150,73 @@ class ChestResultPanel extends StatelessWidget {
   );
 }
 
+/// Çanta kartı: türüne göre renkli kabarık kutu, hediye görseli, adet rozeti ve Aç düğmesi.
+class _ChestTile extends StatelessWidget {
+  const _ChestTile({required this.type, required this.count, required this.onOpen});
+  final String type;
+  final int count;
+  final VoidCallback onOpen;
+
+  static const _tones = {
+    'normal': (Color(0xFFFFD45C), Color(0xFFB27A12)),
+    'cup': (Color(0xFF6CC4FF), Color(0xFF1F5E96)),
+    'champion': (Color(0xFFC78BF5), Color(0xFF5D2A8C)),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final (color, shade) = _tones[type]!;
+    final has = count > 0;
+    return Column(
+      children: [
+        SizedBox(
+          height: 104,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: has
+                    ? RaisedSurface(
+                        color: color,
+                        shade: shade,
+                        radius: 18,
+                        child: const Center(child: RewardIcon('gift', size: 62)),
+                      )
+                    : const RaisedSurface.locked(
+                        radius: 18,
+                        child: Opacity(opacity: .5, child: Center(child: RewardIcon('gift', size: 62))),
+                      ),
+              ),
+              Positioned(
+                right: -4,
+                top: -6,
+                child: Pill(
+                  '×$count',
+                  style: gameText(14, color: Colors.white, height: 1.1),
+                  color: has ? GameColors.danger : GameColors.lockedShade,
+                  borderColor: GameColors.ink,
+                  borderWidth: 2,
+                  radius: 11,
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          chestNames[type]!,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          style: gameText(13.5, color: GameColors.ink, height: 1.1),
+        ),
+        const SizedBox(height: 6),
+        RaisedButton('Aç', onTap: onOpen, enabled: has, width: double.infinity, height: 38, fontSize: 16),
+      ],
+    );
+  }
+}
+
 /// Avatar çerçeveleri.
 class CosmeticsPanel extends StatelessWidget {
   const CosmeticsPanel(this.c, {super.key});
@@ -156,11 +245,10 @@ class CosmeticsPanel extends StatelessWidget {
                 ),
               ),
               RowTitle(cosmeticNames[s.cosmetics[k]]),
-              ActionButton(
-                s.selectedCosmetic == s.cosmetics[k] ? 'Seçili' : 'Seç',
-                tone: s.selectedCosmetic == s.cosmetics[k] ? ButtonTone.cream : ButtonTone.green,
-                onTap: () => c.selectCosmetic(s.cosmetics[k]),
-              ),
+              if (s.selectedCosmetic == s.cosmetics[k])
+                const SelectedTag()
+              else
+                ActionButton('Seç', onTap: () => c.selectCosmetic(s.cosmetics[k])),
             ],
           ),
       ],

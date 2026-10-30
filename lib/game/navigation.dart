@@ -104,7 +104,8 @@ extension NavigationLogic on GameController {
     _changed();
   }
 
-  void showInfo(int i) => panel('info', activeUpgrades[i].title, arg: i);
+  /// Yükseltme açıklaması: pencere açmadan kısa bildirim.
+  void showInfo(int i) => toast('${activeUpgrades[i].title}: ${activeUpgrades[i].desc}');
 
   void openSupport() => panel('support', 'Destek');
   void askReset() => panel('reset', 'Sıfırlansın mı?');

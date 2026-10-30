@@ -787,6 +787,27 @@
           1.6
         ]
       ]
+    },
+    {
+      "name": "panel-tournament-mid",
+      "state": {
+        "tournament": {
+          "branch": "sprint",
+          "attempts": 2,
+          "podiums": 1,
+          "places": [
+            1,
+            5
+          ]
+        },
+        "tournamentCups": 1
+      },
+      "steps": [
+        [
+          "open",
+          "tournament"
+        ]
+      ]
     }
   ]
 }
