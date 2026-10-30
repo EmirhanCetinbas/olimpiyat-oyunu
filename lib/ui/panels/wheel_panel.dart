@@ -22,7 +22,6 @@ class WheelPanel extends StatelessWidget {
         ActionButton(
           used ? '1 biletle çevir' : 'Ücretsiz çevir',
           full: true,
-          fontSize: 15,
           onTap: c.spinWheel,
           enabled: !(used && c.state.spinTickets < 1),
         ),

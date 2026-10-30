@@ -4,7 +4,7 @@ import '../theme/theme.dart';
 
 /// Pencere paragrafı (`#modal-content p`); `muted` ise `.muted`.
 class PanelText extends StatelessWidget {
-  const PanelText(this.text, {super.key, this.align, this.size = 14, this.color = GameColors.ink, this.bottom = 11});
+  const PanelText(this.text, {super.key, this.align, this.size = TextSizes.body, this.color = GameColors.ink, this.bottom = 11});
 
   const PanelText.muted(this.text, {super.key, this.align}) : size = 12, color = GameColors.muted, bottom = 11;
 

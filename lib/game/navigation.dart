@@ -86,5 +86,5 @@ extension NavigationLogic on GameController {
   void showInfo(int i) => panel('info', activeUpgrades[i].title, arg: i);
 
   void openSupport() => panel('support', 'Destek');
-  void askReset() => panel('reset', 'İlerleme sıfırlansın mı?');
+  void askReset() => panel('reset', 'Sıfırlansın mı?');
 }

@@ -113,7 +113,7 @@ class _CampusTop extends StatelessWidget {
           ),
         ),
         gap,
-        Expanded(child: BannerTitle('KAMPÜS', fontSize: vwClamp(context, 19, 5.5, 32))),
+        Expanded(child: ModalBanner('KAMPÜS', height: side + 6)),
         gap,
         Pressable(
           onTap: () => c.toast('Başlangıçta 8 SP; tamamlanan her 5 yarışta +1 SP.'),

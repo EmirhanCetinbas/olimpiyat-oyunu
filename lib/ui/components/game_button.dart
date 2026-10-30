@@ -57,40 +57,6 @@ class ButtonSkin {
     insets: buttonInsets,
     textShadows: whiteTextShadow,
   );
-
-  /// `.row button` / `.modal-action`: pencere içi eylemler.
-  static const action = ButtonSkin(colors: [Color(0xFF52DE35), Color(0xFF18B72B)], borderColor: GameColors.actionBorder);
-
-  /// `.inventory-card>button`: envanter kartı eylemleri.
-  static const leaf = ButtonSkin(colors: [Color(0xFF5FE347), Color(0xFF17B72D)], borderColor: Color(0xFF17752D));
-
-  /// `.equipment-card button`.
-  static const equipment = ButtonSkin(colors: [Color(0xFF66E843), Color(0xFF12B82B)], borderColor: Color(0xFF117427), borderWidth: 1.5);
-
-  /// Etkin sekme (`.inventory-tabs button.active`).
-  static const tabActive = ButtonSkin(
-    colors: [Color(0xFF75EB44), Color(0xFF16BC2A)],
-    borderColor: Color(0xFF15852B),
-    radius: 10,
-    insets: [Inset(Color(0x7AFFFFFF), dy: 2)],
-  );
-
-  /// Pasif sekme.
-  static const tabIdle = ButtonSkin(
-    colors: [Color(0xFFF8FBF6), Color(0xFFE5EDF1)],
-    borderColor: Color(0xFF17344C),
-    radius: 10,
-    textColor: GameColors.ink,
-  );
-
-  /// Kampüs yükseltme düğmesi (↑).
-  static const campus = ButtonSkin(
-    colors: [Color(0xFF73F239), Color(0xFF0FC523)],
-    borderColor: Color(0xFF123429),
-    radius: 12,
-    insets: [Inset(Color(0xFFD0FFAA), dy: 3), Inset(Color(0xFF049628), dy: -3)],
-    textShadows: [Shadow(color: Color(0xFF0F3928), offset: Offset(1, 2))],
-  );
 }
 
 /// Degradeli, konturlu oyun düğmesi. `label` ya da `child` verilir.
@@ -100,7 +66,7 @@ class GameButton extends StatelessWidget {
     this.label,
     this.child,
     required this.onTap,
-    this.skin = ButtonSkin.action,
+    this.skin = ButtonSkin.primary,
     this.enabled = true,
     this.fontSize = 14,
     this.textHeight,
@@ -158,44 +124,4 @@ class GameButton extends StatelessWidget {
           ),
     ),
   );
-}
-
-/// `.modal-action` (gerekirse `.full`: tam genişlik, üstte 11px boşluk).
-class ActionButton extends StatelessWidget {
-  const ActionButton(
-    this.label, {
-    super.key,
-    required this.onTap,
-    this.enabled = true,
-    this.full = false,
-    this.fontSize = 14,
-    this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-    this.skin = ButtonSkin.action,
-    this.semanticLabel,
-  });
-
-  final String label;
-  final VoidCallback? onTap;
-  final bool enabled;
-  final bool full;
-  final double fontSize;
-  final EdgeInsets padding;
-  final ButtonSkin skin;
-  final String? semanticLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final button = GameButton(
-      label: label,
-      onTap: onTap,
-      enabled: enabled,
-      skin: skin,
-      fontSize: fontSize,
-      padding: padding,
-      semanticLabel: semanticLabel,
-      width: full ? double.infinity : null,
-      alignment: full ? Alignment.center : null,
-    );
-    return full ? Padding(padding: const EdgeInsets.only(top: 11), child: button) : button;
-  }
 }

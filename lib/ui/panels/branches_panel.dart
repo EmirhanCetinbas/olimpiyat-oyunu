@@ -25,7 +25,6 @@ class BranchesPanel extends StatelessWidget {
       ActionButton('🏆 Üç Yarışlık Kupa', full: true, onTap: () => c.open('tournament')),
       for (var i = 0; i < _branches.length; i++)
         ListRow(
-          last: i == _branches.length - 1,
           children: [
             RowTitle(_branches[i].$2),
             ActionButton(

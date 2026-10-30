@@ -27,7 +27,6 @@ class LeaguePanel extends StatelessWidget {
           ],
         ),
         ListRow(
-          last: true,
           children: [
             const RowTitle('Toplam zafer'),
             Text('${s.wins}', style: value),

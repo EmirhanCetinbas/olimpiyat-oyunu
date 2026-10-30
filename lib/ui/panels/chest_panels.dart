@@ -37,8 +37,7 @@ class ChestsPanel extends StatelessWidget {
       );
     }
     final s = c.state;
-    Widget chestRow(String name, int count, String type, {bool last = false}) => ListRow(
-      last: last,
+    Widget chestRow(String name, int count, String type) => ListRow(
       children: [
         RowTitle('$name ×$count'),
         ActionButton('Aç', onTap: () => c.pressOpenChest(type), enabled: count >= 1),
@@ -49,7 +48,7 @@ class ChestsPanel extends StatelessWidget {
         const PanelText('Çantaların envanterde. Her 5 yarışta yeni bir Spor Çantası kazanırsın.'),
         chestRow('Spor Çantası', s.chests, 'normal'),
         chestRow('Kupa Çantası', s.cupChests, 'cup'),
-        chestRow('Şampiyon Çantası', s.championChests, 'champion', last: true),
+        chestRow('Şampiyon Çantası', s.championChests, 'champion'),
       ],
     );
   }
@@ -150,7 +149,6 @@ class CosmeticsPanel extends StatelessWidget {
         if (s.cosmetics.isEmpty) const PanelText('Henüz çerçeve kazanmadın.'),
         for (var k = 0; k < s.cosmetics.length; k++)
           ListRow(
-            last: k == s.cosmetics.length - 1,
             children: [
               Expanded(
                 child: Text('✨ ${cosmeticNames[s.cosmetics[k]]}', style: gameText(14, color: GameColors.ink)),

@@ -20,7 +20,6 @@ class ShopPanel extends StatelessWidget {
         ],
       ),
       ListRow(
-        last: true,
         children: [
           const RowTitle('Sponsor paketi', small: '+₺10.000 · 5 elmas'),
           ActionButton('Al', onTap: c.buyCoins, enabled: c.state.gems >= 5),

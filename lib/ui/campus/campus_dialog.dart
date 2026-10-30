@@ -5,7 +5,7 @@ import '../../game/data.dart';
 import '../components/components.dart';
 import '../theme/theme.dart';
 
-/// `#campus-upgrade`: seçili tesisin kalıcı geliştirmeleri.
+/// Seçili tesisin kalıcı geliştirmeleri; ortak pencere dilinde.
 class CampusDialog extends StatelessWidget {
   const CampusDialog({super.key});
 
@@ -13,8 +13,7 @@ class CampusDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
     final f = c.facility(c.campusSelection)!;
-    final size = MediaQuery.sizeOf(context);
-    final wide = size.width >= 600;
+    final m = ScreenMetrics.of(context);
     final note = f.locked
         ? 'Skill puanın harcanmaz.'
         : c.race != null && f.id == 'sprint'
@@ -22,49 +21,35 @@ class CampusDialog extends StatelessWidget {
         : 'Kalıcı bonuslar otomatik uygulanır.';
     return DialogLayer(
       onDismiss: c.closeCampusDialog,
-      barrierColor: const Color(0x25072422),
-      padding: EdgeInsets.only(top: ScreenMetrics.of(context).padding.top, bottom: ScreenMetrics.of(context).padding.bottom),
-      child: Container(
-        width: ScreenMetrics.of(context).dialogWidth((size.width * .92).clamp(0.0, 460.0)),
-        constraints: BoxConstraints(maxHeight: ScreenMetrics.of(context).dialogMaxHeight(.9)),
-        child: GBox(
-          gradient: angleGradient(120, const [Color(0xFFFFFEF3), Color(0xFFFFF0D4)]),
-          borderColor: const Color(0xFF0B263A),
-          borderWidth: 3,
-          radius: 25,
-          shadows: const [BoxShadow(color: Color(0x55082437), offset: Offset(0, 8))],
-          insets: const [Inset(Color(0xFFFFF8E9), spread: 4)],
-          child: Stack(
-            children: [
-              SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(12, 20, 12, 9),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _Header(facility: f, level: c.facilityLevel(f.id), wide: wide),
-                    if (f.locked) const _Note('Bu yarış dalı açıldığında geliştirmeler kullanılabilir.', boxed: true),
-                    for (var i = 0; i < f.rows.length; i++) ...[
-                      if (i > 0) const SizedBox(height: 9),
-                      CampusUpgradeRow(
-                        row: f.rows[i],
-                        rank: c.campusRank(f.id, i),
-                        cost: c.campusCost(f.id, i),
-                        locked: f.locked,
-                        skillPoints: c.state.skillPoints,
-                        onBuy: () => c.pressCampusBuy(i),
-                      ),
-                    ],
-                    _Note(note),
-                  ],
-                ),
+      barrierColor: const Color(0x55072422),
+      padding: EdgeInsets.only(top: m.padding.top, bottom: m.padding.bottom),
+      child: SizedBox(
+        width: m.dialogWidth((m.gameWidth * .95).clamp(0.0, 470.0)),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: m.dialogMaxHeight(.9)),
+          child: GameModal(
+            title: trUpper(f.label),
+            onClose: c.closeCampusDialog,
+            closeLabel: 'Yükseltmeleri kapat',
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _Header(facility: f, level: c.facilityLevel(f.id)),
+                  if (f.locked) const PanelText('Bu yarış dalı açıldığında geliştirmeler kullanılabilir.', align: TextAlign.center),
+                  for (var i = 0; i < f.rows.length; i++)
+                    CampusUpgradeRow(
+                      row: f.rows[i],
+                      rank: c.campusRank(f.id, i),
+                      cost: c.campusCost(f.id, i),
+                      locked: f.locked,
+                      skillPoints: c.state.skillPoints,
+                      onBuy: () => c.pressCampusBuy(i),
+                    ),
+                  PanelText.muted(note, align: TextAlign.center),
+                ],
               ),
-              Positioned(
-                right: 1.5,
-                top: .5,
-                child: RoundCloseButton.campus(onTap: c.closeCampusDialog, semanticLabel: 'Yükseltmeleri kapat'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -72,43 +57,40 @@ class CampusDialog extends StatelessWidget {
   }
 }
 
+/// Tesis ikonu, açıklama ve seviye rozeti.
 class _Header extends StatelessWidget {
-  const _Header({required this.facility, required this.level, required this.wide});
+  const _Header({required this.facility, required this.level});
   final CampusFacility facility;
   final int level;
-  final bool wide;
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 4, bottom: 15, right: 18),
+    padding: const EdgeInsets.only(bottom: 12),
     child: Row(
       children: [
-        GBox(
-          width: wide ? 82 : 65,
-          height: wide ? 82 : 68,
-          gradient: vGradient(const [Color(0xFFFFFCEF), Color(0xFFEFDBB9)]),
-          borderColor: const Color(0xFFD4B28A),
-          borderWidth: 2,
-          radius: 15,
+        Container(
+          width: 64,
+          height: 64,
+          decoration: flatCardDecoration(radius: 16),
           alignment: Alignment.center,
-          child: Art(facility.icon, width: wide ? 69 : 56, height: wide ? 69 : 56),
+          child: Art(facility.icon, width: 52, height: 52),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(facility.name, style: gameText(vwClamp(context, 17, 4.5, 23), color: GameColors.text, height: 1.1, letterSpacing: -.5)),
+              // Tesis adı başlık plakasında; burada yalnız açıklama ve seviye.
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text('Kalıcı geliştirmeler', style: gameText(14, color: const Color(0xFF5C6473))),
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text('Kalıcı geliştirmeler', style: gameText(TextSizes.cardTitle, color: GameColors.ink, height: 1.1)),
               ),
               Pill(
                 facility.locked ? 'YAKINDA' : 'Sv. $level',
-                style: gameText(15, color: GameColors.text, height: 1.1),
+                style: gameText(14, color: GameColors.ink, height: 1.1),
                 color: const Color(0xFFEBDDC3),
                 radius: 20,
-                padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
               ),
             ],
           ),
@@ -118,29 +100,7 @@ class _Header extends StatelessWidget {
   );
 }
 
-class _Note extends StatelessWidget {
-  const _Note(this.text, {this.boxed = false});
-  final String text;
-  final bool boxed;
-
-  @override
-  Widget build(BuildContext context) {
-    final label = Text(
-      text,
-      textAlign: TextAlign.center,
-      style: gameText(12, color: const Color(0xFF677077), height: 1.3),
-    );
-    if (!boxed) return Padding(padding: const EdgeInsets.only(top: 10), child: label);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(color: const Color(0xFFF1E5CB), borderRadius: BorderRadius.circular(9)),
-      child: label,
-    );
-  }
-}
-
-/// `.campus-upgrade-row`: kademe, etki, SP bedeli ve ↑ düğmesi.
+/// Tek geliştirme kademesi: ikon, etki, kademe ve SP bedelli düğme.
 class CampusUpgradeRow extends StatelessWidget {
   const CampusUpgradeRow({
     super.key,
@@ -161,125 +121,42 @@ class CampusUpgradeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final wide = width >= 600, narrow = width <= 350;
-    final enabled = !locked && rank < 5 && skillPoints >= cost;
+    final compact = ScreenMetrics.of(context).compact;
+    final maxed = rank >= 5;
     final sign = row.amount < 0 ? '−' : '+';
-    final gap = SizedBox(
-      width: wide
-          ? 8
-          : narrow
-          ? 4
-          : 6,
-    );
-    final iconSize = wide
-        ? 46.0
-        : narrow
-        ? 29.0
-        : 35.0;
-    return GBox(
-      gradient: angleGradient(110, const [Color(0xFFFFFDF3), Color(0xFFFFF5E3)]),
-      borderColor: const Color(0xFFDFC19E),
-      borderWidth: 2,
-      radius: 17,
-      insets: const [Inset(Colors.white, dy: 2)],
-      padding: EdgeInsets.symmetric(horizontal: wide ? 10 : 6, vertical: wide ? 10 : 8),
-      child: Row(
-        children: [
-          Container(
-            width: wide
-                ? 52
-                : narrow
-                ? 32
-                : 40,
-            height: wide ? 54 : 46,
-            decoration: BoxDecoration(
-              gradient: vGradient(const [Color(0xFFE7D3B0), Color(0xFFFFF9E9)]),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            alignment: Alignment.center,
-            child: Art(row.icon, width: iconSize, height: iconSize),
-          ),
-          gap,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(
-                    row.name,
-                    style: gameText(
-                      wide
-                          ? 17
-                          : narrow
-                          ? 12
-                          : 14,
-                      color: GameColors.text,
-                      height: 1.1,
+    return ListRow(
+      children: [
+        Art(row.icon, width: compact ? 32 : 38, height: compact ? 32 : 38),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(row.name, style: gameText(16.5, color: GameColors.ink, height: 1.15)),
+              Text.rich(
+                TextSpan(
+                  style: gameText(13, color: GameColors.slate, height: 1.25),
+                  children: [
+                    TextSpan(text: '${row.effect} '),
+                    TextSpan(
+                      text: '$sign%${row.amount.abs() * (rank + 1)}',
+                      style: gameText(13, color: GameColors.greenShade),
                     ),
-                  ),
+                  ],
                 ),
-                Text.rich(
-                  TextSpan(
-                    style: gameText(wide ? 14 : 12, color: const Color(0xFF566171), height: 1.2),
-                    children: [
-                      TextSpan(text: '${row.effect} '),
-                      TextSpan(
-                        text: '$sign%${row.amount.abs() * (rank + 1)}',
-                        style: gameText(wide ? 14 : 12, color: const Color(0xFF078420)),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 3),
-                  child: Text(
-                    '$rank/5 · Mevcut: $sign%${row.amount.abs() * rank}',
-                    style: gameText(11, color: const Color(0xFF767569), height: 1.2),
-                  ),
-                ),
-              ],
-            ),
+              ),
+              Text('$rank/5 · Mevcut: $sign%${row.amount.abs() * rank}', style: gameText(11, color: GameColors.slate, height: 1.2)),
+            ],
           ),
-          gap,
-          Text(
-            '★ ${rank >= 5 ? 'MAKS.' : '$cost SP'}',
-            style: gameText(
-              wide
-                  ? 14
-                  : narrow
-                  ? 11
-                  : 12,
-              color: GameColors.text,
-            ),
-          ),
-          gap,
-          GameButton(
-            onTap: onBuy,
-            enabled: enabled,
-            semanticLabel: '${row.name} geliştir, $cost SP',
-            skin: ButtonSkin.campus,
-            label: locked
-                ? '🔒'
-                : rank >= 5
-                ? '✓'
-                : '↑',
-            fontSize: enabled ? 29 : 20,
-            textHeight: 1,
-            padding: EdgeInsets.zero,
-            width: wide
-                ? 47
-                : narrow
-                ? 32
-                : 38,
-            height: wide ? 49 : 41,
-            alignment: Alignment.center,
-            disabledSaturation: .5,
-            disabledOpacity: .65,
-          ),
-        ],
-      ),
+        ),
+        RaisedButton(
+          locked ? 'YAKINDA' : (maxed ? 'MAKS.' : '★ $cost SP'),
+          onTap: onBuy,
+          enabled: !locked && !maxed && skillPoints >= cost,
+          semanticLabel: '${row.name} geliştir, $cost SP',
+          width: compact ? 72 : 82,
+          fontSize: 15,
+        ),
+      ],
     );
   }
 }

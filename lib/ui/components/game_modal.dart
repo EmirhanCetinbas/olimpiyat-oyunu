@@ -35,7 +35,13 @@ class GameModal extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
       final width = box.maxWidth;
-      final bannerWidth = width * .56;
+      // Plaka yazıyı sarar: en az panelin %52'si, en çok %76'sı (pati izleri ve kapat düğmesi dışarıda kalır).
+      final textWidth = (TextPainter(
+        text: TextSpan(text: title, style: ModalBanner.textStyle),
+        textDirection: TextDirection.ltr,
+        maxLines: 1,
+      )..layout()).width;
+      final bannerWidth = (textWidth + 2 * ModalBanner.horizontalPadding + 8).clamp(width * .52, width * .76);
       return Stack(
         clipBehavior: Clip.none,
         children: [
@@ -72,6 +78,9 @@ class ModalBanner extends StatelessWidget {
   final String title;
   final double height;
 
+  static final textStyle = gameText(TextSizes.title, color: Colors.white, height: 1, letterSpacing: 1);
+  static const horizontalPadding = 14.0;
+
   @override
   Widget build(BuildContext context) => SizedBox(
     height: height,
@@ -81,16 +90,11 @@ class ModalBanner extends StatelessWidget {
       radius: 20,
       lip: 5,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 0, 14, 4),
+        padding: const EdgeInsets.fromLTRB(horizontalPadding, 0, horizontalPadding, 4),
         child: Center(
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: OutlinedText(
-              title,
-              maxLines: 1,
-              shadowOffset: const Offset(0, 2.5),
-              style: gameText(33, color: Colors.white, height: 1, letterSpacing: 1),
-            ),
+            child: OutlinedText(title, maxLines: 1, shadowOffset: const Offset(0, 2.5), style: textStyle),
           ),
         ),
       ),

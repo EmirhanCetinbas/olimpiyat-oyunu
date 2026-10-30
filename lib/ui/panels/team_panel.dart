@@ -17,7 +17,6 @@ class TeamPanel extends StatelessWidget {
         for (var i = 0; i < animals.length; i++)
           ListRow(
             locked: s.races < animals[i].unlock,
-            last: i == animals.length - 1,
             children: [
               Art(animals[i].art, width: 36, height: 36, radius: BorderRadius.circular(18)),
               RowTitle(animals[i].name, small: '${animals[i].trait} · Uzmanlık: ${specialtyLabel(i)}'),

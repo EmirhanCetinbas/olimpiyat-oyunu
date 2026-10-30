@@ -64,3 +64,6 @@ const whiteTextShadow = [Shadow(color: Color(0x33000000), offset: Offset(0, 1))]
 
 /// CSS `vw` tabanlı clamp(min, n vw, max).
 double vwClamp(BuildContext context, double min, double vw, double max) => (MediaQuery.sizeOf(context).width * vw / 100).clamp(min, max);
+
+/// Türkçe büyük harf (i → İ, ı → I); başlık plakaları için.
+String trUpper(String text) => text.replaceAll('i', 'İ').replaceAll('ı', 'I').toUpperCase();

@@ -28,15 +28,15 @@ class InventoryPanel extends StatelessWidget {
     child: Row(
       children: [
         for (var i = 0; i < _tabs.length; i++) ...[
-          if (i > 0) const SizedBox(width: 5),
+          if (i > 0) const SizedBox(width: 7),
           Expanded(
-            child: GameButton(
+            // Seçili sekme yeşil, diğerleri krem.
+            child: RaisedButton(
+              _tabs[i].$2,
               onTap: () => c.setInventoryTab(_tabs[i].$1),
-              label: _tabs[i].$2,
-              skin: c.inventoryTab == _tabs[i].$1 ? ButtonSkin.tabActive : ButtonSkin.tabIdle,
-              fontSize: 12,
-              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 7),
-              alignment: Alignment.center,
+              tone: c.inventoryTab == _tabs[i].$1 ? ButtonTone.green : ButtonTone.cream,
+              width: double.infinity,
+              fontSize: 15,
             ),
           ),
         ],
@@ -44,19 +44,7 @@ class InventoryPanel extends StatelessWidget {
     ),
   );
 
-  /// `.inventory-card .modal-action`
-  Widget _cardAction(String label, VoidCallback onTap, {bool enabled = true}) =>
-      ActionButton(label, onTap: onTap, enabled: enabled, fontSize: 12, padding: const EdgeInsets.all(6));
-
-  /// `.inventory-card>button`
-  Widget _leafAction(String label, VoidCallback onTap, {bool enabled = true}) => ActionButton(
-    label,
-    onTap: onTap,
-    enabled: enabled,
-    fontSize: 12,
-    skin: ButtonSkin.leaf,
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-  );
+  Widget _cardAction(String label, VoidCallback onTap, {bool enabled = true}) => ActionButton(label, onTap: onTap, enabled: enabled);
 
   Widget _emoji(String e) => SizedBox(width: 42, child: EmojiArt(e, size: 29));
 
@@ -108,7 +96,7 @@ class InventoryPanel extends StatelessWidget {
         leading: _emoji('✨'),
         title: 'Avatar çerçeveleri',
         small: '${s.cosmetics.length} / 4 açık · Tekrarı parçaya dönüşür',
-        actions: [_leafAction('Seç', () => c.open('cosmetics'))],
+        actions: [_cardAction('Seç', () => c.open('cosmetics'))],
       ),
       ItemCard(
         leading: const Art('ticket', width: 42, height: 42),
@@ -120,13 +108,13 @@ class InventoryPanel extends StatelessWidget {
         leading: _emoji('🎁'),
         title: 'Spor Çantaları ×${s.chests + s.cupChests + s.championChests}',
         small: 'Normal ${s.chests} · Kupa ${s.cupChests} · Şampiyon ${s.championChests}',
-        actions: [_leafAction('Aç', () => c.open('chests'))],
+        actions: [_cardAction('Aç', () => c.open('chests'))],
       ),
       ItemCard(
         leading: _emoji('⚡'),
         title: '2x gelir kuponu ×${s.boostTokens}',
         small: '30 saniye boyunca geliri ikiye katlar',
-        actions: [_leafAction('Kullan', c.useBoostToken, enabled: s.boostTokens >= 1)],
+        actions: [_cardAction('Kullan', c.useBoostToken, enabled: s.boostTokens >= 1)],
       ),
     ];
   }
@@ -145,20 +133,11 @@ class EquipmentCard extends StatelessWidget {
     final parts = stars < 3 && c.state.equipmentParts >= 5;
     final compact = ScreenMetrics.of(context).compact;
     final gap = SizedBox(width: compact ? 4 : 7);
-    Widget button(String label, VoidCallback onTap, {bool enabled = true}) => ActionButton(
-      label,
-      onTap: onTap,
-      enabled: enabled,
-      fontSize: 11,
-      skin: ButtonSkin.equipment,
-      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 7),
-    );
-    return GBox(
-      gradient: vGradient(const [Color(0xFFFFFEF6), Color(0xFFF8FAED)]),
-      borderColor: const Color(0xFFCBD4D7),
-      borderWidth: 2,
-      radius: 12,
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
+    Widget button(String label, VoidCallback onTap, {bool enabled = true}) =>
+        RaisedButton(label, onTap: onTap, enabled: enabled, width: double.infinity, height: 36, fontSize: 14);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
+      decoration: flatCardDecoration(),
       child: Row(
         children: [
           Sprite(equipmentIcon(index), width: compact ? 42 : 52, height: compact ? 42 : 52),

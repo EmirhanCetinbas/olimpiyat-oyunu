@@ -1,33 +1,36 @@
 import 'package:flutter/widgets.dart';
 
 import '../theme/theme.dart';
+import 'raised_surface.dart';
 
-/// `.row`: iki uca yaslanmış, alt çizgili satır.
+/// Pencere içi satır kartı (Ayarlar satırlarıyla aynı düz kart): soldan sağa çocuklar, aralarında boşluk.
 class ListRow extends StatelessWidget {
-  const ListRow({super.key, required this.children, this.last = false, this.locked = false});
+  const ListRow({super.key, required this.children, this.locked = false});
   final List<Widget> children;
-  final bool last;
+
+  /// Kilitli satır soluk görünür (henüz açılmamış sporcu).
   final bool locked;
 
   @override
   Widget build(BuildContext context) {
-    final row = Container(
-      padding: const EdgeInsets.symmetric(vertical: 9),
-      decoration: BoxDecoration(
-        border: last ? null : const Border(bottom: BorderSide(color: Color(0xFFDCE1C7))),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          for (var i = 0; i < children.length; i++) ...[if (i > 0) const SizedBox(width: 8), children[i]],
-        ],
+    final row = Padding(
+      padding: const EdgeInsets.only(bottom: 9),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 58),
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+        decoration: flatCardDecoration(),
+        child: Row(
+          children: [
+            for (var i = 0; i < children.length; i++) ...[if (i > 0) const SizedBox(width: 10), children[i]],
+          ],
+        ),
       ),
     );
     return locked ? Opacity(opacity: .6, child: row) : row;
   }
 }
 
-/// Satır başlığı ve isteğe bağlı açıklama (`.row small`).
+/// Satır başlığı ve isteğe bağlı açıklama; kalan genişliği kaplar.
 class RowTitle extends StatelessWidget {
   const RowTitle(this.title, {super.key, this.small});
   final String title;
@@ -38,18 +41,18 @@ class RowTitle extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: gameText(14, color: GameColors.ink)),
+        Text(title, style: gameText(16.5, color: GameColors.ink, height: 1.15)),
         if (small != null)
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Text(small!, style: gameText(11.7, color: const Color(0xFF68826C))),
+            child: Text(small!, style: gameText(12.5, color: GameColors.slate, height: 1.25)),
           ),
       ],
     ),
   );
 }
 
-/// `.inventory-card`: ikon, başlık, açıklama ve eylemler.
+/// İkonlu kart: ikon, başlık, açıklama ve sağda eylemler.
 class ItemCard extends StatelessWidget {
   const ItemCard({
     super.key,
@@ -66,32 +69,12 @@ class ItemCard extends StatelessWidget {
   final bool locked;
 
   @override
-  Widget build(BuildContext context) {
-    final card = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 9),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFD5E0D6))),
-      ),
-      child: Row(
-        children: [
-          leading,
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: gameText(14, color: GameColors.ink)),
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(small, style: gameText(12, color: GameColors.slate, height: 1.3)),
-                ),
-              ],
-            ),
-          ),
-          for (final a in actions) ...[const SizedBox(width: 10), a],
-        ],
-      ),
-    );
-    return locked ? Opacity(opacity: .6, child: card) : card;
-  }
+  Widget build(BuildContext context) => ListRow(
+    locked: locked,
+    children: [
+      leading,
+      RowTitle(title, small: small),
+      ...actions,
+    ],
+  );
 }

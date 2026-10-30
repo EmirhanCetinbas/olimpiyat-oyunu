@@ -45,7 +45,7 @@ class ResetPanel extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       const PanelText('Bu cihazdaki bütün yarışlar, seviyeler ve ödüller silinecek.'),
-      ActionButton('Vazgeç', full: true, onTap: () => c.openPanel('settings')),
+      ActionButton('Vazgeç', full: true, tone: ButtonTone.cream, onTap: () => c.openPanel('settings')),
       ActionButton('Evet, sıfırla', full: true, onTap: c.confirmReset),
     ],
   );
