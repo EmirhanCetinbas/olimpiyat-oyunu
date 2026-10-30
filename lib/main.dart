@@ -5,8 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'game/audio.dart';
 import 'game/controller.dart';
 import 'game/state.dart';
-import 'ui/game_screen.dart';
-import 'ui/widgets.dart';
+import 'ui/home/game_screen.dart';
+import 'ui/components/sprite.dart';
 
 /// localStorage karşılığı: SharedPreferences'ta aynı anahtar ve JSON biçimi.
 class PrefsStorage implements GameStorage {

@@ -57,13 +57,16 @@ class SoloudAudio implements GameAudio {
     }
     if (_loading.contains(key)) return;
     _loading.add(key);
-    SoLoud.instance.loadMem('$key.wav', build()).then((source) {
-      _sounds[key] = source;
-      _loading.remove(key);
-      SoLoud.instance.play(source, volume: gain);
-    }).catchError((_) {
-      _loading.remove(key);
-    });
+    SoLoud.instance
+        .loadMem('$key.wav', build())
+        .then((source) {
+          _sounds[key] = source;
+          _loading.remove(key);
+          SoLoud.instance.play(source, volume: gain);
+        })
+        .catchError((_) {
+          _loading.remove(key);
+        });
   }
 
   static Uint8List _wav(double seconds, double Function(double t) sample) {

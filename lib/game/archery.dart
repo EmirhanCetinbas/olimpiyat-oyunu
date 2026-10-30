@@ -39,8 +39,8 @@ extension ArcheryLogic on GameController {
     archeryArrowLeft = a.phase == 'flight'
         ? 26 + 56 * t
         : a.phase == 'hit'
-            ? 82
-            : 26;
+        ? 82
+        : 26;
     archeryArrowHidden = !['flight', 'hit'].contains(a.phase);
   }
 

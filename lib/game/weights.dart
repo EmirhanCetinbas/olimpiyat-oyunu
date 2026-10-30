@@ -95,19 +95,24 @@ extension WeightsLogic on GameController {
       phase: 'lifting',
       ids: ids,
       playerLane: ids.indexOf(state.selected),
-      weights: WeightsRound(levels: levels, campus: campus, attempts: [
-        for (final id in ids)
-          () {
-            final attempt = weightAttempt(id, id == state.selected ? levels : const [1, 1, 1, 1]);
-            if (id == state.selected) {
-              final risk = state.weightRisk == 'record';
-              attempt.kg = (attempt.kg * (1 + campus[0] * .01 + campus[2] * .006 + (trainingCard ? .03 : 0)) * (risk ? 1.15 : 1) / 5).round() * 5;
-              attempt.chance = min(.98, max(.12, attempt.chance + campus[1] * .009 - (risk ? .18 : 0)));
-              attempt.success = attempt.roll < attempt.chance;
-            }
-            return attempt;
-          }(),
-      ]),
+      weights: WeightsRound(
+        levels: levels,
+        campus: campus,
+        attempts: [
+          for (final id in ids)
+            () {
+              final attempt = weightAttempt(id, id == state.selected ? levels : const [1, 1, 1, 1]);
+              if (id == state.selected) {
+                final risk = state.weightRisk == 'record';
+                attempt.kg =
+                    (attempt.kg * (1 + campus[0] * .01 + campus[2] * .006 + (trainingCard ? .03 : 0)) * (risk ? 1.15 : 1) / 5).round() * 5;
+                attempt.chance = min(.98, max(.12, attempt.chance + campus[1] * .009 - (risk ? .18 : 0)));
+                attempt.success = attempt.roll < attempt.chance;
+              }
+              return attempt;
+            }(),
+        ],
+      ),
     );
     runners();
     stadiumIdle = false;

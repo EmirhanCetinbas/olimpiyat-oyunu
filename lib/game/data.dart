@@ -70,8 +70,12 @@ const weightUpgrades = [
   UpgradeDef('Temel Güç', 'weight-strength', 1000, 'Her seviye hedef kaldırış ağırlığını %2,5 artırır.'),
   UpgradeDef('Kavrama', 'weight-grip', 1100, 'Her seviye başarılı kaldırış şansını 0,8 yüzde puan artırır.'),
   UpgradeDef('Denge', 'weight-balance', 950, 'Her seviye başarılı kaldırış şansını 0,9 yüzde puan artırır.'),
-  UpgradeDef('Son Hamle', 'weight-finish', 1200,
-      'Her seviye ağırlığı %1 ve başarı şansını 0,3 yüzde puan artırır. Başarı şansı en fazla %98 olur.'),
+  UpgradeDef(
+    'Son Hamle',
+    'weight-finish',
+    1200,
+    'Her seviye ağırlığı %1 ve başarı şansını 0,3 yüzde puan artırır. Başarı şansı en fazla %98 olur.',
+  ),
 ];
 const archeryUpgrades = [
   UpgradeDef('Nişan Alma', 'archery-aim', 1000, 'Her seviye isabeti artırır.'),
@@ -174,41 +178,104 @@ class CampusFacility {
 }
 
 const campusFacilities = [
-  CampusFacility('sprint', '100 METRE TESİSİ', '100 METRE', 'shoe', 25, 25, [6, 11, 36, 14], [
-    CampusRow('Çıkış Hızı', 'İlk 25 m', 1, 2, 'shoe'),
-    CampusRow('Sprint Gücü', 'Genel hız', 1, 3, 'speed'),
-    CampusRow('Finiş Gücü', 'Son 20 m', 1, 3, 'finish'),
-  ]),
-  CampusFacility('hurdles', 'ENGELLİ KOŞU TESİSİ', 'ENGELLİ KOŞU', 'speed', 79, 26, [63, 11, 29, 12], [
-    CampusRow('Engel Ritmi', 'Engeller arası hız', 1, 2, 'speed'),
-    CampusRow('Atlayış Tekniği', 'Engel kaybı', 1, 3, 'shoe'),
-    CampusRow('Finiş Temposu', 'Son bölüm hız', 1, 3, 'finish'),
-  ]),
-  CampusFacility('swim', 'YÜZME TESİSİ', 'YÜZME', 'stamina', 16, 47, [2, 29, 27, 16], [
-    CampusRow('Çıkış Tepkisi', 'İlk 25 m', 1, 2, 'shoe'),
-    CampusRow('Kulaç Gücü', 'Genel hız', 1, 3, 'speed'),
-    CampusRow('Nefes Kontrolü', 'Son 25 m', 1, 3, 'stamina'),
-  ]),
-  CampusFacility('stadium', 'STADYUM', 'STADYUM', 'stadium', 56, 50, [34, 28, 40, 21], [
-    CampusRow('Tribün Kapasitesi', 'Tribün geliri', 5, 2, 'team'),
-    CampusRow('Bilet Geliri', 'Bilet kazancı', 5, 3, 'ticket'),
-    CampusRow('Sponsorluk', 'Yarış ödülü', 3, 3, 'trophy'),
-  ]),
-  CampusFacility('jump', 'UZUN ATLAMA TESİSİ', 'UZUN ATLAMA', 'shoe', 20, 66, [4, 54, 30, 12], [
-    CampusRow('Koşu Hızı', 'Yaklaşma', 1, 2, 'shoe'),
-    CampusRow('Sıçrama Gücü', 'Atlayış', 1, 3, 'speed'),
-    CampusRow('İniş Tekniği', 'Mesafe', 1, 3, 'finish'),
-  ]),
-  CampusFacility('weights', 'HALTER TESİSİ', 'HALTER', 'stamina', 53, 70, [39, 55, 25, 14], [
-    CampusRow('Temel Güç', 'Kaldırış', 1, 2, 'stamina'),
-    CampusRow('Denge', 'Başarı şansı', 1, 3, 'medal'),
-    CampusRow('Son Hamle', 'Final güç', 1, 3, 'finish'),
-  ]),
-  CampusFacility('archery', 'OKÇULUK TESİSİ', 'OKÇULUK', 'medal', 86, 66, [76, 52, 18, 14], [
-    CampusRow('Nişan Tekniği', 'İsabet', 1, 2, 'medal'),
-    CampusRow('Yay Gücü', 'Atış puanı', 1, 3, 'stamina'),
-    CampusRow('Odaklanma', 'Son atış', 1, 3, 'finish'),
-  ]),
+  CampusFacility(
+    'sprint',
+    '100 METRE TESİSİ',
+    '100 METRE',
+    'shoe',
+    25,
+    25,
+    [6, 11, 36, 14],
+    [
+      CampusRow('Çıkış Hızı', 'İlk 25 m', 1, 2, 'shoe'),
+      CampusRow('Sprint Gücü', 'Genel hız', 1, 3, 'speed'),
+      CampusRow('Finiş Gücü', 'Son 20 m', 1, 3, 'finish'),
+    ],
+  ),
+  CampusFacility(
+    'hurdles',
+    'ENGELLİ KOŞU TESİSİ',
+    'ENGELLİ KOŞU',
+    'speed',
+    79,
+    26,
+    [63, 11, 29, 12],
+    [
+      CampusRow('Engel Ritmi', 'Engeller arası hız', 1, 2, 'speed'),
+      CampusRow('Atlayış Tekniği', 'Engel kaybı', 1, 3, 'shoe'),
+      CampusRow('Finiş Temposu', 'Son bölüm hız', 1, 3, 'finish'),
+    ],
+  ),
+  CampusFacility(
+    'swim',
+    'YÜZME TESİSİ',
+    'YÜZME',
+    'stamina',
+    16,
+    47,
+    [2, 29, 27, 16],
+    [
+      CampusRow('Çıkış Tepkisi', 'İlk 25 m', 1, 2, 'shoe'),
+      CampusRow('Kulaç Gücü', 'Genel hız', 1, 3, 'speed'),
+      CampusRow('Nefes Kontrolü', 'Son 25 m', 1, 3, 'stamina'),
+    ],
+  ),
+  CampusFacility(
+    'stadium',
+    'STADYUM',
+    'STADYUM',
+    'stadium',
+    56,
+    50,
+    [34, 28, 40, 21],
+    [
+      CampusRow('Tribün Kapasitesi', 'Tribün geliri', 5, 2, 'team'),
+      CampusRow('Bilet Geliri', 'Bilet kazancı', 5, 3, 'ticket'),
+      CampusRow('Sponsorluk', 'Yarış ödülü', 3, 3, 'trophy'),
+    ],
+  ),
+  CampusFacility(
+    'jump',
+    'UZUN ATLAMA TESİSİ',
+    'UZUN ATLAMA',
+    'shoe',
+    20,
+    66,
+    [4, 54, 30, 12],
+    [
+      CampusRow('Koşu Hızı', 'Yaklaşma', 1, 2, 'shoe'),
+      CampusRow('Sıçrama Gücü', 'Atlayış', 1, 3, 'speed'),
+      CampusRow('İniş Tekniği', 'Mesafe', 1, 3, 'finish'),
+    ],
+  ),
+  CampusFacility(
+    'weights',
+    'HALTER TESİSİ',
+    'HALTER',
+    'stamina',
+    53,
+    70,
+    [39, 55, 25, 14],
+    [
+      CampusRow('Temel Güç', 'Kaldırış', 1, 2, 'stamina'),
+      CampusRow('Denge', 'Başarı şansı', 1, 3, 'medal'),
+      CampusRow('Son Hamle', 'Final güç', 1, 3, 'finish'),
+    ],
+  ),
+  CampusFacility(
+    'archery',
+    'OKÇULUK TESİSİ',
+    'OKÇULUK',
+    'medal',
+    86,
+    66,
+    [76, 52, 18, 14],
+    [
+      CampusRow('Nişan Tekniği', 'İsabet', 1, 2, 'medal'),
+      CampusRow('Yay Gücü', 'Atış puanı', 1, 3, 'stamina'),
+      CampusRow('Odaklanma', 'Son atış', 1, 3, 'finish'),
+    ],
+  ),
 ];
 
 // ---- Görsel parçaları (paintArt karşılığı) ----
@@ -260,9 +327,24 @@ const _referenceArt = {
 };
 
 const _iconGrid = {
-  'avatar': [0, 0], 'trophy': [1, 0], 'gear': [2, 0], 'gem': [3, 0], 'shoe': [4, 0], 'bank': [5, 0],
-  'team': [0, 1], 'speed': [1, 1], 'stamina': [2, 1], 'finish': [3, 1], 'stadium': [4, 1], 'ticket': [5, 1],
-  'clipboard': [0, 2], 'bag': [1, 2], 'cards': [2, 2], 'medal': [3, 2], 'camp': [4, 2], 'shop': [5, 2],
+  'avatar': [0, 0],
+  'trophy': [1, 0],
+  'gear': [2, 0],
+  'gem': [3, 0],
+  'shoe': [4, 0],
+  'bank': [5, 0],
+  'team': [0, 1],
+  'speed': [1, 1],
+  'stamina': [2, 1],
+  'finish': [3, 1],
+  'stadium': [4, 1],
+  'ticket': [5, 1],
+  'clipboard': [0, 2],
+  'bag': [1, 2],
+  'cards': [2, 2],
+  'medal': [3, 2],
+  'camp': [4, 2],
+  'shop': [5, 2],
 };
 
 const _jumpIcons = {

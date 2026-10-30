@@ -3,15 +3,7 @@ import 'data.dart';
 const storageKey = 'pati-champions-v1';
 
 class ChestItem {
-  ChestItem({
-    required this.kind,
-    this.amount = 0,
-    this.branch,
-    this.label = '',
-    this.icon = '',
-    this.index,
-    this.extra,
-  });
+  ChestItem({required this.kind, this.amount = 0, this.branch, this.label = '', this.icon = '', this.index, this.extra});
 
   String kind;
   int amount;
@@ -22,14 +14,14 @@ class ChestItem {
   ChestItem? extra;
 
   Map<String, dynamic> toJson() => {
-        'kind': kind,
-        'amount': amount,
-        if (branch != null) 'branch': branch,
-        'label': label,
-        'icon': icon,
-        if (index != null) 'index': index,
-        if (extra != null) 'extra': extra!.toJson(),
-      };
+    'kind': kind,
+    'amount': amount,
+    if (branch != null) 'branch': branch,
+    'label': label,
+    'icon': icon,
+    if (index != null) 'index': index,
+    if (extra != null) 'extra': extra!.toJson(),
+  };
 
   static ChestItem? fromJson(dynamic raw) {
     if (raw is! Map) return null;
@@ -50,7 +42,10 @@ class PendingChest {
   final String type;
   final List<ChestItem> offers;
 
-  Map<String, dynamic> toJson() => {'type': type, 'offers': [for (final o in offers) o.toJson()]};
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'offers': [for (final o in offers) o.toJson()],
+  };
 }
 
 class Tournament {
@@ -80,9 +75,7 @@ List<int> _levels(dynamic raw, int count) {
 }
 
 class GameState {
-  GameState.initial(int now)
-      : last = now,
-        version = 1;
+  GameState.initial(int now) : last = now, version = 1;
 
   int version;
   int skillPoints = 8;
@@ -223,56 +216,56 @@ class GameState {
   }
 
   Map<String, dynamic> toJson() => {
-        'version': version,
-        'skillPoints': skillPoints,
-        'campusUpgrades': campusUpgrades,
-        'money': money,
-        'gems': gems,
-        'xp': xp,
-        'levels': levels,
-        'hurdleLevels': hurdleLevels,
-        'swimLevels': swimLevels,
-        'longJumpLevels': longJumpLevels,
-        'bestJump': bestJump,
-        'weightLevels': weightLevels,
-        'bestWeight': bestWeight,
-        'archeryLevels': archeryLevels,
-        'bestArchery': bestArchery,
-        'tournament': tournament?.toJson(),
-        'tournamentCups': tournamentCups,
-        'weightRisk': weightRisk,
-        'branch': branch,
-        'races': races,
-        'wins': wins,
-        'medals': medals,
-        'best': best,
-        'selected': selected,
-        'name': name,
-        'auto': auto,
-        'sound': sound,
-        'musicVolume': musicVolume,
-        'soundVolume': soundVolume,
-        'vibration': vibration,
-        'claims': claims,
-        'camp': camp,
-        'equipment': equipment,
-        'equipmentStars': equipmentStars,
-        'equipmentLegacy': equipmentLegacy,
-        'chests': chests,
-        'cupChests': cupChests,
-        'championChests': championChests,
-        'equipmentParts': equipmentParts,
-        'trainingCards': trainingCards,
-        'cosmetics': cosmetics,
-        'selectedCosmetic': selectedCosmetic,
-        'pendingChest': pendingChest?.toJson(),
-        'boostTokens': boostTokens,
-        'boostUntil': boostUntil,
-        'boostReady': boostReady,
-        'last': last,
-        'daily': daily,
-        'dailyStep': dailyStep,
-        'spinDate': spinDate,
-        'spinTickets': spinTickets,
-      };
+    'version': version,
+    'skillPoints': skillPoints,
+    'campusUpgrades': campusUpgrades,
+    'money': money,
+    'gems': gems,
+    'xp': xp,
+    'levels': levels,
+    'hurdleLevels': hurdleLevels,
+    'swimLevels': swimLevels,
+    'longJumpLevels': longJumpLevels,
+    'bestJump': bestJump,
+    'weightLevels': weightLevels,
+    'bestWeight': bestWeight,
+    'archeryLevels': archeryLevels,
+    'bestArchery': bestArchery,
+    'tournament': tournament?.toJson(),
+    'tournamentCups': tournamentCups,
+    'weightRisk': weightRisk,
+    'branch': branch,
+    'races': races,
+    'wins': wins,
+    'medals': medals,
+    'best': best,
+    'selected': selected,
+    'name': name,
+    'auto': auto,
+    'sound': sound,
+    'musicVolume': musicVolume,
+    'soundVolume': soundVolume,
+    'vibration': vibration,
+    'claims': claims,
+    'camp': camp,
+    'equipment': equipment,
+    'equipmentStars': equipmentStars,
+    'equipmentLegacy': equipmentLegacy,
+    'chests': chests,
+    'cupChests': cupChests,
+    'championChests': championChests,
+    'equipmentParts': equipmentParts,
+    'trainingCards': trainingCards,
+    'cosmetics': cosmetics,
+    'selectedCosmetic': selectedCosmetic,
+    'pendingChest': pendingChest?.toJson(),
+    'boostTokens': boostTokens,
+    'boostUntil': boostUntil,
+    'boostReady': boostReady,
+    'last': last,
+    'daily': daily,
+    'dailyStep': dailyStep,
+    'spinDate': spinDate,
+    'spinTickets': spinTickets,
+  };
 }

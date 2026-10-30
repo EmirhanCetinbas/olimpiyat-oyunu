@@ -35,5 +35,4 @@ String istanbulDayKey(int millis) {
 
 String jumpMetres(num n) => '${n.toStringAsFixed(2).replaceAll('.', ',')} m';
 
-String stopwatch(double seconds) =>
-    '◴ ${_two((seconds / 60).floor())}:${_two((seconds % 60).floor())}';
+String stopwatch(double seconds) => '◴ ${_two((seconds / 60).floor())}:${_two((seconds % 60).floor())}';

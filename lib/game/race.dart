@@ -20,8 +20,8 @@ class Race {
     this.jump,
     this.weights,
     this.archery,
-  })  : progress = progress ?? [],
-        times = times ?? [];
+  }) : progress = progress ?? [],
+       times = times ?? [];
 
   final String branch;
   String phase;

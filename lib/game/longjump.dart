@@ -59,13 +59,18 @@ extension LongJumpLogic on GameController {
       phase: 'jumping',
       ids: ids,
       playerLane: ids.indexOf(state.selected),
-      jump: JumpRound(levels: levels, campus: campus, distances: [
-        for (final id in ids)
-          min(
+      jump: JumpRound(
+        levels: levels,
+        campus: campus,
+        distances: [
+          for (final id in ids)
+            min(
               9.95,
               longJumpDistance(id, id == state.selected ? levels : const [1, 1, 1, 1]) *
-                  (id == state.selected ? 1 + campusSum * .01 + (trainingCard ? .03 : 0) : 1)),
-      ]),
+                  (id == state.selected ? 1 + campusSum * .01 + (trainingCard ? .03 : 0) : 1),
+            ),
+        ],
+      ),
     );
     runners();
     stadiumIdle = false;
@@ -130,7 +135,11 @@ extension LongJumpLogic on GameController {
   void updateLongJumpHUD() {
     if (state.branch != 'longjump') return;
     final best = jumpCompleted.isEmpty ? null : jumpCompleted.map((r) => r.metres).reduce(max);
-    timerText = race != null ? 'DENEME' : best != null ? 'EN İYİ ${jumpMetres(best)}' : 'DENEME';
+    timerText = race != null
+        ? 'DENEME'
+        : best != null
+        ? 'EN İYİ ${jumpMetres(best)}'
+        : 'DENEME';
   }
 
   void finishLongJump() {
@@ -164,5 +173,11 @@ extension LongJumpLogic on GameController {
     toast('$place. sıra · ${jumpMetres(player.metres)} · +₺${fmt(reward)}');
     save();
     update();
+  }
+
+  void showJumpResult(int i) {
+    if (i < 0 || i >= jumpCompleted.length) return;
+    final result = jumpCompleted[i];
+    toast('${animals[result.id].name} · ${jumpMetres(result.metres)}');
   }
 }

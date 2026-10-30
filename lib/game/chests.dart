@@ -45,11 +45,19 @@ extension ChestLogic on GameController {
       ];
     }
     if (type == 'champion') {
-      final missing = [for (var i = 0; i < cosmeticNames.length; i++) if (!state.cosmetics.contains(i)) i];
+      final missing = [
+        for (var i = 0; i < cosmeticNames.length; i++)
+          if (!state.cosmetics.contains(i)) i,
+      ];
       offers = [
         for (var i = 0; i < 3; i++)
           missing.isNotEmpty
-              ? ChestItem(kind: 'cosmetic', index: missing[i % missing.length], label: cosmeticNames[missing[i % missing.length]], icon: '✨')
+              ? ChestItem(
+                  kind: 'cosmetic',
+                  index: missing[i % missing.length],
+                  label: cosmeticNames[missing[i % missing.length]],
+                  icon: '✨',
+                )
               : ChestItem(kind: 'parts', amount: 6, label: '6 ekipman parçası', icon: '⚙️'),
       ];
     }

@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pati_sampiyonlari/game/controller.dart';
 import 'package:pati_sampiyonlari/main.dart';
-import 'package:pati_sampiyonlari/ui/widgets.dart';
+import 'package:pati_sampiyonlari/ui/components/sprite.dart';
 
 final _date = DateTime.now().toIso8601String().substring(0, 10);
 const _root = String.fromEnvironment('PREVIEW_OUTPUT_ROOT', defaultValue: 'docs/verification');

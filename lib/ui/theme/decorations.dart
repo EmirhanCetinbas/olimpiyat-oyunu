@@ -1,45 +1,10 @@
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-const ink = Color(0xFF10283B);
-const textInk = Color(0xFF0B2437);
+import 'colors.dart';
+
 const outlineWidth = 2.4;
-
-/// Nunito değişken fontu; CSS font-weight 1000 dahil eksen değeri doğrudan verilir.
-TextStyle nunito(
-  double size, {
-  int weight = 900,
-  Color color = textInk,
-  double? height,
-  double? letterSpacing,
-  List<Shadow>? shadows,
-}) =>
-    TextStyle(
-      fontFamily: 'Nunito',
-      fontSize: size,
-      fontWeight: FontWeight.values[(math.min(weight, 900) ~/ 100) - 1],
-      fontVariations: [FontVariation('wght', weight.toDouble())],
-      color: color,
-      height: height,
-      letterSpacing: letterSpacing,
-      shadows: shadows,
-    );
-
-/// text-stroke / çok yönlü text-shadow karşılığı.
-List<Shadow> outlineShadows(Color color, double w, {Offset extra = Offset.zero}) => [
-      for (final o in const [
-        Offset(-1, -1), Offset(0, -1), Offset(1, -1), Offset(1, 0),
-        Offset(1, 1), Offset(0, 1), Offset(-1, 1), Offset(-1, 0),
-      ])
-        Shadow(color: color, offset: o * w),
-      if (extra != Offset.zero) Shadow(color: color, offset: extra),
-    ];
-
-/// CSS `vw` tabanlı clamp(min, n vw, max).
-double vwClamp(BuildContext context, double min, double vw, double max) =>
-    (MediaQuery.sizeOf(context).width * vw / 100).clamp(min, max);
 
 /// İç gölge (CSS `inset X Y 0 spread color`, bulanıklıksız).
 class Inset {
@@ -61,10 +26,7 @@ class _InsetPainter extends CustomPainter {
     canvas.save();
     canvas.clipRRect(outer);
     for (final inset in insets) {
-      final inner = radius
-          .toRRect(Offset.zero & size)
-          .shift(Offset(inset.dx, inset.dy))
-          .deflate(inset.spread);
+      final inner = outer.shift(Offset(inset.dx, inset.dy)).deflate(inset.spread);
       final path = Path()
         ..fillType = PathFillType.evenOdd
         ..addRRect(outer)
@@ -125,7 +87,10 @@ class GBox extends StatelessWidget {
       bottomLeft: shrink(r.bottomLeft),
       bottomRight: shrink(r.bottomRight),
     );
-    Widget content = Padding(padding: padding, child: alignment != null ? Align(alignment: alignment!, child: child) : child);
+    Widget content = Padding(
+      padding: padding,
+      child: alignment != null ? Align(alignment: alignment!, child: child) : child,
+    );
     if (insets.isNotEmpty) content = CustomPaint(painter: _InsetPainter(insets, inner), child: content);
     return Container(
       width: width,
@@ -135,8 +100,7 @@ class GBox extends StatelessWidget {
         color: color,
         gradient: gradient,
         borderRadius: r,
-        border: border ??
-            (borderColor != null && borderWidth > 0 ? Border.all(color: borderColor!, width: borderWidth) : null),
+        border: border ?? (borderColor != null && borderWidth > 0 ? Border.all(color: borderColor!, width: borderWidth) : null),
         boxShadow: shadows,
       ),
       child: content,
@@ -144,6 +108,7 @@ class GBox extends StatelessWidget {
   }
 }
 
+/// Dikey CSS degradesi (`linear-gradient(a,b)`).
 LinearGradient vGradient(List<Color> colors, [List<double>? stops]) =>
     LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: colors, stops: stops);
 
@@ -154,7 +119,7 @@ LinearGradient angleGradient(double deg, List<Color> colors, [List<double>? stop
   return LinearGradient(begin: Alignment(-dx, -dy), end: Alignment(dx, dy), colors: colors, stops: stops);
 }
 
-// ---- Ortak kutu stilleri ----
+// ---- `.cream` ----
 const creamGradient = LinearGradient(
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
@@ -163,6 +128,7 @@ const creamGradient = LinearGradient(
 const creamShadows = [BoxShadow(color: Color(0x4518362A), offset: Offset(0, 2))];
 const creamInsets = [Inset(Colors.white, dy: 1)];
 
+// ---- `.green` / `.blue` ----
 const greenGradient = LinearGradient(
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
@@ -175,29 +141,6 @@ const blueGradient = LinearGradient(
 );
 const buttonInsets = [Inset(Color(0x63FFFFFF), dy: 2)];
 const buttonShadows = [BoxShadow(color: Color(0x66123B42), offset: Offset(0, 2))];
-const whiteTextShadow = [Shadow(color: Color(0x33000000), offset: Offset(0, 1))];
 
-/// `button:disabled{filter:saturate(.35);opacity:.7}`
-Widget disabledLook(Widget child, {double saturation = .35, double opacity = .7}) {
-  final s = saturation;
-  const lr = .2126, lg = .7152, lb = .0722;
-  final matrix = <double>[
-    lr + (1 - lr) * s, lg - lg * s, lb - lb * s, 0, 0, //
-    lr - lr * s, lg + (1 - lg) * s, lb - lb * s, 0, 0,
-    lr - lr * s, lg - lg * s, lb + (1 - lb) * s, 0, 0,
-    0, 0, 0, 1, 0,
-  ];
-  return Opacity(opacity: opacity, child: ColorFiltered(colorFilter: ColorFilter.matrix(matrix), child: child));
-}
-
-/// Gri tonlama filtresi (`grayscale(x)`).
-Widget grayscaleLook(Widget child, double amount, {double opacity = 1}) =>
-    disabledLook(child, saturation: 1 - amount, opacity: opacity);
-
-/// Bulanık arka plan katmanı.
-Widget blurLayer(double sigma, Color color) => ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
-        child: ColoredBox(color: color),
-      ),
-    );
+/// `--outline` konturlu standart kutu kenarı.
+const inkBorderColor = GameColors.ink;
