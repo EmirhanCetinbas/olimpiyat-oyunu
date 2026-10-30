@@ -64,40 +64,31 @@ class _Header extends StatelessWidget {
   final int level;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 12),
-    child: Row(
-      children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: flatCardDecoration(radius: 16),
-          alignment: Alignment.center,
-          child: Art(facility.icon, width: 52, height: 52),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Tesis adı başlık plakasında; burada yalnız açıklama ve seviye.
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Text('Kalıcı geliştirmeler', style: gameText(TextSizes.cardTitle, color: GameColors.ink, height: 1.1)),
-              ),
-              Pill(
-                facility.locked ? 'YAKINDA' : 'Sv. $level',
-                style: gameText(14, color: GameColors.ink, height: 1.1),
-                color: const Color(0xFFEBDDC3),
-                radius: 20,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
-              ),
-            ],
+  Widget build(BuildContext context) {
+    final c = GameScope.of(context);
+    // Tek satır: tesis seviyesi ve harcanabilir SP.
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Art(facility.icon, width: 40, height: 40),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text('Tesis seviyesi $level', style: gameText(TextSizes.cardTitle, color: GameColors.ink, height: 1.1)),
           ),
-        ),
-      ],
-    ),
-  );
+          Pill(
+            '★ ${c.state.skillPoints} SP',
+            style: gameText(15, color: Colors.white, height: 1.1),
+            color: GameColors.navy,
+            borderColor: GameColors.ink,
+            borderWidth: 2,
+            radius: 12,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Tek geliştirme kademesi: ikon, etki, kademe ve SP bedelli düğme.

@@ -17,7 +17,7 @@ class CampusPage extends StatelessWidget {
     final c = GameScope.of(context);
     final size = MediaQuery.sizeOf(context);
     final padding = MediaQuery.paddingOf(context);
-    final worldWidth = size.width.clamp(0.0, 660.0);
+    final worldWidth = (size.width - 16).clamp(0.0, 640.0);
     final layout = PercentLayout(worldWidth, worldWidth * 1536 / 1024);
 
     final world = SizedBox(
@@ -34,28 +34,13 @@ class CampusPage extends StatelessWidget {
               f.y,
               FacilityMarker(
                 label: f.label,
-                level: f.locked ? '🔒 YAKINDA' : 'Sv. ${c.facilityLevel(f.id)}',
+                level: f.locked ? 'YAKINDA' : 'Sv. ${c.facilityLevel(f.id)}',
+                upgradable: c.canUpgradeFacility(f.id),
                 maxWidth: layout.x(35),
                 semanticLabel: f.name,
                 onTap: () => c.showCampusFacility(f.id),
               ),
             ),
-          Positioned(top: layout.y(1.2), left: layout.x(2), right: layout.x(2), child: _CampusTop(c)),
-          Positioned(
-            bottom: layout.y(9),
-            left: layout.x(4),
-            width: layout.x(92),
-            child: Pill(
-              'Bir tesise dokun · Her 5 yarışta +1 SP',
-              style: gameText(13, color: const Color(0xFF0B2139)),
-              textAlign: TextAlign.center,
-              color: const Color(0xEDFFF9E7),
-              borderColor: const Color(0xFF19384B),
-              borderWidth: 2,
-              radius: 15,
-              padding: const EdgeInsets.all(10),
-            ),
-          ),
         ],
       ),
     );
@@ -69,9 +54,28 @@ class CampusPage extends StatelessWidget {
                 color: Color(0xFF2B983C),
                 image: DecorationImage(image: AssetImage('assets/images/park-background.png'), fit: BoxFit.cover),
               ),
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(top: padding.top, bottom: padding.bottom),
-                child: Center(child: world),
+              child: Column(
+                children: [
+                  // Başlık haritanın üstünde sabit; harita ve tesis listesi kayar.
+                  Padding(padding: EdgeInsets.fromLTRB(8, padding.top + 6, 8, 6), child: _CampusTop(c)),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(bottom: padding.bottom + 12),
+                      child: Center(
+                        child: SizedBox(
+                          width: layout.width,
+                          child: Column(
+                            children: [
+                              ClipRRect(borderRadius: BorderRadius.circular(18), child: world),
+                              const SizedBox(height: 10),
+                              _FacilityList(c),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -146,4 +150,42 @@ class _CampusTop extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Haritanın altında tesis listesi: seviye ve geliştirilebilirlik bir bakışta.
+class _FacilityList extends StatelessWidget {
+  const _FacilityList(this.c);
+  final GameController c;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.fromLTRB(10, 10, 10, 2),
+    decoration: BoxDecoration(
+      color: GameColors.paper,
+      borderRadius: BorderRadius.circular(22),
+      border: Border.all(color: GameColors.ink, width: 3),
+      boxShadow: const [BoxShadow(color: GameColors.panelShadow, offset: Offset(0, 5), blurRadius: 8)],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: Text('TESİSLER', style: gameText(TextSizes.section, color: GameColors.ink, height: 1)),
+        ),
+        for (final f in campusFacilities)
+          ListRow(
+            children: [
+              Art(f.icon, width: 38, height: 38),
+              RowTitle(f.name, small: 'Sv. ${c.facilityLevel(f.id)} · ${[for (final r in f.rows) r.name].join(', ')}'),
+              if (c.canUpgradeFacility(f.id))
+                ActionButton('Geliştir', onTap: () => c.showCampusFacility(f.id))
+              else
+                RaisedButton('Gör', tone: ButtonTone.cream, onTap: () => c.showCampusFacility(f.id), height: 40),
+            ],
+          ),
+        const PanelText.muted('Başlangıçta 8 SP; tamamlanan her 5 yarışta +1 SP.', align: TextAlign.center),
+      ],
+    ),
+  );
 }

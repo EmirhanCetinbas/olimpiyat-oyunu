@@ -272,9 +272,7 @@ class GameController extends ChangeNotifier {
       state.pendingChest != null ||
       state.chests + state.cupChests + state.championChests > 0 ||
       (state.equipmentParts >= 5 && state.equipmentStars.any((s) => s < 3));
-  bool get campusBadge => campusFacilities.any(
-    (f) => !f.locked && [0, 1, 2].any((i) => campusRank(f.id, i) < 5 && state.skillPoints >= f.rows[i].base + campusRank(f.id, i)),
-  );
+  bool get campusBadge => campusFacilities.any((f) => canUpgradeFacility(f.id));
 
   bool get achievementDot => achievements.any((a) => a.done(state) && !state.claims.contains(a.id));
 

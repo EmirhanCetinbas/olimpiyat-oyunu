@@ -4,6 +4,12 @@ part of 'controller.dart';
 extension CampusLogic on GameController {
   CampusFacility? facility(String id) => campusFacilities.where((f) => f.id == id).firstOrNull;
 
+  /// Tesiste SP'nin yettiği, tavana ulaşmamış bir kademe var mı.
+  bool canUpgradeFacility(String id) {
+    final f = facility(id);
+    return f != null && !f.locked && [0, 1, 2].any((i) => campusRank(id, i) < 5 && state.skillPoints >= campusCost(id, i));
+  }
+
   int campusCost(String id, int i) => facility(id)!.rows[i].base + campusRank(id, i);
 
   /// Tesis seviyesi: 1 + üç kademenin toplamı.

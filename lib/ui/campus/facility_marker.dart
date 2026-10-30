@@ -12,7 +12,11 @@ class FacilityMarker extends StatelessWidget {
     required this.maxWidth,
     required this.semanticLabel,
     required this.onTap,
+    this.upgradable = false,
   });
+
+  /// SP yetiyor: etiketin köşesinde yeşil yukarı ok rozeti.
+  final bool upgradable;
 
   final String label;
   final String level;
@@ -45,10 +49,10 @@ class FacilityMarker extends StatelessWidget {
             Transform.translate(
               offset: const Offset(0, -1),
               child: Pill(
-                level,
+                upgradable ? '$level ↑' : level,
                 style: gameText(size * .9, color: Colors.white),
                 maxLines: 1,
-                color: GameColors.navy,
+                color: upgradable ? GameColors.greenShade : GameColors.navy,
                 borderColor: GameColors.ink,
                 borderWidth: 2.5,
                 radius: 12,
