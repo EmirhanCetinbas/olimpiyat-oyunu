@@ -10,7 +10,7 @@ class OutlinedText extends StatelessWidget {
     super.key,
     required this.style,
     this.strokeColor = GameColors.ink,
-    this.strokeWidth = 3,
+    this.strokeWidth,
     this.shadowOffset = const Offset(0, 2),
     this.textAlign = TextAlign.center,
     this.maxLines,
@@ -23,8 +23,8 @@ class OutlinedText extends StatelessWidget {
   final TextStyle style;
   final Color strokeColor;
 
-  /// Harf dışına taşan kontur kalınlığı.
-  final double strokeWidth;
+  /// Harf dışına taşan kontur kalınlığı; verilmezse yazı boyutuna göre (`outlineFor`).
+  final double? strokeWidth;
 
   /// Konturun altına düşen koyu gölge (sıfırsa yok).
   final Offset shadowOffset;
@@ -34,8 +34,10 @@ class OutlinedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final outline = strokeWidth ?? outlineFor(style.fontSize ?? 14);
     TextStyle stroke(Offset offset) => TextStyle(
       fontFamily: style.fontFamily,
+      fontFamilyFallback: style.fontFamilyFallback,
       fontSize: style.fontSize,
       fontWeight: style.fontWeight,
       fontVariations: style.fontVariations,
@@ -43,7 +45,7 @@ class OutlinedText extends StatelessWidget {
       letterSpacing: style.letterSpacing,
       foreground: Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth * 2
+        ..strokeWidth = outline * 2
         ..strokeJoin = StrokeJoin.round
         ..color = strokeColor,
     );

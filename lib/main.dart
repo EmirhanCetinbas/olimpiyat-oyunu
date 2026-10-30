@@ -7,6 +7,7 @@ import 'game/controller.dart';
 import 'game/state.dart';
 import 'ui/home/game_screen.dart';
 import 'ui/components/sprite.dart';
+import 'ui/theme/typography.dart';
 
 /// localStorage karşılığı: SharedPreferences'ta aynı anahtar ve JSON biçimi.
 class PrefsStorage implements GameStorage {
@@ -44,8 +45,11 @@ class PatiApp extends StatelessWidget {
       title: 'Pati Şampiyonları',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Nunito',
-        fontFamilyFallback: fontFallback,
+        fontFamily: gameFontFamily,
+        fontFamilyFallback: [...?fontFallback, ...gameFontFallback],
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(fontSize: TextSizes.body, fontWeight: FontWeight.w800),
+        ),
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF76C94D)),
         textSelectionTheme: const TextSelectionThemeData(cursorColor: Color(0xFF10283B)),
       ),

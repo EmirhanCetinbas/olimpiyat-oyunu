@@ -1,31 +1,47 @@
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart';
 
 import 'colors.dart';
 
-/// Nunito değişken fontu; CSS font-weight 1000 dahil eksen değeri doğrudan verilir.
-TextStyle nunito(
-  double size, {
-  int weight = 900,
-  Color color = GameColors.text,
-  double? height,
-  double? letterSpacing,
-  List<Shadow>? shadows,
-}) => TextStyle(
-  fontFamily: 'Nunito',
+/// Oyunun tek yazı ailesi: Baloo 2 ExtraBold. Türkçe harflerin (Ğ, İ, Ş) hepsi aynı fontta çizilir;
+/// başka fonttan yedek harf aynı kelimeye karışmaz (duck-gacha kararı).
+const gameFontFamily = 'Baloo2';
+const gameFontFallback = ['Arial'];
+
+/// Yazı ölçeği (duck-gacha tasarım dili): yeni ekranlar bu değerlerden seçer.
+abstract final class TextSizes {
+  /// Pencere / ekran başlığı (başlık plakası).
+  static const title = 33.0;
+
+  /// Bölüm başlığı (SES, OYUN…).
+  static const section = 23.0;
+
+  /// Kart / satır başlığı.
+  static const cardTitle = 18.0;
+
+  /// Gövde metni.
+  static const body = 14.5;
+
+  /// Sayaç (para, elmas).
+  static const counter = 21.0;
+
+  /// En küçük etiket; bunun altına inilmez.
+  static const min = 11.0;
+}
+
+/// Oyun yazısı. Tek ağırlık (800) vardır; vurgu boyut ve renkle verilir.
+TextStyle gameText(double size, {Color color = GameColors.text, double? height, double? letterSpacing, List<Shadow>? shadows}) => TextStyle(
+  fontFamily: gameFontFamily,
+  fontFamilyFallback: gameFontFallback,
   fontSize: size,
-  fontWeight: FontWeight.values[(math.min(weight, 900) ~/ 100) - 1],
-  fontVariations: [FontVariation('wght', weight.toDouble())],
+  fontWeight: FontWeight.w800,
   color: color,
   height: height,
   letterSpacing: letterSpacing,
   shadows: shadows,
 );
 
-/// Lilita One: pencere başlıkları, bölüm başlıkları, satır etiketleri ve düğme yazıları.
-TextStyle display(double size, {Color color = GameColors.text, double? height = 1.1, double? letterSpacing = .2, List<Shadow>? shadows}) =>
-    TextStyle(fontFamily: 'LilitaOne', fontSize: size, color: color, height: height, letterSpacing: letterSpacing, shadows: shadows);
+/// Konturlu etiketin kontur kalınlığı (harf dışına taşan kısım): büyük başlıkta 2.2, küçükte boyuta göre.
+double outlineFor(double size) => (size >= 30 ? 4.4 : size * .17 + .8) / 2;
 
 /// text-stroke / çok yönlü text-shadow karşılığı.
 List<Shadow> outlineShadows(Color color, double w, {Offset extra = Offset.zero}) => [

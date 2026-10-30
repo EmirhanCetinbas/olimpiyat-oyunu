@@ -48,7 +48,7 @@ class RaceCall extends StatelessWidget {
     }
     final label = Pill(
       c.raceCallText,
-      style: nunito(11),
+      style: gameText(11),
       color: const Color(0xEEFFFDEE),
       borderColor: GameColors.ink,
       borderWidth: 1.5,

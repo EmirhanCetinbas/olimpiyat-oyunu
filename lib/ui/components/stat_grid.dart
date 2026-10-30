@@ -23,11 +23,11 @@ class StatGrid extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 9),
               child: Column(
                 children: [
-                  Text(items[i].$1, style: nunito(20, color: GameColors.ink)),
+                  Text(items[i].$1, style: gameText(20, color: GameColors.ink)),
                   Text(
                     items[i].$2,
                     textAlign: TextAlign.center,
-                    style: nunito(11, color: GameColors.ink),
+                    style: gameText(11, color: GameColors.ink),
                   ),
                 ],
               ),

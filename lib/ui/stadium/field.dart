@@ -84,7 +84,7 @@ class RaceField extends StatelessWidget {
                   },
                   child: Pill(
                     '● CANLI',
-                    style: nunito(10, color: const Color(0xFF198039)),
+                    style: gameText(11, color: const Color(0xFF198039)),
                     color: const Color(0xE8FFFEF1),
                     borderColor: const Color(0xFF183324),
                     borderWidth: 1.5,

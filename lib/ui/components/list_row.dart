@@ -38,11 +38,11 @@ class RowTitle extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: nunito(14, color: GameColors.ink)),
+        Text(title, style: gameText(14, color: GameColors.ink)),
         if (small != null)
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Text(small!, style: nunito(11.7, weight: 700, color: const Color(0xFF68826C))),
+            child: Text(small!, style: gameText(11.7, color: const Color(0xFF68826C))),
           ),
       ],
     ),
@@ -80,10 +80,10 @@ class ItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: nunito(14, color: GameColors.ink)),
+                Text(title, style: gameText(14, color: GameColors.ink)),
                 Padding(
                   padding: const EdgeInsets.only(top: 2),
-                  child: Text(small, style: nunito(12, color: GameColors.slate, height: 1.3)),
+                  child: Text(small, style: gameText(12, color: GameColors.slate, height: 1.3)),
                 ),
               ],
             ),

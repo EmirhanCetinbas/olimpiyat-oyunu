@@ -19,7 +19,6 @@ class BannerTitle extends StatelessWidget {
     this.shadows = const [BoxShadow(color: Color(0x40172C39), offset: Offset(0, 3))],
     this.insets = const [Inset(Color(0xFFFFBBAC), dy: 4), Inset(Color(0xFFE43C36), dy: -4)],
     this.textShadows,
-    this.weight = 1000,
     this.height = 1,
     this.semanticsLabel,
   });
@@ -33,7 +32,6 @@ class BannerTitle extends StatelessWidget {
   final List<BoxShadow> shadows;
   final List<Inset> insets;
   final List<Shadow>? textShadows;
-  final int weight;
   final double height;
   final String? semanticsLabel;
 
@@ -50,13 +48,7 @@ class BannerTitle extends StatelessWidget {
     child: Text(
       text,
       semanticsLabel: semanticsLabel,
-      style: nunito(
-        fontSize,
-        weight: weight,
-        color: Colors.white,
-        height: height,
-        shadows: textShadows ?? outlineShadows(const Color(0xFF142532), 2),
-      ),
+      style: gameText(fontSize, color: Colors.white, height: height, shadows: textShadows ?? outlineShadows(const Color(0xFF142532), 2)),
     ),
   );
 }

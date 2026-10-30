@@ -86,7 +86,7 @@ class SettingsPanel extends StatelessWidget {
             child: Text(
               'SÜRÜM 1.0',
               textAlign: TextAlign.center,
-              style: display(14, color: const Color(0xFF7D8A90), height: 1.1, letterSpacing: .6),
+              style: gameText(14, color: const Color(0xFF7D8A90), height: 1.1, letterSpacing: .6),
             ),
           ),
         ],

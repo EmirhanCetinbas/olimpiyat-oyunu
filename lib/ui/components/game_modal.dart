@@ -87,9 +87,8 @@ class ModalBanner extends StatelessWidget {
             child: OutlinedText(
               title,
               maxLines: 1,
-              strokeWidth: 3,
               shadowOffset: const Offset(0, 2.5),
-              style: display(33, color: Colors.white, height: 1, letterSpacing: 1),
+              style: gameText(33, color: Colors.white, height: 1, letterSpacing: 1),
             ),
           ),
         ),

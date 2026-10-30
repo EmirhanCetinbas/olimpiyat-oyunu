@@ -90,7 +90,7 @@ class _MenuItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
         child: SizedBox(
           width: double.infinity,
-          child: Text(label, style: nunito(15)),
+          child: Text(label, style: gameText(15)),
         ),
       ),
     ),

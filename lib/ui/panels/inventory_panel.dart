@@ -167,11 +167,11 @@ class EquipmentCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.name, style: nunito(compact ? 12 : 13, color: GameColors.ink, height: 1.15)),
+                Text(item.name, style: gameText(compact ? 12 : 13, color: GameColors.ink, height: 1.15)),
                 _Stars(stars, size: compact ? 17 : 19),
                 Text(
                   '${item.effect}: +%${trNumber(stars * item.bonus, 3)}',
-                  style: nunito(11, color: const Color(0xFF58738A), height: 1.2),
+                  style: gameText(11, color: const Color(0xFF58738A), height: 1.2),
                 ),
               ],
             ),

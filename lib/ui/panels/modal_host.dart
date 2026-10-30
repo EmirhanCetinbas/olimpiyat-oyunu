@@ -77,7 +77,7 @@ class _StandardFrame extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(spec.title, style: nunito(19, weight: 700, color: GameColors.ink)),
+                    child: Text(spec.title, style: gameText(19, color: GameColors.ink)),
                   ),
                   SquareCloseButton(onTap: c.closeModal),
                 ],
@@ -87,7 +87,7 @@ class _StandardFrame extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(14),
                 child: DefaultTextStyle(
-                  style: nunito(14, color: GameColors.ink),
+                  style: gameText(14, color: GameColors.ink),
                   child: panelContent(c, spec),
                 ),
               ),
@@ -123,7 +123,7 @@ class _RewardFrame extends StatelessWidget {
           SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(12, 14, 12, 18),
             child: DefaultTextStyle(
-              style: nunito(14, color: GameColors.ink),
+              style: gameText(14, color: GameColors.ink),
               child: panelContent(c, spec),
             ),
           ),

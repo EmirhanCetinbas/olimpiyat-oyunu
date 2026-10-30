@@ -20,7 +20,7 @@ class PanelText extends StatelessWidget {
     child: Text(
       text,
       textAlign: align,
-      style: nunito(size, weight: 700, color: color, height: 1.4),
+      style: gameText(size, color: color, height: 1.4),
     ),
   );
 }

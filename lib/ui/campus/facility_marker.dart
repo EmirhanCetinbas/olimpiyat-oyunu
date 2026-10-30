@@ -33,7 +33,7 @@ class FacilityMarker extends StatelessWidget {
           children: [
             Pill(
               label,
-              style: nunito(size, weight: 1000, color: GameColors.text),
+              style: gameText(size, color: GameColors.text),
               maxLines: 1,
               gradient: vGradient(const [Color(0xFFFFFEFA), Color(0xFFFFEBC7)]),
               borderColor: const Color(0xFF14334A),
@@ -46,7 +46,7 @@ class FacilityMarker extends StatelessWidget {
               offset: const Offset(0, -1),
               child: Pill(
                 level,
-                style: nunito(size * .9, weight: 1000, color: Colors.white),
+                style: gameText(size * .9, color: Colors.white),
                 maxLines: 1,
                 color: const Color(0xFF0D304D),
                 borderColor: const Color(0xFF132C3F),

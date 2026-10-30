@@ -42,7 +42,7 @@ class AchievementsPanel extends StatelessWidget {
           Center(
             child: Text(
               '${s.claims.length} / ${achievements.length}',
-              style: nunito(vwClamp(context, 12, 3, 18), weight: 1000, color: const Color(0xFF07192E), height: 1),
+              style: gameText(vwClamp(context, 12, 3, 18), color: const Color(0xFF07192E), height: 1),
             ),
           ),
         ),
@@ -81,7 +81,7 @@ class _ProgressRow extends StatelessWidget {
           Flexible(
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text('$done / $goal', style: nunito(vwClamp(context, 10, 2.5, 15), color: GameColors.ink)),
+              child: Text('$done / $goal', style: gameText(vwClamp(context, 10, 2.5, 15), color: GameColors.ink)),
             ),
           ),
         ],
@@ -131,7 +131,7 @@ class _ClaimButton extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           taken ? '✓' : 'AL',
-          style: nunito(
+          style: gameText(
             vwClamp(context, 10, 2.4, 15),
             color: Colors.white,
             height: 1,

@@ -75,7 +75,7 @@ class _RaceHead extends StatelessWidget {
                   const Art('bank', width: 25, height: 25),
                   Text(
                     fmt(c.state.money),
-                    style: nunito(
+                    style: gameText(
                       15,
                       shadows: const [Shadow(color: Colors.white, offset: Offset(0, 1), blurRadius: 2)],
                     ),
@@ -94,11 +94,11 @@ class _RaceHead extends StatelessWidget {
                 children: [
                   Text(
                     c.roundText,
-                    style: nunito(hurdle ? 18 : 19, color: const Color(0xFF92D7FF), height: 1, shadows: _darkShadow),
+                    style: gameText(hurdle ? 18 : 19, color: const Color(0xFF92D7FF), height: 1, shadows: _darkShadow),
                   ),
                   Text(
                     c.timerText,
-                    style: nunito(hurdle ? 11 : 10, color: Colors.white, height: 1, letterSpacing: .3, shadows: _darkShadow),
+                    style: gameText(hurdle ? 11 : 10, color: Colors.white, height: 1, letterSpacing: .3, shadows: _darkShadow),
                   ),
                 ],
               ),
@@ -115,7 +115,7 @@ class _RaceHead extends StatelessWidget {
                 children: [
                   Text(
                     'TAKIMIN',
-                    style: nunito(10, color: const Color(0xFF91D6FF), shadows: _darkShadow),
+                    style: gameText(11, color: const Color(0xFF91D6FF), shadows: _darkShadow),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -124,7 +124,7 @@ class _RaceHead extends StatelessWidget {
                       const SizedBox(width: 3),
                       Text(
                         '${c.power}',
-                        style: nunito(15, color: Colors.white, shadows: _darkShadow),
+                        style: gameText(15, color: Colors.white, shadows: _darkShadow),
                       ),
                     ],
                   ),

@@ -121,7 +121,7 @@ class PrefsSlider extends StatelessWidget {
   }
 }
 
-TextStyle _controlText(double size) => display(size, color: Colors.white, height: 1, letterSpacing: .4);
+TextStyle _controlText(double size) => gameText(size, color: Colors.white, height: 1, letterSpacing: .4);
 
 /// Açık/kapalı anahtarı: yazı ve topuz ayrı alanlarda.
 class PrefsSwitch extends StatelessWidget {
@@ -134,7 +134,7 @@ class PrefsSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const h = PrefsMetrics.controlHeight, inset = 4.0;
-    final text = OutlinedText(value ? 'AÇIK' : 'KAPALI', strokeWidth: 2.6, shadowOffset: const Offset(0, 1.5), style: _controlText(value ? 15.5 : 14));
+    final text = OutlinedText(value ? 'AÇIK' : 'KAPALI', shadowOffset: const Offset(0, 1.5), style: _controlText(value ? 15.5 : 14));
     return Semantics(
       toggled: value,
       label: label,
@@ -185,7 +185,7 @@ class PrefsStatus extends StatelessWidget {
     final text = Padding(
       padding: const EdgeInsets.only(bottom: 3),
       child: Center(
-        child: OutlinedText(active ? 'AKTİF' : 'KAPALI', strokeWidth: 2.6, shadowOffset: const Offset(0, 1.5), style: _controlText(17)),
+        child: OutlinedText(active ? 'AKTİF' : 'KAPALI', shadowOffset: const Offset(0, 1.5), style: _controlText(17)),
       ),
     );
     return Semantics(

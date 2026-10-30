@@ -78,7 +78,7 @@ class _ProfileButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Sv. ${c.level}', style: nunito(compact ? 11 : 12, height: 1.2), maxLines: 1, overflow: TextOverflow.clip),
+                Text('Sv. ${c.level}', style: gameText(compact ? 11 : 12, height: 1.2), maxLines: 1, overflow: TextOverflow.clip),
                 const SizedBox(height: 2),
                 GameProgressBar.xp(value: (c.state.xp % 100) / 100),
               ],
@@ -99,12 +99,12 @@ class _IncomeDisplay extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Text('Gelir /sn', style: nunito(12, height: 1.3)),
+      Text('Gelir /sn', style: gameText(12, height: 1.3)),
       FittedBox(
         fit: BoxFit.scaleDown,
         child: Text(
           '₺${fmt(c.income())}',
-          style: nunito(
+          style: gameText(
             compact ? 27 : 30,
             color: const Color(0xFF79F44B),
             height: 1.05,
@@ -130,7 +130,7 @@ class _GemsButton extends StatelessWidget {
       child: Stack(
         children: [
           const Positioned(left: 8, top: 0, bottom: 0, child: Center(child: Art('gem', width: 27, height: 27))),
-          Center(child: Text(fmt(c.state.gems), style: nunito(18, height: 1))),
+          Center(child: Text(fmt(c.state.gems), style: gameText(18, height: 1))),
         ],
       ),
     ),
@@ -216,7 +216,7 @@ class _BoostButton extends StatelessWidget {
       fit: BoxFit.scaleDown,
       child: Text(
         c.boostText,
-        style: nunito(13, color: Colors.white, shadows: whiteTextShadow),
+        style: gameText(13, color: Colors.white, shadows: whiteTextShadow),
       ),
     ),
   );
@@ -250,11 +250,11 @@ class _BranchButton extends StatelessWidget {
               child: Text(
                 c.branchName,
                 textAlign: TextAlign.center,
-                style: nunito(compact ? 11 : 12, color: Colors.white, height: 1.1),
+                style: gameText(compact ? 11 : 12, color: Colors.white, height: 1.1),
               ),
             ),
             const SizedBox(width: 4),
-            Text('⌄', style: nunito(13, color: const Color(0xFF8BABBD))),
+            Text('⌄', style: gameText(13, color: const Color(0xFF8BABBD))),
           ],
         ),
       ),

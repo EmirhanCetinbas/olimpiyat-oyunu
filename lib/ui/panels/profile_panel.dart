@@ -38,7 +38,7 @@ class _ProfilePanelState extends State<ProfilePanel> {
           child: TextField(
             controller: _name,
             maxLength: 24,
-            style: nunito(14, color: GameColors.ink),
+            style: gameText(14, color: GameColors.ink),
             decoration: InputDecoration(
               counterText: '',
               isDense: true,

@@ -32,6 +32,8 @@ Future<void> loadPreviewFonts() async {
   // Test ortamında sistem yedek fontu yok: sembol ve emoji için macOS fontlarını ekle.
   for (final (family, path) in const [
     ('Arial Unicode', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf'),
+    // Oyun fontunun yedeği 'Arial' (cihazda sistemde var); testte Arial Unicode ile karşılanır.
+    ('Arial', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf'),
     ('Apple Symbols', '/System/Library/Fonts/Apple Symbols.ttf'),
   ]) {
     final file = File(path);

@@ -78,7 +78,7 @@ class _ChestChoice extends StatelessWidget {
         children: [
           const EmojiArt('🎁', size: 39),
           const SizedBox(height: 4),
-          Text('${index + 1}. Çanta', style: nunito(11, color: GameColors.ink)),
+          Text('${index + 1}. Çanta', style: gameText(11, color: GameColors.ink)),
         ],
       ),
     ),
@@ -123,7 +123,7 @@ class ChestResultPanel extends StatelessWidget {
                 Text(
                   prize.label,
                   textAlign: TextAlign.center,
-                  style: nunito(18, color: GameColors.ink),
+                  style: gameText(18, color: GameColors.ink),
                 ),
               ],
             ),
@@ -153,7 +153,7 @@ class CosmeticsPanel extends StatelessWidget {
             last: k == s.cosmetics.length - 1,
             children: [
               Expanded(
-                child: Text('✨ ${cosmeticNames[s.cosmetics[k]]}', style: nunito(14, color: GameColors.ink)),
+                child: Text('✨ ${cosmeticNames[s.cosmetics[k]]}', style: gameText(14, color: GameColors.ink)),
               ),
               ActionButton(s.selectedCosmetic == s.cosmetics[k] ? 'Seçili' : 'Seç', onTap: () => c.selectCosmetic(s.cosmetics[k])),
             ],

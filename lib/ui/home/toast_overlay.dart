@@ -29,7 +29,7 @@ class ToastOverlay extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: width * .9),
                 child: Pill(
                   c.toastText,
-                  style: nunito(12, color: const Color(0xFF173627)),
+                  style: gameText(12, color: const Color(0xFF173627)),
                   textAlign: TextAlign.center,
                   color: const Color(0xFFFFFEE9),
                   borderColor: const Color(0xFF193B36),

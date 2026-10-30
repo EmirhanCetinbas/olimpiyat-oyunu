@@ -47,7 +47,7 @@ class CampusPage extends StatelessWidget {
             width: layout.x(92),
             child: Pill(
               'Bir tesise dokun · Her 5 yarışta +1 SP',
-              style: nunito(13, color: const Color(0xFF0B2139)),
+              style: gameText(13, color: const Color(0xFF0B2139)),
               textAlign: TextAlign.center,
               color: const Color(0xEDFFF9E7),
               borderColor: const Color(0xFF19384B),
@@ -109,7 +109,7 @@ class _CampusTop extends StatelessWidget {
             shadows: _shadow,
             insets: const [Inset(Colors.white, dy: 2)],
             alignment: Alignment.center,
-            child: Text('←', style: nunito(29, color: GameColors.text, height: 1)),
+            child: Text('←', style: gameText(29, color: GameColors.text, height: 1)),
           ),
         ),
         gap,
@@ -128,7 +128,7 @@ class _CampusTop extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             child: Text.rich(
               TextSpan(
-                style: nunito(narrow ? 12 : 14, color: Colors.white),
+                style: gameText(narrow ? 12 : 14, color: Colors.white),
                 children: [
                   const TextSpan(
                     text: '★',

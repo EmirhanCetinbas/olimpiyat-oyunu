@@ -78,7 +78,7 @@ class _NavItem extends StatelessWidget {
           children: [
             Sprite(navIcon(column), width: compact ? 33 : 38, height: compact ? 33 : 38),
             const SizedBox(height: 1),
-            Text(label, maxLines: 1, style: nunito(compact ? 10 : 11, weight: 1000, color: const Color(0xFF173548), height: 1.1)),
+            Text(label, maxLines: 1, style: gameText(11, color: const Color(0xFF173548), height: 1.1)),
           ],
         ),
       ),

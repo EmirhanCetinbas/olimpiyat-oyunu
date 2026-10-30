@@ -4,7 +4,7 @@ import '../../components/components.dart';
 import '../../theme/theme.dart';
 import 'settings_icon.dart';
 
-TextStyle _label(double size) => display(size, color: GameColors.ink, height: 1.05, letterSpacing: .3);
+TextStyle _label(double size) => gameText(size, color: GameColors.ink, height: 1.05, letterSpacing: .3);
 
 /// SES / OYUN / KAYIT başlığı ve satırları.
 class PrefsSection extends StatelessWidget {
@@ -22,7 +22,7 @@ class PrefsSection extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.only(left: 8, bottom: short ? 4 : 6),
-            child: Text(title, style: display(short ? 21 : 23, color: GameColors.ink, height: 1, letterSpacing: .6)),
+            child: Text(title, style: gameText(short ? 21 : 23, color: GameColors.ink, height: 1, letterSpacing: .6)),
           ),
           ...rows,
         ],

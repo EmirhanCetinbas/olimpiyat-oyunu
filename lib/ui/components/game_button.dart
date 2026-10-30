@@ -103,7 +103,6 @@ class GameButton extends StatelessWidget {
     this.skin = ButtonSkin.action,
     this.enabled = true,
     this.fontSize = 14,
-    this.fontWeight = 900,
     this.textHeight,
     this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
     this.width,
@@ -121,7 +120,6 @@ class GameButton extends StatelessWidget {
   final ButtonSkin skin;
   final bool enabled;
   final double fontSize;
-  final int fontWeight;
   final double? textHeight;
   final EdgeInsets padding;
   final double? width;
@@ -156,7 +154,7 @@ class GameButton extends StatelessWidget {
           Text(
             label!,
             textAlign: TextAlign.center,
-            style: nunito(fontSize, weight: fontWeight, color: skin.textColor, height: textHeight, shadows: skin.textShadows),
+            style: gameText(fontSize, color: skin.textColor, height: textHeight, shadows: skin.textShadows),
           ),
     ),
   );

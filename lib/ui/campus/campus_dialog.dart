@@ -98,17 +98,14 @@ class _Header extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                facility.name,
-                style: nunito(vwClamp(context, 17, 4.5, 23), weight: 1000, color: GameColors.text, height: 1.1, letterSpacing: -.5),
-              ),
+              Text(facility.name, style: gameText(vwClamp(context, 17, 4.5, 23), color: GameColors.text, height: 1.1, letterSpacing: -.5)),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text('Kalıcı geliştirmeler', style: nunito(14, color: const Color(0xFF5C6473))),
+                child: Text('Kalıcı geliştirmeler', style: gameText(14, color: const Color(0xFF5C6473))),
               ),
               Pill(
                 facility.locked ? 'YAKINDA' : 'Sv. $level',
-                style: nunito(15, color: GameColors.text, height: 1.1),
+                style: gameText(15, color: GameColors.text, height: 1.1),
                 color: const Color(0xFFEBDDC3),
                 radius: 20,
                 padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 3),
@@ -131,7 +128,7 @@ class _Note extends StatelessWidget {
     final label = Text(
       text,
       textAlign: TextAlign.center,
-      style: nunito(12, color: const Color(0xFF677077), height: 1.3),
+      style: gameText(12, color: const Color(0xFF677077), height: 1.3),
     );
     if (!boxed) return Padding(padding: const EdgeInsets.only(top: 10), child: label);
     return Container(
@@ -212,13 +209,12 @@ class CampusUpgradeRow extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
                     row.name,
-                    style: nunito(
+                    style: gameText(
                       wide
                           ? 17
                           : narrow
                           ? 12
                           : 14,
-                      weight: 1000,
                       color: GameColors.text,
                       height: 1.1,
                     ),
@@ -226,12 +222,12 @@ class CampusUpgradeRow extends StatelessWidget {
                 ),
                 Text.rich(
                   TextSpan(
-                    style: nunito(wide ? 14 : 12, color: const Color(0xFF566171), height: 1.2),
+                    style: gameText(wide ? 14 : 12, color: const Color(0xFF566171), height: 1.2),
                     children: [
                       TextSpan(text: '${row.effect} '),
                       TextSpan(
                         text: '$sign%${row.amount.abs() * (rank + 1)}',
-                        style: nunito(wide ? 14 : 12, weight: 1000, color: const Color(0xFF078420)),
+                        style: gameText(wide ? 14 : 12, color: const Color(0xFF078420)),
                       ),
                     ],
                   ),
@@ -240,7 +236,7 @@ class CampusUpgradeRow extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 3),
                   child: Text(
                     '$rank/5 · Mevcut: $sign%${row.amount.abs() * rank}',
-                    style: nunito(10, color: const Color(0xFF767569), height: 1.2),
+                    style: gameText(11, color: const Color(0xFF767569), height: 1.2),
                   ),
                 ),
               ],
@@ -249,13 +245,12 @@ class CampusUpgradeRow extends StatelessWidget {
           gap,
           Text(
             '★ ${rank >= 5 ? 'MAKS.' : '$cost SP'}',
-            style: nunito(
+            style: gameText(
               wide
                   ? 14
                   : narrow
                   ? 11
                   : 12,
-              weight: 1000,
               color: GameColors.text,
             ),
           ),

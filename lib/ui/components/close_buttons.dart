@@ -71,7 +71,7 @@ class RoundCloseButton extends StatelessWidget {
     final mark = glyph == CloseGlyph.times
         ? Text(
             '×',
-            style: nunito(fontSize, color: Colors.white, height: glyphHeight),
+            style: gameText(fontSize, color: Colors.white, height: glyphHeight),
           )
         : Stack(
             alignment: Alignment.center,
@@ -129,7 +129,7 @@ class SquareCloseButton extends StatelessWidget {
       borderWidth: 2,
       radius: 8,
       alignment: Alignment.center,
-      child: Text('×', style: nunito(22, color: GameColors.ink, height: 1)),
+      child: Text('×', style: gameText(22, color: GameColors.ink, height: 1)),
     ),
   );
 }

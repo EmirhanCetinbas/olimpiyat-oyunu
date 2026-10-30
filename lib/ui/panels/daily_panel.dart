@@ -89,7 +89,7 @@ class _DayButton extends StatelessWidget {
           fit: BoxFit.scaleDown,
           child: Text(
             text,
-            style: nunito(
+            style: gameText(
               vwClamp(context, 13, 4, 25),
               color: green ? Colors.white : const Color(0xFF16334A),
               height: 1,

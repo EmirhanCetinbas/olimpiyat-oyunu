@@ -67,11 +67,11 @@ class UpgradeCard extends StatelessWidget {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(right: 11, bottom: 2),
-                          child: Text(u.title, style: nunito(compact ? 11 : 12, weight: 700, height: 1.02, letterSpacing: -.25)),
+                          child: Text(u.title, style: gameText(compact ? 11 : 12, height: 1.02, letterSpacing: -.25)),
                         ),
                         Pill(
                           'Sv. $level',
-                          style: nunito(10, color: const Color(0xFF56728E)),
+                          style: gameText(11, color: const Color(0xFF56728E)),
                           color: const Color(0xFFE4EBEE),
                           radius: 3,
                           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -137,7 +137,7 @@ class _InfoButton extends StatelessWidget {
       height: 16,
       decoration: const BoxDecoration(color: Color(0xFF8397B0), shape: BoxShape.circle),
       alignment: Alignment.center,
-      child: Text('i', style: nunito(10, color: Colors.white, height: 1)),
+      child: Text('i', style: gameText(11, color: Colors.white, height: 1)),
     ),
   );
 }
@@ -161,11 +161,11 @@ class _StatChange extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(from, style: nunito(13)),
+          Text(from, style: gameText(13)),
           const SizedBox(width: 6),
-          Text('➜', style: nunito(13, color: const Color(0xFF8398AA))),
+          Text('➜', style: gameText(13, color: const Color(0xFF8398AA))),
           const SizedBox(width: 6),
-          Text(to, style: nunito(13, color: const Color(0xFF00A328))),
+          Text(to, style: gameText(13, color: const Color(0xFF00A328))),
         ],
       ),
     ),
@@ -195,7 +195,7 @@ class _UpgradeButton extends StatelessWidget {
               child: Center(
                 child: Text(
                   'Yükselt',
-                  style: nunito(13, weight: 1000, color: Colors.white, shadows: whiteTextShadow),
+                  style: gameText(13, color: Colors.white, shadows: whiteTextShadow),
                 ),
               ),
             ),
@@ -215,7 +215,7 @@ class _UpgradeButton extends StatelessWidget {
                   const SizedBox(width: 3),
                   Text(
                     cost,
-                    style: nunito(10, color: Colors.white, shadows: whiteTextShadow),
+                    style: gameText(11, color: Colors.white, shadows: whiteTextShadow),
                   ),
                 ],
               ),

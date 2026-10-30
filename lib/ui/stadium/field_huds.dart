@@ -25,7 +25,7 @@ class WeightHud extends StatelessWidget {
               34,
               Pill(
                 c.weightKgText,
-                style: nunito(13, color: Colors.white, height: 1),
+                style: gameText(13, color: Colors.white, height: 1),
                 gradient: vGradient(const [Color(0xFF536074), Color(0xFF253243)]),
                 borderColor: GameColors.ink,
                 borderWidth: 2,
@@ -48,7 +48,7 @@ class WeightHud extends StatelessWidget {
                 75,
                 Pill(
                   result,
-                  style: nunito(
+                  style: gameText(
                     11,
                     color: Colors.white,
                     shadows: const [Shadow(color: GameColors.ink, offset: Offset(0, 1))],
@@ -104,7 +104,7 @@ class ArcheryHud extends StatelessWidget {
                 child: Center(
                   child: Pill(
                     score,
-                    style: nunito(13, color: Colors.white),
+                    style: gameText(13, color: Colors.white),
                     color: const Color(0xE8142D42),
                     borderColor: const Color(0xFFFFF9D6),
                     borderWidth: 2,
@@ -155,7 +155,7 @@ class JumpFlag extends StatelessWidget {
               Positioned(
                 left: 8,
                 top: 3,
-                child: Text('${index + 1}', style: nunito(8, color: GameColors.ink, height: 1)),
+                child: Text('${index + 1}', style: gameText(8, color: GameColors.ink, height: 1)),
               ),
             ],
           ),

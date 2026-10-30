@@ -14,7 +14,7 @@ class LeaguePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = c.state;
-    final value = nunito(14, color: GameColors.ink);
+    final value = gameText(14, color: GameColors.ink);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
