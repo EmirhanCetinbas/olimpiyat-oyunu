@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../theme/theme.dart';
 import 'outlined_text.dart';
+import 'paw_mark.dart';
 import 'pressable.dart';
 import 'raised_surface.dart';
 
 /// Oyunun ortak pencere dili: kalın konturlu kâğıt panel, üst kenara oturan kırmızı başlık plakası
-/// (iki yanda sarı ışınlar) ve köşeden taşan yeşil kapat düğmesi.
+/// (iki yanda sarı pati izleri) ve köşeden taşan yeşil kapat düğmesi.
 class GameModal extends StatelessWidget {
   const GameModal({
     super.key,
@@ -50,9 +51,9 @@ class GameModal extends StatelessWidget {
             child: child,
           ),
           Positioned(top: 0, left: (width - bannerWidth) / 2, width: bannerWidth, child: ModalBanner(title)),
-          // Işınlar plakanın iki yanının ortasında.
-          Positioned(top: 8, right: (width + bannerWidth) / 2 - 4, child: const Sparkle(mirrored: true)),
-          Positioned(top: 8, left: (width + bannerWidth) / 2 - 4, child: const Sparkle()),
+          // Pati izleri plakanın iki yanının ortasında.
+          Positioned(top: 12, right: (width + bannerWidth) / 2 - 2, child: const PawMark(mirrored: true)),
+          Positioned(top: 12, left: (width + bannerWidth) / 2 - 2, child: const PawMark()),
           // 48pt düğme panelin sağ üst köşesinden taşar.
           Positioned(
             top: 8,

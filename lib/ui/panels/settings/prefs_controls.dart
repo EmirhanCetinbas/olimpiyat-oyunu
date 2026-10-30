@@ -133,7 +133,8 @@ class PrefsSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const h = PrefsMetrics.controlHeight, inset = 4.0;
+    // Topuz yüzeyin tam ortasında: dikey ve yatay boşluk eşit.
+    const h = PrefsMetrics.controlHeight, inset = (h - _knobSize) / 2;
     final text = OutlinedText(value ? 'AÇIK' : 'KAPALI', shadowOffset: const Offset(0, 1.5), style: _controlText(value ? 15.5 : 14));
     return Semantics(
       toggled: value,
@@ -161,8 +162,8 @@ class PrefsSwitch extends StatelessWidget {
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 150),
                 curve: Curves.easeOut,
-                top: (h - _knobSize) / 2 - 1.5,
-                left: value ? width - _knobSize - inset + 1 : inset - 1,
+                top: inset,
+                left: value ? width - _knobSize - inset : inset,
                 child: const _Knob(),
               ),
             ],
