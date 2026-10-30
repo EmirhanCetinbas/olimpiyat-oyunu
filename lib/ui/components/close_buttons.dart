@@ -94,6 +94,7 @@ class RoundCloseButton extends StatelessWidget {
     return Pressable(
       onTap: onTap,
       semanticLabel: semanticLabel,
+      minTapSize: minTapTarget,
       child: GBox(
         width: size,
         height: size,
@@ -119,6 +120,7 @@ class SquareCloseButton extends StatelessWidget {
   Widget build(BuildContext context) => Pressable(
     onTap: onTap,
     semanticLabel: 'Kapat',
+    minTapSize: minTapTarget,
     child: GBox(
       width: 28,
       height: 28,

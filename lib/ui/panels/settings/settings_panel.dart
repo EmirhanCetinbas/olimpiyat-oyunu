@@ -128,10 +128,11 @@ class _Heading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final narrow = MediaQuery.sizeOf(context).width <= 360;
+    final short = ScreenMetrics.of(context).short;
     return LayoutBuilder(
       builder: (context, box) {
         return Padding(
-          padding: EdgeInsets.only(left: box.maxWidth * (narrow ? .08 : .11), bottom: 10),
+          padding: EdgeInsets.only(left: box.maxWidth * (narrow ? .08 : .11), bottom: short ? 8 : 10),
           child: Row(
             children: [
               Expanded(
@@ -148,7 +149,7 @@ class _Heading extends StatelessWidget {
                   ),
                   borderColor: const Color(0xFF0A2033),
                   radius: 21,
-                  padding: const EdgeInsets.fromLTRB(3, 9, 3, 11),
+                  padding: EdgeInsets.fromLTRB(3, short ? 7 : 9, 3, short ? 9 : 11),
                   shadows: const [BoxShadow(color: Color(0x75D4C39A), offset: Offset(0, 5))],
                   insets: const [Inset(Color(0xFFFFAD9F), dy: 5), Inset(Color(0xFFE34137), dy: -4)],
                   textShadows: [for (final o in _shadowOffsets) Shadow(color: const Color(0xFF102633), offset: o)],

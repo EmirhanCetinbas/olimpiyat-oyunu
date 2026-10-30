@@ -60,25 +60,28 @@ class _NavItem extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Pressable(
-    semanticLabel: label,
-    onTap: onTap,
-    child: Container(
-      constraints: const BoxConstraints(minHeight: 54),
-      padding: const EdgeInsets.only(top: 2, bottom: 3),
-      decoration: BoxDecoration(
-        color: selected ? const Color(0xFFFFF1BF) : null,
-        borderRadius: BorderRadius.circular(8),
-        border: selected ? Border.all(color: const Color(0xFFE2BD48)) : null,
+  Widget build(BuildContext context) {
+    final compact = ScreenMetrics.of(context).compact;
+    return Pressable(
+      semanticLabel: label,
+      onTap: onTap,
+      child: Container(
+        constraints: BoxConstraints(minHeight: compact ? 51 : 54),
+        padding: const EdgeInsets.only(top: 2, bottom: 3),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFFFFF1BF) : null,
+          borderRadius: BorderRadius.circular(8),
+          border: selected ? Border.all(color: const Color(0xFFE2BD48)) : null,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Sprite(navIcon(column), width: compact ? 33 : 38, height: compact ? 33 : 38),
+            const SizedBox(height: 1),
+            Text(label, maxLines: 1, style: nunito(compact ? 10 : 11, weight: 1000, color: const Color(0xFF173548), height: 1.1)),
+          ],
+        ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Sprite(navIcon(column), width: 38, height: 38),
-          const SizedBox(height: 1),
-          Text(label, maxLines: 1, style: nunito(10, weight: 1000, color: const Color(0xFF173548), height: 1.1)),
-        ],
-      ),
-    ),
-  );
+    );
+  }
 }

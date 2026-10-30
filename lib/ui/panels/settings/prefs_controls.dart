@@ -32,7 +32,7 @@ class PrefsSlider extends StatelessWidget {
           onTapDown: (d) => setAt(d.localPosition.dx),
           onHorizontalDragUpdate: (d) => setAt(d.localPosition.dx),
           child: SizedBox(
-            height: 34,
+            height: minTapTarget, // görsel 34pt, dokunma alanı 44pt
             child: Stack(
               alignment: Alignment.centerLeft,
               clipBehavior: Clip.none,

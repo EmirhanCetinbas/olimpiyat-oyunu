@@ -140,6 +140,7 @@ class _GameBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final top = MediaQuery.paddingOf(context).top;
+    final side = ScreenMetrics.of(context).compact ? 6.0 : 8.0;
     return DecoratedBox(
       decoration: const BoxDecoration(
         color: GameColors.grass,
@@ -154,7 +155,7 @@ class _GameBody extends StatelessWidget {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(8, 10 + top, 8, 8),
+              padding: EdgeInsets.fromLTRB(side, 10 + top, side, 8),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

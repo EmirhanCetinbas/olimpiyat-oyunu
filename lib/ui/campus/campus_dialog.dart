@@ -23,9 +23,10 @@ class CampusDialog extends StatelessWidget {
     return DialogLayer(
       onDismiss: c.closeCampusDialog,
       barrierColor: const Color(0x25072422),
+      padding: EdgeInsets.only(top: ScreenMetrics.of(context).padding.top, bottom: ScreenMetrics.of(context).padding.bottom),
       child: Container(
-        width: (size.width * .92).clamp(0.0, 460.0),
-        constraints: BoxConstraints(maxHeight: size.height * .9),
+        width: ScreenMetrics.of(context).dialogWidth((size.width * .92).clamp(0.0, 460.0)),
+        constraints: BoxConstraints(maxHeight: ScreenMetrics.of(context).dialogMaxHeight(.9)),
         child: GBox(
           gradient: angleGradient(120, const [Color(0xFFFFFEF3), Color(0xFFFFF0D4)]),
           borderColor: const Color(0xFF0B263A),
@@ -59,8 +60,8 @@ class CampusDialog extends StatelessWidget {
                 ),
               ),
               Positioned(
-                right: 6,
-                top: 5,
+                right: 1.5,
+                top: .5,
                 child: RoundCloseButton.campus(onTap: c.closeCampusDialog, semanticLabel: 'Yükseltmeleri kapat'),
               ),
             ],
@@ -270,7 +271,7 @@ class CampusUpgradeRow extends StatelessWidget {
                 ? '✓'
                 : '↑',
             fontSize: enabled ? 29 : 20,
-          textHeight: 1,
+            textHeight: 1,
             padding: EdgeInsets.zero,
             width: wide
                 ? 47

@@ -1,4 +1,5 @@
-// Simülatörsüz ekran önizlemesi: flutter test --no-pub tool/preview_game.dart --dart-define=PREVIEW_OUTPUT_ROOT=docs/verification
+// Simülatörsüz ekran önizlemesi; senaryolar tool/scenarios.json'dan gelir.
+// flutter test --no-pub tool/preview_game.dart --dart-define=PREVIEW_OUTPUT_ROOT=docs/verification [--dart-define=PREVIEW_ONLY=panel-]
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -8,8 +9,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pati_sampiyonlari/game/controller.dart';
+import 'package:pati_sampiyonlari/game/state.dart';
 import 'package:pati_sampiyonlari/main.dart';
 import 'package:pati_sampiyonlari/ui/components/sprite.dart';
+
+import 'mulberry32.dart';
 
 final _date = DateTime.now().toIso8601String().substring(0, 10);
 const _root = String.fromEnvironment('PREVIEW_OUTPUT_ROOT', defaultValue: 'docs/verification');
@@ -24,32 +28,104 @@ Future<void> loadPreviewFonts() async {
     }
     await loader.load();
   }
+  // Test ortamında sistem yedek fontu yok: sembol ve emoji için macOS fontlarını ekle.
+  for (final (family, path) in const [
+    ('Arial Unicode', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf'),
+    ('Apple Symbols', '/System/Library/Fonts/Apple Symbols.ttf'),
+  ]) {
+    final file = File(path);
+    if (!file.existsSync()) continue;
+    final loader = FontLoader(family)..addFont(Future.value(ByteData.sublistView(file.readAsBytesSync())));
+    await loader.load();
+  }
+}
+
+/// scenarios.json eylemlerinin Flutter karşılığı (web_reference.mjs ile aynı adlar).
+void runStep(GameController c, String action, Object? arg) {
+  switch (action) {
+    case 'begin':
+      c.beginRace();
+    case 'advance':
+      for (var i = 0; i < ((arg as num) * 60).round(); i++) {
+        c.tick(1 / 60);
+      }
+    case 'open':
+      c.openPanel(arg as String);
+    case 'inventoryTab':
+      c.setInventoryTab(arg as String);
+    case 'info':
+      c.showInfo(arg as int);
+    case 'support':
+      c.openSupport();
+    case 'reset':
+      c.askReset();
+    case 'rewardsMenu':
+      c.selectNav(2);
+      c.rewardsMenu(true);
+    case 'upgrade':
+      c.pressUpgrade(arg as int);
+    case 'openChest':
+      c.pressOpenChest(arg as String);
+    case 'chooseChest':
+      c.pressChooseChest(arg as int);
+    case 'campusFacility':
+      c.showCampusFacility(arg as String);
+    case 'spinUsed':
+      c.state.spinDate = c.todayKey;
+    case 'dailyClaimed':
+      c.state.daily = c.now;
+    case 'keepToast':
+      break;
+    default:
+      throw ArgumentError('Bilinmeyen eylem: $action');
+  }
 }
 
 void main() {
+  final spec = jsonDecode(File('tool/scenarios.json').readAsStringSync()) as Map<String, dynamic>;
+  final base = spec['base'] as Map<String, dynamic>;
+
   testWidgets('pati screens', (tester) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
+    tester.view.devicePixelRatio = 1;
     await tester.runAsync(loadPreviewFonts);
     await tester.runAsync(SpriteCache.preload);
 
-    final c = GameController(storage: MemoryStorage());
-    c.state.races = 6;
-    c.state.wins = 3;
-    c.state.money = 117000;
-    c.state.auto = false;
-    final boundary = GlobalKey();
-    await tester.pumpWidget(RepaintBoundary(key: boundary, child: PatiApp(controller: c)));
-
-    Future<void> settle([int ms = 300]) async {
-      await tester.runAsync(() => Future.delayed(Duration(milliseconds: ms)));
-      await tester.pump(const Duration(milliseconds: 16));
+    Future<void> settle() async {
+      for (var i = 0; i < 2; i++) {
+        await tester.runAsync(() => Future.delayed(const Duration(milliseconds: 300)));
+        await tester.pump();
+      }
     }
 
-    Future<void> shot(String name) async {
-      if (_only.isNotEmpty && !name.startsWith(_only)) return;
-      await settle(400);
+    for (final s in (spec['scenarios'] as List).cast<Map<String, dynamic>>()) {
+      final name = s['name'] as String;
+      if (_only.isNotEmpty && !name.startsWith(_only)) continue;
+      final size = (s['size'] as List?)?.cast<num>() ?? [390, 844];
+      tester.view.physicalSize = Size(size[0].toDouble(), size[1].toDouble());
+
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final preset = {...GameState.initial(now).toJson(), ...base, ...?s['state'] as Map<String, dynamic>?, 'last': now};
+      final c = GameController(storage: MemoryStorage(jsonEncode(preset)), random: Mulberry32(12345));
+      final boundary = GlobalKey();
+      await tester.pumpWidget(RepaintBoundary(key: boundary, child: PatiApp(controller: c, fontFallback: const ['Arial Unicode', 'Apple Symbols'])));
+      await settle();
+
+      final steps = (s['steps'] as List?)?.cast<List>() ?? const [];
+      for (final step in steps) {
+        runStep(c, step[0] as String, step.length > 1 ? step[1] : null);
+      }
+      if (!steps.any((step) => step[0] == 'keepToast')) c.toastVisible = false;
+      // Arayüz animasyonları (toast, çanta açılışı) bitsin; oyun simülasyonu bu sırada dondurulur.
+      // Yarış yoksa dondurmaya gerek yok (Ayarlar'daki duraklat anahtarı etkilenmesin).
+      final wasPaused = c.paused;
+      if (c.race != null || c.resultDelay > 0) c.paused = true;
+      await tester.pump(); // değişiklikler kurulsun, animasyonlar bu karede başlasın
+      await tester.pump(const Duration(milliseconds: 400));
+      c.paused = wasPaused;
+      await tester.pump();
+      await settle();
+
       await tester.runAsync(() async {
         final image = await (boundary.currentContext!.findRenderObject()! as RenderRepaintBoundary).toImage(pixelRatio: 1);
         final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -58,52 +134,8 @@ void main() {
           ..writeAsBytesSync(bytes!.buffer.asUint8List());
         image.dispose();
       });
+      await tester.pumpWidget(const SizedBox());
+      c.dispose();
     }
-
-    Future<void> run(double seconds) async {
-      for (var i = 0; i < seconds * 30; i++) {
-        await tester.pump(const Duration(milliseconds: 33));
-      }
-    }
-
-    await settle(800);
-    await shot('sprint-idle');
-    c.beginRace();
-    await run(4.5);
-    await shot('sprint-race');
-
-    for (final branch in ['hurdles', 'swim', 'longjump', 'weights', 'archery']) {
-      c.race = null;
-      c.selectBranch(branch);
-      await settle(600);
-      await shot('$branch-idle');
-      c.beginRace();
-      await run(branch == 'hurdles' || branch == 'swim' ? 6 : 3);
-      await shot('$branch-race');
-    }
-    c.race = null;
-    c.clearMove();
-    c.selectBranch('sprint');
-
-    for (final panel in ['settings', 'achievements', 'daily-rewards', 'inventory', 'shop', 'branches', 'wheel']) {
-      c.openPanel(panel);
-      await settle(600);
-      await shot('panel-$panel');
-    }
-    c.inventoryTab = 'equipment';
-    c.openPanel('inventory');
-    await shot('panel-equipment');
-    c.closeModal();
-    c.rewardsMenu(true);
-    await shot('rewards-menu');
-    c.rewardsMenu(false);
-    c.openPanel('campus');
-    await settle(800);
-    await shot('campus');
-    c.showCampusFacility('stadium');
-    await shot('campus-dialog');
-    c.closeCampus();
-    await tester.pump();
-    c.dispose();
   });
 }

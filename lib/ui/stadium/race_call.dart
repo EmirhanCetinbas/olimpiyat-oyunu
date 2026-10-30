@@ -71,7 +71,7 @@ class RaceCall extends StatelessWidget {
     return Positioned.fill(
       child: Stack(
         children: [
-          Positioned.fill(child: blurLayer(.25, const Color(0x24071D27))),
+          Positioned.fill(child: blurLayer(.5, const Color(0x24071D27))),
           Center(child: content),
         ],
       ),

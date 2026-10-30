@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Önizleme çıktıları (tool/ ile yeniden üretilir)
+/docs/verification/

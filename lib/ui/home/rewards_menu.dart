@@ -12,12 +12,11 @@ class RewardsMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
-    final bottom = MediaQuery.paddingOf(context).bottom;
     final width = (MediaQuery.sizeOf(context).width - 32).clamp(0.0, 300.0);
     return Positioned(
       left: 0,
       right: 0,
-      bottom: 75 + bottom,
+      bottom: ScreenMetrics.of(context).bottomNavHeight + 12,
       child: Center(
         child: SizedBox(
           width: width,

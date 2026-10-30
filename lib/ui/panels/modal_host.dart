@@ -16,28 +16,27 @@ class ModalHost extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
     final spec = c.modal!;
-    final size = MediaQuery.sizeOf(context);
-    final padding = MediaQuery.paddingOf(context);
-    final viewportWidth = size.width.clamp(0.0, 500.0);
-    final maxHeight = size.height * .85 - padding.vertical;
+    final m = ScreenMetrics.of(context);
+    final w = m.gameWidth;
     final daily = spec.style == ModalStyle.exactDaily;
 
     final Widget dialog = switch (spec.style) {
-      ModalStyle.exactAchievements => SizedBox(width: (viewportWidth * .844).clamp(0.0, 422.0), child: AchievementsPanel(c)),
-      ModalStyle.exactDaily => SizedBox(width: viewportWidth, child: DailyPanel(c)),
+      ModalStyle.exactAchievements => SizedBox(width: m.dialogWidth((w * .844).clamp(0.0, 422.0)), child: AchievementsPanel(c)),
+      ModalStyle.exactDaily => SizedBox(width: m.dialogWidth(w), child: DailyPanel(c)),
       ModalStyle.settings => ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: (viewportWidth * .95).clamp(0.0, 470.0), maxHeight: size.height - 20 - padding.vertical),
+        constraints: BoxConstraints(maxWidth: m.dialogWidth((w * .95).clamp(0.0, 470.0)), maxHeight: m.dialogMaxHeight()),
         child: SingleChildScrollView(child: SettingsPanel(c)),
       ),
-      ModalStyle.reward => _RewardFrame(spec: spec, maxHeight: maxHeight),
-      ModalStyle.normal => _StandardFrame(spec: spec, width: (viewportWidth * .93).clamp(0.0, 410.0), maxHeight: maxHeight),
+      ModalStyle.reward => _RewardFrame(spec: spec, width: m.dialogWidth((w * .96).clamp(0.0, 460.0)), maxHeight: m.dialogMaxHeight(.85)),
+      ModalStyle.normal => _StandardFrame(spec: spec, width: m.dialogWidth((w * .93).clamp(0.0, 410.0)), maxHeight: m.dialogMaxHeight(.85)),
     };
 
+    // Günlük ödül alttan açılan sayfa gibi durur; ev çubuğunun ve klavyenin üstünde kalır.
     return DialogLayer(
       onDismiss: c.closeModal,
-      blur: 1.5,
+      blur: 3,
       alignment: daily ? Alignment.bottomCenter : Alignment.center,
-      padding: EdgeInsets.only(top: padding.top, bottom: daily ? 0 : padding.bottom),
+      padding: EdgeInsets.only(top: m.padding.top, bottom: m.padding.bottom + m.viewInsets.bottom),
       child: KeyedSubtree(key: ValueKey(spec.key), child: dialog),
     );
   }
@@ -69,7 +68,8 @@ class _StandardFrame extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              // Kapat düğmesinin 44pt dokunma alanı başlık yüksekliğini korur (28 + 2×10).
+              padding: const EdgeInsets.fromLTRB(14, 2, 6, 2),
               decoration: const BoxDecoration(
                 color: Color(0xFF88D54D),
                 border: Border(bottom: BorderSide(color: GameColors.ink, width: 2)),
@@ -77,7 +77,7 @@ class _StandardFrame extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(spec.title, style: nunito(19, color: GameColors.ink)),
+                    child: Text(spec.title, style: nunito(19, weight: 700, color: GameColors.ink)),
                   ),
                   SquareCloseButton(onTap: c.closeModal),
                 ],
@@ -101,15 +101,16 @@ class _StandardFrame extends StatelessWidget {
 
 /// `.reward-dialog`: başlıksız, köşede kırmızı kapat düğmeli pencere.
 class _RewardFrame extends StatelessWidget {
-  const _RewardFrame({required this.spec, required this.maxHeight});
+  const _RewardFrame({required this.spec, required this.width, required this.maxHeight});
   final ModalSpec spec;
+  final double width;
   final double maxHeight;
 
   @override
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
     return Container(
-      width: (MediaQuery.sizeOf(context).width * .96).clamp(0.0, 460.0),
+      width: width,
       constraints: BoxConstraints(maxHeight: maxHeight),
       decoration: BoxDecoration(
         color: const Color(0xFFFFFEF4),
@@ -126,9 +127,10 @@ class _RewardFrame extends StatelessWidget {
               child: panelContent(c, spec),
             ),
           ),
+          // 38pt görsel, 44pt dokunma alanının ortasında: konum 3pt içeri kayar.
           Positioned(
-            right: 7,
-            top: 4,
+            right: 4,
+            top: 1,
             child: RoundCloseButton(
               onTap: c.closeModal,
               shadows: const [BoxShadow(color: Color(0xFF8F142F), offset: Offset(0, 2))],

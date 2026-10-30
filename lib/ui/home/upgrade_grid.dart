@@ -42,6 +42,7 @@ class UpgradeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
     final u = c.activeUpgrades[index];
+    final compact = ScreenMetrics.of(context).compact;
     final level = c.upgradeLevels[index];
     return GBox(
       gradient: vGradient(const [Color(0xFFFFFDEE), Color(0xFFFFFEEF)]),
@@ -49,7 +50,7 @@ class UpgradeCard extends StatelessWidget {
       borderWidth: outlineWidth,
       radius: 14,
       shadows: const [BoxShadow(color: Color(0xFF43873B), offset: Offset(0, 2))],
-      padding: const EdgeInsets.fromLTRB(6, 7, 6, 6),
+      padding: compact ? const EdgeInsets.symmetric(horizontal: 5, vertical: 6) : const EdgeInsets.fromLTRB(6, 7, 6, 6),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -66,7 +67,7 @@ class UpgradeCard extends StatelessWidget {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(right: 11, bottom: 2),
-                          child: Text(u.title, style: nunito(12, height: 1.02, letterSpacing: -.25)),
+                          child: Text(u.title, style: nunito(compact ? 11 : 12, weight: 700, height: 1.02, letterSpacing: -.25)),
                         ),
                         Pill(
                           'Sv. $level',
@@ -80,9 +81,10 @@ class UpgradeCard extends StatelessWidget {
                   ),
                 ],
               ),
+              // 16pt görsel, 32pt dokunma alanının ortasında.
               Positioned(
-                right: -2,
-                top: -3,
+                right: -10,
+                top: -11,
                 child: _InfoButton(onTap: () => c.showInfo(index), label: '${u.title} hakkında'),
               ),
             ],
@@ -129,6 +131,7 @@ class _InfoButton extends StatelessWidget {
   Widget build(BuildContext context) => Pressable(
     onTap: onTap,
     semanticLabel: label,
+    minTapSize: 32,
     child: Container(
       width: 16,
       height: 16,

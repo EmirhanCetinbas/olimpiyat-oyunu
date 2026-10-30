@@ -143,6 +143,8 @@ class EquipmentCard extends StatelessWidget {
     final item = equipmentItems[index];
     final stars = c.state.equipmentStars[index];
     final parts = stars < 3 && c.state.equipmentParts >= 5;
+    final compact = ScreenMetrics.of(context).compact;
+    final gap = SizedBox(width: compact ? 4 : 7);
     Widget button(String label, VoidCallback onTap, {bool enabled = true}) => ActionButton(
       label,
       onTap: onTap,
@@ -159,14 +161,14 @@ class EquipmentCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
       child: Row(
         children: [
-          Sprite(equipmentIcon(index), width: 52, height: 52),
-          const SizedBox(width: 7),
+          Sprite(equipmentIcon(index), width: compact ? 42 : 52, height: compact ? 42 : 52),
+          gap,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.name, style: nunito(13, color: GameColors.ink, height: 1.15)),
-                _Stars(stars),
+                Text(item.name, style: nunito(compact ? 12 : 13, color: GameColors.ink, height: 1.15)),
+                _Stars(stars, size: compact ? 17 : 19),
                 Text(
                   '${item.effect}: +%${trNumber(stars * item.bonus, 3)}',
                   style: nunito(11, color: const Color(0xFF58738A), height: 1.2),
@@ -174,9 +176,9 @@ class EquipmentCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 7),
+          gap,
           SizedBox(
-            width: 74,
+            width: compact ? 64 : 74,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -196,15 +198,16 @@ class EquipmentCard extends StatelessWidget {
 }
 
 class _Stars extends StatelessWidget {
-  const _Stars(this.stars);
+  const _Stars(this.stars, {required this.size});
   final int stars;
+  final double size;
 
   @override
   Widget build(BuildContext context) => Text(
     '${'★' * stars}${'☆' * (3 - stars)}',
     semanticsLabel: '$stars / 3 yıldız',
     style: TextStyle(
-      fontSize: 19,
+      fontSize: size,
       height: 1.05,
       letterSpacing: 1,
       color: const Color(0xFFFFBF20),

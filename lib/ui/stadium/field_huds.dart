@@ -129,11 +129,13 @@ class JumpFlag extends StatelessWidget {
   Widget build(BuildContext context) {
     final r = c.jumpCompleted[index];
     final p = jumpLanding(r.metres, index);
+    // 18×21 bayrak, 34pt dokunma alanının ortasında (web: translate(-3px,-100%)).
     return Positioned(
-      left: layout.x(p.x) - 3,
-      top: layout.y(p.y) - 21,
+      left: layout.x(p.x) - 3 - 8,
+      top: layout.y(p.y) - 21 - 6.5,
       child: Pressable(
         onTap: () => c.showJumpResult(index),
+        minTapSize: 34,
         semanticLabel: '${animals[r.id].name}: ${jumpMetres(r.metres)}',
         child: SizedBox(
           width: 18,

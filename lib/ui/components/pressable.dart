@@ -14,6 +14,7 @@ class Pressable extends StatefulWidget {
     this.semanticLabel,
     this.disabledSaturation = .35,
     this.disabledOpacity = .7,
+    this.minTapSize = 0,
   });
 
   final VoidCallback? onTap;
@@ -22,6 +23,9 @@ class Pressable extends StatefulWidget {
   final String? semanticLabel;
   final double disabledSaturation;
   final double disabledOpacity;
+
+  /// Görseli büyütmeden dokunma alanını bu boyuta genişletir (görsel ortada kalır).
+  final double minTapSize;
 
   @override
   State<Pressable> createState() => _PressableState();
@@ -40,6 +44,12 @@ class _PressableState extends State<Pressable> {
       child = saturated(child, saturation: widget.disabledSaturation, opacity: widget.disabledOpacity);
     } else if (_down) {
       child = Transform.translate(offset: const Offset(0, 1), child: child);
+    }
+    if (widget.minTapSize > 0) {
+      child = ConstrainedBox(
+        constraints: BoxConstraints(minWidth: widget.minTapSize, minHeight: widget.minTapSize),
+        child: Center(widthFactor: 1, heightFactor: 1, child: child),
+      );
     }
     return Semantics(
       button: true,

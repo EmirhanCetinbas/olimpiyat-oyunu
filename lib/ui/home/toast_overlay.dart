@@ -15,7 +15,8 @@ class ToastOverlay extends StatelessWidget {
     return Positioned(
       left: 0,
       right: 0,
-      bottom: 80,
+      // Alt menünün üstünde kalır (web'de sabit 80px, ev çubuğuyla menüyle çakışıyordu).
+      bottom: ScreenMetrics.of(context).bottomNavHeight + 14,
       child: IgnorePointer(
         child: Center(
           child: AnimatedOpacity(

@@ -8,10 +8,15 @@ import 'field_huds.dart';
 import 'race_call.dart';
 import 'runner_avatar.dart';
 
+/// Sahanın, stadyum bulanıklığının altında ve üstünde kalan katmanları.
+enum FieldLayer { below, above }
+
 /// `.field`: arena görseli üzerinde canlı sporcular, engeller ve göstergeler.
-/// Katman sırası style.css z-index değerlerini izler.
+/// Katman sırası style.css z-index değerlerini izler: bekleme bulanıklığı (z3) sahneyi örter,
+/// okçuluk göstergeleri, başlat düğmesi ve CANLI etiketi onun üstünde kalır.
 class RaceField extends StatelessWidget {
-  const RaceField({super.key});
+  const RaceField({super.key, required this.layer});
+  final FieldLayer layer;
 
   static const _hurdleX = [24.0, 44.0, 64.0, 83.0];
 
@@ -36,33 +41,38 @@ class RaceField extends StatelessWidget {
             for (var i = 0; i < c.runnerIds.length && i < c.runnerPos.length; i++)
               if (include(c.runnerPos[i])) _runner(c, layout, i, runnerSize),
           ];
-          final blur = c.stadiumIdle && (branch == 'sprint' || branch == 'archery');
+          if (layer == FieldLayer.below) {
+            return Stack(
+              clipBehavior: Clip.hardEdge,
+              children: [
+                if (branch != 'sprint') Positioned.fill(child: Image.asset(c.arenaImage, fit: BoxFit.fill)),
+                if (branch == 'hurdles')
+                  for (var lane = 0; lane < 6; lane++)
+                    for (final x in _hurdleX)
+                      layout.point(
+                        x,
+                        35.5 + lane * 9.2,
+                        SizedBox(
+                          width: 22,
+                          height: layout.y(7.8),
+                          child: Image.asset('assets/images/hurdle-sprite.png', fit: BoxFit.contain),
+                        ),
+                      ),
+                if (branch == 'sprint') ...runners((_) => true),
+                if (branch == 'hurdles' || branch == 'swim') ...[...runners((p) => !p.jump), ...runners((p) => p.jump)],
+                if (branch == 'longjump') ...[
+                  ...runners((p) => !p.airborne),
+                  for (var i = 0; i < c.jumpCompleted.length; i++) JumpFlag(c: c, index: i, layout: layout),
+                  ...runners((p) => p.airborne),
+                ],
+                if (branch == 'weights') ...[...runners((_) => true), WeightHud(c: c, layout: layout)],
+              ],
+            );
+          }
           return Stack(
             clipBehavior: Clip.hardEdge,
             children: [
-              if (branch != 'sprint') Positioned.fill(child: Image.asset(c.arenaImage, fit: BoxFit.fill)),
-              if (branch == 'hurdles')
-                for (var lane = 0; lane < 6; lane++)
-                  for (final x in _hurdleX)
-                    layout.point(
-                      x,
-                      35.5 + lane * 9.2,
-                      SizedBox(
-                        width: 22,
-                        height: layout.y(7.8),
-                        child: Image.asset('assets/images/hurdle-sprite.png', fit: BoxFit.contain),
-                      ),
-                    ),
-              if (branch == 'sprint') ...runners((_) => true),
-              if (blur) Positioned.fill(child: blurLayer(1.1, const Color(0x22112233))),
               if (branch == 'archery') ...[ArcheryHud(c: c, layout: layout), ...runners((_) => true)],
-              if (branch == 'hurdles' || branch == 'swim') ...[...runners((p) => !p.jump), ...runners((p) => p.jump)],
-              if (branch == 'longjump') ...[
-                ...runners((p) => !p.airborne),
-                for (var i = 0; i < c.jumpCompleted.length; i++) JumpFlag(c: c, index: i, layout: layout),
-                ...runners((p) => p.airborne),
-              ],
-              if (branch == 'weights') ...[...runners((_) => true), WeightHud(c: c, layout: layout)],
               if (!c.raceCallHidden) RaceCall(c: c, layout: layout),
               if (!c.liveTagHidden)
                 Positioned(
@@ -74,7 +84,7 @@ class RaceField extends StatelessWidget {
                   },
                   child: Pill(
                     '● CANLI',
-                    style: nunito(9, color: const Color(0xFF198039)),
+                    style: nunito(10, color: const Color(0xFF198039)),
                     color: const Color(0xE8FFFEF1),
                     borderColor: const Color(0xFF183324),
                     borderWidth: 1.5,

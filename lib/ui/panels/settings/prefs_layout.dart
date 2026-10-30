@@ -4,7 +4,10 @@ import '../../components/components.dart';
 import '../../theme/theme.dart';
 import 'settings_icon.dart';
 
-bool _narrow(BuildContext context) => MediaQuery.sizeOf(context).width <= 360;
+bool _narrow(BuildContext context) => ScreenMetrics.of(context).compact;
+
+/// Kısa ekranlarda (≤690pt) Ayarlar sıkışır (web `@media(max-height:690px)`).
+bool _short(BuildContext context) => ScreenMetrics.of(context).short;
 
 /// `.prefs-section`: başlık ve satırlar.
 class PrefsSection extends StatelessWidget {
@@ -14,7 +17,7 @@ class PrefsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 9),
+    padding: EdgeInsets.only(bottom: _short(context) ? 7 : 9),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -55,8 +58,8 @@ class PrefsRow extends StatelessWidget {
         radius: 15,
         shadows: const [BoxShadow(color: Color(0x75D8CAA5), offset: Offset(0, 3))],
         insets: const [Inset(Colors.white, dy: 2)],
-        padding: EdgeInsets.symmetric(horizontal: narrow ? 6 : 9, vertical: 6),
-        constraints: const BoxConstraints(minHeight: 54),
+        padding: EdgeInsets.symmetric(horizontal: narrow ? 6 : 9, vertical: _short(context) ? 4 : 6),
+        constraints: BoxConstraints(minHeight: _short(context) ? 49 : 54),
         child: Row(
           children: [
             SizedBox(
@@ -85,7 +88,7 @@ class PrefsActionTile extends StatelessWidget {
   Widget build(BuildContext context) => Pressable(
     onTap: onTap,
     child: GBox(
-      constraints: const BoxConstraints(minHeight: 50),
+      constraints: BoxConstraints(minHeight: _short(context) ? 46 : 50),
       gradient: vGradient(const [Color(0xFFFFFDF3), Color(0xFFFFF7E5)]),
       borderColor: const Color(0xFF102B40),
       borderWidth: 2,

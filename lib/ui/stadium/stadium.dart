@@ -27,7 +27,22 @@ class Stadium extends StatelessWidget {
           children: [
             if (branch == 'sprint' || branch == 'archery')
               Positioned.fill(child: Image.asset('assets/images/stadium.png', fit: BoxFit.fill)),
-            Column(children: [_RaceHead(c), const RaceField()]),
+            // Sahne katmanı; başlık yeri boş tutulur.
+            Column(
+              children: [
+                Visibility(visible: false, maintainSize: true, maintainAnimation: true, maintainState: true, child: _RaceHead(c)),
+                const RaceField(layer: FieldLayer.below),
+              ],
+            ),
+            // `.stadium.idle:before`: bekleme bulanıklığı tüm stadyumu örter (CSS blur 2.2px).
+            if (c.stadiumIdle && (branch == 'sprint' || branch == 'archery'))
+              Positioned.fill(child: blurLayer(2.2, const Color(0x22112233))),
+            Column(
+              children: [
+                _RaceHead(c),
+                const RaceField(layer: FieldLayer.above),
+              ],
+            ),
           ],
         ),
       ),

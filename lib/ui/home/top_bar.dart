@@ -5,16 +5,18 @@ import '../../game/format.dart';
 import '../components/components.dart';
 import '../theme/theme.dart';
 
-/// `<header class="top">`: 3 sütun × 2 satır ızgara.
+/// `<header class="top">`: 3 sütun × 2 satır ızgara; dar ekranda sıkışır.
 class TopBar extends StatelessWidget {
   const TopBar({super.key});
 
   @override
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
+    final compact = ScreenMetrics.of(context).compact;
+    final gap = compact ? 4.0 : 7.0;
     return LayoutBuilder(
       builder: (context, box) {
-        final unit = (box.maxWidth - 14) / 3.08;
+        final unit = (box.maxWidth - gap * 2) / 3.08;
         final cols = [unit, unit, unit * 1.08];
         Widget cell(int col, double height, Widget child, {Alignment align = Alignment.center}) => SizedBox(
           width: cols[col],
@@ -25,10 +27,10 @@ class TopBar extends StatelessWidget {
           children: [
             Row(
               children: [
-                cell(0, 47, _ProfileButton(c)),
-                const SizedBox(width: 7),
-                cell(1, 47, _IncomeDisplay(c), align: Alignment.topCenter),
-                const SizedBox(width: 7),
+                cell(0, 47, _ProfileButton(c, compact: compact)),
+                SizedBox(width: gap),
+                cell(1, 47, _IncomeDisplay(c, compact: compact), align: Alignment.topCenter),
+                SizedBox(width: gap),
                 cell(
                   2,
                   47,
@@ -37,14 +39,14 @@ class TopBar extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 5),
+            SizedBox(height: compact ? 4 : 5),
             Row(
               children: [
-                cell(0, 44, _QuickButtons(c), align: Alignment.centerLeft),
-                const SizedBox(width: 7),
+                cell(0, 44, _QuickButtons(c, compact: compact), align: Alignment.centerLeft),
+                SizedBox(width: gap),
                 cell(1, 44, _BoostButton(c)),
-                const SizedBox(width: 7),
-                cell(2, 44, _BranchButton(c)),
+                SizedBox(width: gap),
+                cell(2, 44, _BranchButton(c, compact: compact)),
               ],
             ),
           ],
@@ -55,8 +57,9 @@ class TopBar extends StatelessWidget {
 }
 
 class _ProfileButton extends StatelessWidget {
-  const _ProfileButton(this.c);
+  const _ProfileButton(this.c, {required this.compact});
   final GameController c;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Pressable(
@@ -75,7 +78,7 @@ class _ProfileButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Sv. ${c.level}', style: nunito(12, height: 1.2), maxLines: 1, overflow: TextOverflow.clip),
+                Text('Sv. ${c.level}', style: nunito(compact ? 11 : 12, height: 1.2), maxLines: 1, overflow: TextOverflow.clip),
                 const SizedBox(height: 2),
                 GameProgressBar.xp(value: (c.state.xp % 100) / 100),
               ],
@@ -88,8 +91,9 @@ class _ProfileButton extends StatelessWidget {
 }
 
 class _IncomeDisplay extends StatelessWidget {
-  const _IncomeDisplay(this.c);
+  const _IncomeDisplay(this.c, {required this.compact});
   final GameController c;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -100,7 +104,13 @@ class _IncomeDisplay extends StatelessWidget {
         fit: BoxFit.scaleDown,
         child: Text(
           '₺${fmt(c.income())}',
-          style: nunito(30, color: const Color(0xFF79F44B), height: 1.05, letterSpacing: -.5, shadows: outlineShadows(GameColors.ink, 1)),
+          style: nunito(
+            compact ? 27 : 30,
+            color: const Color(0xFF79F44B),
+            height: 1.05,
+            letterSpacing: -.5,
+            shadows: outlineShadows(GameColors.ink, 1),
+          ),
         ),
       ),
     ],
@@ -129,10 +139,11 @@ class _GemsButton extends StatelessWidget {
 
 /// Kare krem düğme (başarımlar, ayarlar).
 class _SquareButton extends StatelessWidget {
-  const _SquareButton({required this.onTap, required this.label, required this.child, this.dot = false});
+  const _SquareButton({required this.onTap, required this.label, required this.child, required this.compact, this.dot = false});
   final VoidCallback onTap;
   final String label;
   final Widget child;
+  final bool compact;
   final bool dot;
 
   @override
@@ -144,8 +155,8 @@ class _SquareButton extends StatelessWidget {
       children: [
         CreamBox(
           radius: 10,
-          width: 42,
-          height: 42,
+          width: compact ? 38 : 42,
+          height: compact ? 40 : 42,
           padding: const EdgeInsets.all(3),
           child: Center(child: child),
         ),
@@ -169,15 +180,22 @@ class _SquareButton extends StatelessWidget {
 }
 
 class _QuickButtons extends StatelessWidget {
-  const _QuickButtons(this.c);
+  const _QuickButtons(this.c, {required this.compact});
   final GameController c;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      _SquareButton(onTap: () => c.open('achievements'), label: 'Başarımlar', dot: c.achievementDot, child: const Art('trophy')),
+      _SquareButton(
+        onTap: () => c.open('achievements'),
+        label: 'Başarımlar',
+        dot: c.achievementDot,
+        compact: compact,
+        child: const Art('trophy'),
+      ),
       const SizedBox(width: 6),
-      _SquareButton(onTap: () => c.open('settings'), label: 'Ayarlar', child: const Art('gear', width: 30, height: 30)),
+      _SquareButton(onTap: () => c.open('settings'), label: 'Ayarlar', compact: compact, child: const Art('gear', width: 30, height: 30)),
     ],
   );
 }
@@ -205,14 +223,16 @@ class _BoostButton extends StatelessWidget {
 }
 
 class _BranchButton extends StatelessWidget {
-  const _BranchButton(this.c);
+  const _BranchButton(this.c, {required this.compact});
   final GameController c;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final art = c.branchArt;
     return Pressable(
       onTap: () => c.open('branches'),
+      semanticLabel: 'Branş seç: ${c.branchName}',
       child: GBox(
         gradient: vGradient(const [Color(0xFF223951), Color(0xFF102134)]),
         borderColor: GameColors.ink,
@@ -230,7 +250,7 @@ class _BranchButton extends StatelessWidget {
               child: Text(
                 c.branchName,
                 textAlign: TextAlign.center,
-                style: nunito(12, color: Colors.white, height: 1.1),
+                style: nunito(compact ? 11 : 12, color: Colors.white, height: 1.1),
               ),
             ),
             const SizedBox(width: 4),

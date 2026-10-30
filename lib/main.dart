@@ -32,8 +32,11 @@ Future<void> main() async {
 }
 
 class PatiApp extends StatelessWidget {
-  const PatiApp({super.key, required this.controller});
+  const PatiApp({super.key, required this.controller, this.fontFallback});
   final GameController controller;
+
+  /// Yalnızca simülatörsüz önizlemede: sistem yedek fontu olmayan test ortamı için.
+  final List<String>? fontFallback;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +45,7 @@ class PatiApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Nunito',
+        fontFamilyFallback: fontFallback,
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF76C94D)),
         textSelectionTheme: const TextSelectionThemeData(cursorColor: Color(0xFF10283B)),
       ),
@@ -50,7 +54,8 @@ class PatiApp extends StatelessWidget {
         resizeToAvoidBottomInset: false,
         body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.dark,
-          child: GameScreen(controller: controller),
+          // Oyun yerleşimi sabit ölçülü; sistem yazı büyütmesi düzeni bozmasın diye sınırlı tutulur.
+          child: MediaQuery.withClampedTextScaling(maxScaleFactor: 1.15, child: GameScreen(controller: controller)),
         ),
       ),
     );
