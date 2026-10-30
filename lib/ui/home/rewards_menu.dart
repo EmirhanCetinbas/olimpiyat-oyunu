@@ -36,9 +36,9 @@ class RewardsMenu extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _MenuItem('🎁 Günlük ödül', () => c.open('daily-rewards')),
-                    _MenuItem('🎡 Çarkıfelek', () => c.open('wheel')),
-                    _MenuItem('🏅 Başarımlar', () => c.open('achievements')),
+                    _MenuItem('Günlük ödül', const RewardIcon('calendar', size: 34), () => c.open('daily-rewards')),
+                    _MenuItem('Çarkıfelek', const PrizeWheel(size: 34), () => c.open('wheel')),
+                    _MenuItem('Başarımlar', const RewardIcon('medal', size: 34), () => c.open('achievements')),
                   ],
                 ),
               ),
@@ -71,8 +71,9 @@ class _Arrow extends StatelessWidget {
 }
 
 class _MenuItem extends StatelessWidget {
-  const _MenuItem(this.label, this.onTap);
+  const _MenuItem(this.label, this.icon, this.onTap);
   final String label;
+  final Widget icon;
   final VoidCallback onTap;
 
   @override
@@ -83,9 +84,18 @@ class _MenuItem extends StatelessWidget {
       semanticLabel: label,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: flatCardDecoration(radius: 14),
-        child: Text(label, style: gameText(16.5, color: GameColors.ink, height: 1.1)),
+        child: Row(
+          children: [
+            icon,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(label, style: gameText(16.5, color: GameColors.ink, height: 1.1)),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: GameColors.slate),
+          ],
+        ),
       ),
     ),
   );

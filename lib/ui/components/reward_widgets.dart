@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/theme.dart';
 import 'raised_surface.dart';
+import 'sprite.dart';
 
 /// Ödül / pencere ikonu: `assets/images/rewards/<name>.png` (tool/extract_panel_icons.py).
 class RewardIcon extends StatelessWidget {
@@ -121,4 +122,25 @@ class NoteStrip extends StatelessWidget {
       ],
     ),
   );
+}
+
+/// Ödül türünün görseli (çanta ödülleri, envanter eşyaları): gerçek oyun ikonları, emoji yok.
+class RewardKindIcon extends StatelessWidget {
+  const RewardKindIcon(this.kind, {super.key, this.size = 40});
+
+  /// money, gems, parts, card, boost, cosmetic, bundle, chest, ticket
+  final String kind;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => switch (kind) {
+    'money' || 'boost' => RewardIcon('money', size: size),
+    'gems' => RewardIcon('gem', size: size),
+    'ticket' => RewardIcon('ticket', size: size),
+    'bundle' || 'chest' => RewardIcon('gift', size: size),
+    'parts' => Art('gear', width: size, height: size),
+    'card' => Art('cards', width: size, height: size),
+    'cosmetic' => Art('avatar', width: size, height: size, radius: BorderRadius.circular(size * .2)),
+    _ => RewardIcon('gift', size: size),
+  };
 }

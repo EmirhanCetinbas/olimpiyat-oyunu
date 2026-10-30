@@ -9,31 +9,49 @@ class BranchesPanel extends StatelessWidget {
   final GameController c;
 
   static const _branches = [
-    ('sprint', '100 metre koşu'),
-    ('hurdles', 'Engelli koşu'),
-    ('swim', 'Yüzme'),
-    ('longjump', 'Uzun atlama'),
-    ('weights', 'Halter'),
-    ('archery', 'Okçuluk'),
+    ('sprint', '100 metre koşu', 'shoe'),
+    ('hurdles', 'Engelli koşu', 'speed'),
+    ('swim', 'Yüzme', 'swim-wave'),
+    ('longjump', 'Uzun atlama', 'jump-start'),
+    ('weights', 'Halter', 'weight-strength'),
+    ('archery', 'Okçuluk', 'archery-bow'),
   ];
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const PanelText('Oynamak istediğin yarışı seç.'),
-      ActionButton('🏆 Üç Yarışlık Kupa', full: true, onTap: () => c.open('tournament')),
-      for (var i = 0; i < _branches.length; i++)
+  Widget build(BuildContext context) {
+    final t = c.state.tournament;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Kupa: ayrı kart, durumu ile.
         ListRow(
           children: [
-            RowTitle(_branches[i].$2),
-            ActionButton(
-              c.state.branch == _branches[i].$1 ? 'Seçili' : 'Oyna',
-              onTap: () => c.selectBranch(_branches[i].$1),
-              enabled: c.race == null,
+            const Art('trophy', width: 40, height: 40),
+            RowTitle(
+              'Üç Yarışlık Kupa',
+              small: t != null && t.attempts < 3
+                  ? 'Sürüyor · ${t.attempts}/3 yarış, ${t.podiums}/2 madalya'
+                  : 'Üç yarışta iki madalya: Kupa Çantası + 1 SP',
             ),
+            ActionButton('Aç', onTap: () => c.open('tournament')),
           ],
         ),
-    ],
-  );
+        const SizedBox(height: 4),
+        const PanelText('Oynamak istediğin yarışı seç.', bottom: 8),
+        for (final (id, name, art) in _branches)
+          ListRow(
+            children: [
+              Art(art, width: 36, height: 36, emojiSize: 28),
+              RowTitle(name),
+              ActionButton(
+                c.state.branch == id ? 'Seçili' : 'Oyna',
+                tone: c.state.branch == id ? ButtonTone.cream : ButtonTone.green,
+                onTap: c.state.branch == id ? null : () => c.selectBranch(id),
+                enabled: c.race == null && c.state.branch != id,
+              ),
+            ],
+          ),
+      ],
+    );
+  }
 }

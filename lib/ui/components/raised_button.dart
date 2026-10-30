@@ -6,7 +6,7 @@ import 'pressable.dart';
 import 'raised_surface.dart';
 
 /// Pencere düğmesinin rengi: yeşil ana eylem ya da krem ikincil eylem. Kapalıyken gri.
-enum ButtonTone { green, cream }
+enum ButtonTone { green, cream, red }
 
 /// Ortak pencere dilinin düğmesi: kabarık yüzey, beyaz konturlu yazı (krem düğmede koyu yazı).
 /// Dokunma alanı her zaman en az 44pt.
@@ -72,6 +72,8 @@ class RaisedButton extends StatelessWidget {
         ? RaisedSurface.locked(radius: radius, child: inner)
         : cream
         ? RaisedSurface.cream(radius: radius, child: inner)
+        : tone == ButtonTone.red
+        ? RaisedSurface(color: GameColors.danger, shade: GameColors.dangerShade, radius: radius, child: inner)
         : RaisedSurface.green(radius: radius, child: inner);
     return Pressable(
       onTap: onTap,

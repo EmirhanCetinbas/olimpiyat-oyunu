@@ -16,7 +16,7 @@ class TournamentPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         PanelText(t != null ? 'Branş: ${branchLabel(t.branch)}' : 'Seçili branşta üç yarışlık kupa başlat.'),
-        StatGrid([('${t?.attempts ?? 0}/3', 'Yarış'), ('${t?.podiums ?? 0}/2', 'Gerekli madalya'), ('${c.state.tournamentCups}', 'Kupa')]),
+        StatGrid([('${t?.attempts ?? 0}/3', 'Yarış'), ('${t?.podiums ?? 0}/2', 'Madalya'), ('${c.state.tournamentCups}', 'Kupa')]),
         const PanelText.muted('Üç yarışta en az iki kez ilk üçe gir: Kupa Çantası ve 1 SP kazan.'),
         ActionButton(
           t != null && t.attempts >= 3 ? 'Yeni turnuva' : 'Turnuvayı başlat',

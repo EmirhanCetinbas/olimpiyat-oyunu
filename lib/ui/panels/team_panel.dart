@@ -22,7 +22,7 @@ class TeamPanel extends StatelessWidget {
               RowTitle(animals[i].name, small: '${animals[i].trait} · Uzmanlık: ${specialtyLabel(i)}'),
               ActionButton(
                 s.races < animals[i].unlock
-                    ? '${animals[i].unlock} yarış'
+                    ? '${s.races}/${animals[i].unlock}'
                     : s.selected == i
                     ? 'Seçili'
                     : 'Seç',

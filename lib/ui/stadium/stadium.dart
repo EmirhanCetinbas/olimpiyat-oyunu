@@ -125,7 +125,7 @@ class _RaceHead extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'TAKIMIN',
+                    'TAKIM GÜCÜ',
                     style: gameText(11, color: const Color(0xFF91D6FF), shadows: _darkShadow),
                   ),
                   Row(

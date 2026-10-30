@@ -74,4 +74,8 @@ abstract final class GameColors {
 
   /// Alt menüde seçili sekme zemini.
   static const highlight = Color(0xFFFFE7A0);
+
+  /// Geri alınamaz eylem (sıfırla).
+  static const danger = Color(0xFFF2554B);
+  static const dangerShade = Color(0xFF8E1F18);
 }

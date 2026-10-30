@@ -46,8 +46,6 @@ class InventoryPanel extends StatelessWidget {
 
   Widget _cardAction(String label, VoidCallback onTap, {bool enabled = true}) => ActionButton(label, onTap: onTap, enabled: enabled);
 
-  Widget _emoji(String e) => SizedBox(width: 42, child: EmojiArt(e, size: 29));
-
   List<Widget> _athletes() {
     final s = c.state;
     return [
@@ -60,7 +58,7 @@ class InventoryPanel extends StatelessWidget {
           actions: [
             _cardAction(
               s.races < animals[i].unlock
-                  ? '${animals[i].unlock} yarış'
+                  ? '${s.races}/${animals[i].unlock}'
                   : s.selected == i
                   ? 'Seçili'
                   : 'Seç',
@@ -86,33 +84,37 @@ class InventoryPanel extends StatelessWidget {
     final s = c.state;
     final cards = s.trainingCards.entries.where((e) => e.value > 0).map((e) => '${branchLabel(e.key)} ×${e.value}').join(', ');
     return [
-      ItemCard(leading: _emoji('⚙️'), title: 'Ekipman parçası ×${s.equipmentParts}', small: '5 parça ile bir ekipmanı yıldızla geliştir'),
       ItemCard(
-        leading: _emoji('🎫'),
+        leading: const RewardKindIcon('parts'),
+        title: 'Ekipman parçası ×${s.equipmentParts}',
+        small: '5 parça ile bir ekipmanı yıldızla geliştir',
+      ),
+      ItemCard(
+        leading: const RewardKindIcon('card'),
         title: 'Antrenman kartları',
         small:
             '${cards.isEmpty ? 'Henüz yok' : cards} · İlgili branşın sonraki yarışında otomatik: hız/mesafe/kilo +%3, okçulukta her oka +1 puan',
       ),
       ItemCard(
-        leading: _emoji('✨'),
+        leading: const RewardKindIcon('cosmetic'),
         title: 'Avatar çerçeveleri',
         small: '${s.cosmetics.length} / 4 açık · Tekrarı parçaya dönüşür',
         actions: [_cardAction('Seç', () => c.open('cosmetics'))],
       ),
       ItemCard(
-        leading: const Art('ticket', width: 42, height: 42),
+        leading: const RewardKindIcon('ticket'),
         title: 'Çark bileti ×${s.spinTickets}',
         small: 'Ödül çarkında bir kez kullanılır',
         actions: [_cardAction('Aç', () => c.open('wheel'))],
       ),
       ItemCard(
-        leading: _emoji('🎁'),
+        leading: const RewardKindIcon('chest'),
         title: 'Spor Çantaları ×${s.chests + s.cupChests + s.championChests}',
         small: 'Normal ${s.chests} · Kupa ${s.cupChests} · Şampiyon ${s.championChests}',
         actions: [_cardAction('Aç', () => c.open('chests'))],
       ),
       ItemCard(
-        leading: _emoji('⚡'),
+        leading: const RewardKindIcon('boost'),
         title: '2x gelir kuponu ×${s.boostTokens}',
         small: '30 saniye boyunca geliri ikiye katlar',
         actions: [_cardAction('Kullan', c.useBoostToken, enabled: s.boostTokens >= 1)],

@@ -24,7 +24,8 @@ class RunnerAvatar extends StatelessWidget {
   final bool airborne;
   final bool jumping;
 
-  static const _cosmetics = [
+  /// Avatar çerçevelerinin renkleri (kontur, parıltı).
+  static const cosmeticColors = [
     [Color(0xFFFFCF19), Color(0xFFFFCD23)],
     [Color(0xFF24A9FF), Color(0xFF48D8FF)],
     [Color(0xFFDE70FD), Color(0xFFEEB3FF)],
@@ -63,8 +64,11 @@ class RunnerAvatar extends StatelessWidget {
           ? const [BoxShadow(color: Colors.white, spreadRadius: 1.5), BoxShadow(color: Color(0xFFFFE94E), blurRadius: 8)]
           : const [BoxShadow(color: Color(0x44000000), offset: Offset(0, 1))];
     }
-    if (player && cosmetic >= 0 && cosmetic < _cosmetics.length) {
-      shadows = [BoxShadow(color: _cosmetics[cosmetic][0], spreadRadius: 3), BoxShadow(color: _cosmetics[cosmetic][1], blurRadius: 8)];
+    if (player && cosmetic >= 0 && cosmetic < cosmeticColors.length) {
+      shadows = [
+        BoxShadow(color: cosmeticColors[cosmetic][0], spreadRadius: 3),
+        BoxShadow(color: cosmeticColors[cosmetic][1], blurRadius: 8),
+      ];
     }
     if (jumping) shadows = [...shadows, const BoxShadow(color: Colors.white, blurRadius: 5)];
     final faceSize = size - borderWidth * 2 - 2;

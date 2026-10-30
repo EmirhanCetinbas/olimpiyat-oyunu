@@ -159,7 +159,7 @@ class _StatChange extends StatelessWidget {
         children: [
           Text(from, style: gameText(14, color: GameColors.ink)),
           const SizedBox(width: 6),
-          Text('➜', style: gameText(14, color: const Color(0xFF8398AA))),
+          const Icon(Icons.arrow_forward_rounded, size: 16, color: Color(0xFF8398AA)),
           const SizedBox(width: 6),
           Text(to, style: gameText(14, color: GameColors.greenShade)),
         ],

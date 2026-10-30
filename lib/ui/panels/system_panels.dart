@@ -32,7 +32,7 @@ class SupportPanel extends StatelessWidget {
     children: [
       const PanelText('İlerlemen bu cihaza otomatik kaydedilir. Müzik ve ses düzeylerini Ayarlar bölümünden değiştirebilirsin.'),
       const PanelText('Titreşim, cihaz destekliyorsa çalışır.'),
-      ActionButton('Ayarlara dön', full: true, onTap: () => c.open('settings')),
+      ActionButton('Ayarlara dön', full: true, tone: ButtonTone.cream, onTap: () => c.open('settings')),
     ],
   );
 }
@@ -48,7 +48,7 @@ class ResetPanel extends StatelessWidget {
     children: [
       const PanelText('Bu cihazdaki bütün yarışlar, seviyeler ve ödüller silinecek.'),
       ActionButton('Vazgeç', full: true, tone: ButtonTone.cream, onTap: () => c.openPanel('settings')),
-      ActionButton('Evet, sıfırla', full: true, onTap: c.confirmReset),
+      ActionButton('Evet, sıfırla', full: true, tone: ButtonTone.red, onTap: c.confirmReset),
     ],
   );
 }

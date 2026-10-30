@@ -59,7 +59,16 @@ class _ProfilePanelState extends State<ProfilePanel> {
             ActionButton('Kaydet', onTap: () => c.saveName(_name.text)),
           ],
         ),
-        StatGrid([('${c.level}', 'Seviye'), ('${c.state.races}', 'Yarış'), ('${c.state.wins}', 'Zafer')]),
+        StatGrid([('${c.level}', 'Seviye'), ('${c.state.races}', 'Yarış'), ('${c.state.wins}', 'Zafer'), ('${c.state.medals}', 'Madalya')]),
+        // Sonraki seviyeye XP (her 100 XP bir seviye).
+        Row(
+          children: [
+            Expanded(child: GameProgressBar(value: (c.state.xp % 100) / 100, label: 'Seviye ilerlemesi', height: 14)),
+            const SizedBox(width: 8),
+            Text('${c.state.xp % 100} / 100 XP', style: gameText(13, color: GameColors.ink, height: 1)),
+          ],
+        ),
+        const SizedBox(height: 10),
         PanelText.muted(
           c.storageOK
               ? 'İlerlemen otomatik olarak bu cihazda saklanır.'

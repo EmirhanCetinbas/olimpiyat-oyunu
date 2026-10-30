@@ -4,6 +4,7 @@ import '../../game/controller.dart';
 import '../../game/data.dart';
 import '../../game/state.dart';
 import '../components/components.dart';
+import '../stadium/runner_avatar.dart';
 import '../theme/theme.dart';
 
 /// Spor Çantaları: bekleyen seçim ya da sahip olunan çantalar.
@@ -74,7 +75,7 @@ class _ChestChoice extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const EmojiArt('🎁', size: 42),
+              const RewardIcon('gift', size: 52),
               const SizedBox(height: 6),
               Text('${index + 1}. Çanta', style: gameText(14, color: GameColors.ink, height: 1)),
             ],
@@ -106,24 +107,16 @@ class ChestResultPanel extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFF142D42), width: 3),
-              borderRadius: BorderRadius.circular(16),
-              gradient: const RadialGradient(
-                radius: .75,
-                colors: [Color(0xFFFFF4AD), Color(0xFFFFD25D), Color(0xFFF7AE3F)],
-                stops: [0, .65, 1],
-              ),
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+            decoration: flatCardDecoration(radius: 18, color: const Color(0xFFFFF0B8)),
             child: Column(
               children: [
-                EmojiArt(prize.icon, size: 55),
+                RewardKindIcon(prize.kind, size: 72),
                 const SizedBox(height: 8),
                 Text(
                   prize.label,
                   textAlign: TextAlign.center,
-                  style: gameText(18, color: GameColors.ink),
+                  style: gameText(TextSizes.cardTitle, color: GameColors.ink, height: 1.15),
                 ),
               ],
             ),
@@ -151,10 +144,23 @@ class CosmeticsPanel extends StatelessWidget {
         for (var k = 0; k < s.cosmetics.length; k++)
           ListRow(
             children: [
-              Expanded(
-                child: Text('✨ ${cosmeticNames[s.cosmetics[k]]}', style: gameText(14, color: GameColors.ink)),
+              // Çerçevenin gerçek rengiyle önizleme.
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: GameColors.row,
+                  border: Border.all(color: RunnerAvatar.cosmeticColors[s.cosmetics[k]][0], width: 4),
+                  boxShadow: [BoxShadow(color: RunnerAvatar.cosmeticColors[s.cosmetics[k]][1], blurRadius: 6)],
+                ),
               ),
-              ActionButton(s.selectedCosmetic == s.cosmetics[k] ? 'Seçili' : 'Seç', onTap: () => c.selectCosmetic(s.cosmetics[k])),
+              RowTitle(cosmeticNames[s.cosmetics[k]]),
+              ActionButton(
+                s.selectedCosmetic == s.cosmetics[k] ? 'Seçili' : 'Seç',
+                tone: s.selectedCosmetic == s.cosmetics[k] ? ButtonTone.cream : ButtonTone.green,
+                onTap: () => c.selectCosmetic(s.cosmetics[k]),
+              ),
             ],
           ),
       ],

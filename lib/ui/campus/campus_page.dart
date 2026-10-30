@@ -34,7 +34,7 @@ class CampusPage extends StatelessWidget {
               f.y,
               FacilityMarker(
                 label: f.label,
-                level: f.locked ? '🔒 YAKINDA' : 'Sv. ${c.facilityLevel(f.id)}　⬆',
+                level: f.locked ? '🔒 YAKINDA' : 'Sv. ${c.facilityLevel(f.id)}',
                 maxWidth: layout.x(35),
                 semanticLabel: f.name,
                 onTap: () => c.showCampusFacility(f.id),

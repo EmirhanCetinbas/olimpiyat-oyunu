@@ -122,10 +122,20 @@ class _GemsButton extends StatelessWidget {
     semanticLabel: 'Elmas mağazası',
     child: _FlatBox(
       height: 34,
-      child: Stack(
+      padding: const EdgeInsets.only(left: 6, right: 4),
+      child: Row(
         children: [
-          const Positioned(left: 8, top: 0, bottom: 0, child: Center(child: Art('gem', width: 27, height: 27))),
-          Center(child: Text(fmt(c.state.gems), style: gameText(18, height: 1))),
+          const Art('gem', width: 26, height: 26),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(fmt(c.state.gems), style: gameText(18, color: GameColors.ink, height: 1)),
+          ),
+          // Mağazaya git işareti
+          const SizedBox(
+            width: 22,
+            height: 22,
+            child: RaisedSurface.green(radius: 11, child: Icon(Icons.add_rounded, size: 16, color: Colors.white)),
+          ),
         ],
       ),
     ),
@@ -263,7 +273,7 @@ class _BranchButton extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 3),
-                Text('⌄', style: gameText(14, color: const Color(0xFF9DB9CC))),
+                const Icon(Icons.expand_more_rounded, size: 18, color: Color(0xFF9DB9CC)),
               ],
             ),
           ),
