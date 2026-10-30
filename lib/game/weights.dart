@@ -187,6 +187,7 @@ extension WeightsLogic on GameController {
       state.chests++;
       state.skillPoints++;
     }
+    final record = player.success && player.kg > state.bestWeight;
     if (player.success) state.bestWeight = max(state.bestWeight, player.kg);
     recordTournament('weights', place);
     final reward = (_placeReward(place) * (1 + campusRank('stadium', 2) * .03)).round();
@@ -201,7 +202,19 @@ extension WeightsLogic on GameController {
     raceCallText = summary;
     startText = 'Tekrar Kaldır ▶';
     resultDelay = state.auto ? 6 : 0;
-    toast('$summary · +₺${fmt(reward)}');
+    presentResult(
+      RaceResult(
+        branch: 'weights',
+        place: place,
+        total: results.length,
+        value: '${player.kg} KG',
+        reward: reward,
+        xp: place == 1 ? 30 : 15,
+        record: record,
+        success: player.success,
+      ),
+      '$summary · +₺${fmt(reward)}',
+    );
     save();
     update();
   }

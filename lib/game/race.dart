@@ -134,3 +134,31 @@ class RunnerPos {
   bool jump;
   bool airborne;
 }
+
+/// Biten yarışın oyuncuya gösterilen sonucu (sonuç penceresi).
+class RaceResult {
+  const RaceResult({
+    required this.branch,
+    required this.place,
+    required this.total,
+    required this.value,
+    required this.reward,
+    required this.xp,
+    this.record = false,
+    this.success = true,
+  });
+  final String branch;
+  final int place;
+  final int total;
+
+  /// Ölçüm: süre, mesafe, kilo ya da puan (biçimlenmiş).
+  final String value;
+  final int reward;
+  final int xp;
+
+  /// Kişisel rekor kırıldı mı.
+  final bool record;
+
+  /// Halterde kaldırış başarılı mı.
+  final bool success;
+}

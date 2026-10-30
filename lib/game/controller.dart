@@ -85,6 +85,7 @@ class GameController extends ChangeNotifier {
   double resultDelay = 0;
   bool paused = false;
   ActiveMove? activeMove;
+  RaceResult? lastResult;
   List<JumpResult> jumpCompleted = [];
   List<WeightResult> weightCompleted = [];
   List<ArcheryResult> archeryCompleted = [];

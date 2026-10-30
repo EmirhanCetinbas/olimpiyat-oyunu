@@ -76,6 +76,29 @@ extension NavigationLogic on GameController {
     _changed();
   }
 
+  /// Yarış sonucu: otomatik yarışta kısa bildirim, değilse sonuç penceresi.
+  void presentResult(RaceResult r, String summary) {
+    lastResult = r;
+    if (state.auto) {
+      toast(summary);
+      return;
+    }
+    final title = !r.success
+        ? 'Başarısız'
+        : r.place == 1
+        ? 'Zafer!'
+        : r.place <= 3
+        ? 'Madalya!'
+        : 'Yarış bitti';
+    panel('result', title, arg: r);
+  }
+
+  /// Sonuç penceresinden yeni yarış.
+  void raceAgain() {
+    closeModal();
+    beginRace();
+  }
+
   void closeModal() {
     modal = null;
     _changed();

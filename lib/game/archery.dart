@@ -170,6 +170,7 @@ extension ArcheryLogic on GameController {
       state.chests++;
       state.skillPoints++;
     }
+    final record = player.points > state.bestArchery;
     state.bestArchery = max(state.bestArchery, player.points);
     recordTournament('archery', place);
     final reward = (_placeReward(place) * (1 + campusRank('stadium', 2) * .03)).round();
@@ -185,7 +186,18 @@ extension ArcheryLogic on GameController {
     raceCallText = summary;
     startText = 'Tekrar Atış ▶';
     resultDelay = state.auto ? 6 : 0;
-    toast('$summary · +₺${fmt(reward)}');
+    presentResult(
+      RaceResult(
+        branch: 'archery',
+        place: place,
+        total: results.length,
+        value: '${player.points} / 30 puan',
+        reward: reward,
+        xp: place == 1 ? 30 : 15,
+        record: record,
+      ),
+      '$summary · +₺${fmt(reward)}',
+    );
     save();
     update();
   }

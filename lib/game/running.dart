@@ -58,7 +58,10 @@ extension RunningLogic on GameController {
     if (place == 1) state.wins++;
     if (place <= 3) state.medals++;
     recordTournament(state.branch, place);
+    // 100 m rekoru (state.best orijinalde koşu branşlarının ortak süresi; rekor yalnız 100 m'de anlamlı).
+    final record = state.branch == 'sprint' && (state.best == null || time < state.best!);
     state.best = state.best == null ? time : min(state.best!, time);
+    final total = r.ids.length;
     final reward = (_placeReward(place) * (1 + (state.races / 10).floor() * .1) * (1 + campusRank('stadium', 2) * .03)).round();
     state.money += reward;
     clearMove();
@@ -68,7 +71,16 @@ extension RunningLogic on GameController {
     final stopwatchBranch = state.branch == 'hurdles' || state.branch == 'swim';
     timerText = stopwatchBranch ? stopwatch(time) : '${time.toStringAsFixed(2)} sn';
     raceStatus = '$place. oldun · +₺${fmt(reward)} · ${time.toStringAsFixed(2)} sn';
-    toast(
+    presentResult(
+      RaceResult(
+        branch: state.branch,
+        place: place,
+        total: total,
+        value: '${time.toStringAsFixed(2)} sn',
+        reward: reward,
+        xp: place == 1 ? 30 : 15,
+        record: record,
+      ),
       '${place == 1
           ? '🏆 Zafer!'
           : place <= 3

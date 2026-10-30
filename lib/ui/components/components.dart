@@ -15,3 +15,4 @@ export 'paw_mark.dart';
 export 'raised_button.dart';
 export 'reward_widgets.dart';
 export 'prize_wheel.dart';
+export 'medal_badge.dart';

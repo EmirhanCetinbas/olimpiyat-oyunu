@@ -157,6 +157,7 @@ extension LongJumpLogic on GameController {
       state.chests++;
       state.skillPoints++;
     }
+    final record = player.metres > state.bestJump;
     state.bestJump = max(state.bestJump, player.metres);
     recordTournament('longjump', place);
     final reward = (_placeReward(place) * (1 + campusRank('stadium', 2) * .03)).round();
@@ -170,7 +171,18 @@ extension LongJumpLogic on GameController {
     raceCallText = '$place. sıra · ${jumpMetres(player.metres)}';
     startText = 'Tekrar Atla ▶';
     resultDelay = state.auto ? 6 : 0;
-    toast('$place. sıra · ${jumpMetres(player.metres)} · +₺${fmt(reward)}');
+    presentResult(
+      RaceResult(
+        branch: 'longjump',
+        place: place,
+        total: results.length,
+        value: jumpMetres(player.metres),
+        reward: reward,
+        xp: place == 1 ? 30 : 15,
+        record: record,
+      ),
+      '$place. sıra · ${jumpMetres(player.metres)} · +₺${fmt(reward)}',
+    );
     save();
     update();
   }

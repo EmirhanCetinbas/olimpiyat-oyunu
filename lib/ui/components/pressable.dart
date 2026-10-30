@@ -42,8 +42,14 @@ class _PressableState extends State<Pressable> {
     Widget child = widget.child;
     if (!enabled) {
       child = saturated(child, saturation: widget.disabledSaturation, opacity: widget.disabledOpacity);
-    } else if (_down) {
-      child = Transform.translate(offset: const Offset(0, 1), child: child);
+    } else {
+      // Basınca hafifçe küçülür, bırakınca yaylanarak döner.
+      child = AnimatedScale(
+        scale: _down ? .94 : 1,
+        duration: Duration(milliseconds: _down ? 70 : 160),
+        curve: _down ? Curves.easeOut : Curves.easeOutBack,
+        child: child,
+      );
     }
     if (widget.minTapSize > 0) {
       child = ConstrainedBox(

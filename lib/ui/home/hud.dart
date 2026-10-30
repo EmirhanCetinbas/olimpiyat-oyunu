@@ -96,7 +96,14 @@ class _MoneyCard extends StatelessWidget {
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
-                child: Text(fmt(c.state.money), maxLines: 1, style: gameText(compact ? 20 : 22, color: GameColors.ink, height: 1.05)),
+                // Para sıçramaları (ödül, harcama) sayarak geçer.
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(end: c.state.money),
+                  duration: const Duration(milliseconds: 450),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, v, _) =>
+                      Text(fmt(v), maxLines: 1, style: gameText(compact ? 20 : 22, color: GameColors.ink, height: 1.05)),
+                ),
               ),
               FittedBox(
                 fit: BoxFit.scaleDown,
