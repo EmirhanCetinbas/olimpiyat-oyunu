@@ -4,71 +4,62 @@ import '../../components/components.dart';
 import '../../theme/theme.dart';
 import 'settings_icon.dart';
 
-const _rowShadow = [BoxShadow(color: Color(0xFFE3D0A6), offset: Offset(0, 2.5))];
-const _rowGradient = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [Color(0xFFFFFCF2), Color(0xFFFDF3DE)],
-);
+TextStyle _label(double size) => display(size, color: GameColors.ink, height: 1.05, letterSpacing: .3);
 
-TextStyle _label(double size) => nunito(size, weight: 1000, color: GameColors.panelInk, height: 1.1, letterSpacing: -.2);
-
-/// `.prefs-section`: SES / OYUN / KAYIT başlığı ve satırları.
+/// SES / OYUN / KAYIT başlığı ve satırları.
 class PrefsSection extends StatelessWidget {
   const PrefsSection({super.key, required this.title, required this.rows});
   final String title;
   final List<Widget> rows;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: EdgeInsets.only(bottom: ScreenMetrics.of(context).short ? 4 : 7),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 10, bottom: 4),
-          child: Text(title, style: nunito(19, weight: 1000, color: GameColors.panelInk, height: 1.1, letterSpacing: -.2)),
-        ),
-        ...rows,
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final short = ScreenMetrics.of(context).short;
+    return Padding(
+      padding: EdgeInsets.only(bottom: short ? 4 : 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 8, bottom: short ? 4 : 6),
+            child: Text(title, style: display(short ? 21 : 23, color: GameColors.ink, height: 1, letterSpacing: .6)),
+          ),
+          ...rows,
+        ],
+      ),
+    );
+  }
 }
 
-/// `.prefs-row`: ikon, etiket ve kontrol. `wide` satırlarda kontrol kalan alanı kullanır (kaydırıcılar).
+/// Ayar satırı: düz kart, ikon, etiket ve sağda kontrol.
 class PrefsRow extends StatelessWidget {
-  const PrefsRow({super.key, required this.icon, required this.label, required this.control, this.wide = false});
+  const PrefsRow({super.key, required this.icon, required this.label, required this.control});
   final String icon;
   final String label;
   final Widget control;
-  final bool wide;
 
   @override
   Widget build(BuildContext context) {
     final m = ScreenMetrics.of(context);
-    final text = Text(label, maxLines: 1, softWrap: false, style: _label(m.compact ? 14 : 15));
     return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: GBox(
-        gradient: _rowGradient,
-        borderColor: GameColors.ink,
-        borderWidth: 2.5,
-        radius: 15,
-        shadows: _rowShadow,
-        constraints: BoxConstraints(minHeight: m.short ? 46 : 50),
-        padding: EdgeInsets.only(left: m.compact ? 8 : 11, right: m.compact ? 7 : 9),
+      padding: EdgeInsets.only(bottom: m.short ? 6 : 9),
+      child: Container(
+        constraints: BoxConstraints(minHeight: m.short ? 50 : 56),
+        padding: EdgeInsets.symmetric(horizontal: m.compact ? 9 : 11),
+        decoration: flatCardDecoration(),
         child: Row(
           children: [
-            SettingsIcon(icon, size: m.compact ? 30 : 34),
-            SizedBox(width: m.compact ? 10 : 14),
-            if (wide)
-              SizedBox(width: m.compact ? 62 : 70, child: text)
-            else
-              Expanded(
-                child: FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: text),
+            SettingsIcon(icon, size: m.compact ? 32 : 38),
+            SizedBox(width: m.compact ? 8 : 11),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(label, maxLines: 1, style: _label(m.compact ? 16 : 18)),
               ),
+            ),
             const SizedBox(width: 8),
-            if (wide) Expanded(child: control) else control,
+            control,
           ],
         ),
       ),
@@ -76,7 +67,7 @@ class PrefsRow extends StatelessWidget {
   }
 }
 
-/// `.prefs-actions button`: Destek / İlerlemeyi sıfırla kutucukları.
+/// Alt eylem kutucuğu (Destek / İlerlemeyi sıfırla): düz kart, ikon ve etiket.
 class PrefsActionTile extends StatelessWidget {
   const PrefsActionTile({super.key, required this.icon, required this.label, required this.onTap});
   final String icon;
@@ -86,27 +77,20 @@ class PrefsActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final m = ScreenMetrics.of(context);
+    final twoLines = label.contains('\n');
     return Pressable(
       onTap: onTap,
       semanticLabel: label.replaceAll('\n', ' '),
-      child: GBox(
-        gradient: _rowGradient,
-        borderColor: GameColors.ink,
-        borderWidth: 2.5,
-        radius: 15,
-        shadows: _rowShadow,
-        constraints: BoxConstraints(minHeight: m.short ? 44 : 50),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      child: Container(
+        constraints: BoxConstraints(minHeight: m.short ? 50 : 56),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: flatCardDecoration(),
         child: Row(
           children: [
-            SettingsIcon(icon, size: m.compact ? 32 : 38),
+            SettingsIcon(icon, size: m.compact ? 32 : 36),
             const SizedBox(width: 6),
             Expanded(
-              child: Text(
-                label,
-                textAlign: TextAlign.center,
-                style: _label(label.contains('\n') ? (m.compact ? 12.5 : 13.5) : (m.compact ? 14 : 15)),
-              ),
+              child: Text(label, textAlign: TextAlign.center, style: _label(twoLines ? (m.compact ? 13.5 : 15) : (m.compact ? 16 : 18))),
             ),
           ],
         ),

@@ -32,4 +32,35 @@ abstract final class GameColors {
   /// Oyun arka planı (yeşil) ve dış zemin.
   static const grass = Color(0xFF86D850);
   static const page = Color(0xFF173D35);
+
+  // ---- Ortak pencere dili (kabarık yüzeyler ve düz kartlar) ----
+
+  /// Pencere kâğıdı ve satır kartı zemini.
+  static const paper = Color(0xFFFFF8E4);
+  static const row = Color(0xFFFFFBED);
+
+  /// Kart altı yumuşak gölge ve pencere gölgesi.
+  static const cardShadow = Color(0x22082436);
+  static const panelShadow = Color(0x33082436);
+
+  /// Kırmızı başlık plakası ve gölgesi.
+  static const coral = Color(0xFFFF5F50);
+  static const coralShade = Color(0xFFB8322A);
+
+  /// Yeşil kontroller (açık anahtar, kaydırıcı dolgusu, onay).
+  static const green = Color(0xFF43D82E);
+  static const greenShade = Color(0xFF087520);
+
+  /// Kapalı / kilitli kontroller.
+  static const locked = Color(0xFFA9B6BD);
+  static const lockedShade = Color(0xFF5C6B74);
+
+  /// Krem ikincil düğmeler.
+  static const creamShade = Color(0xFFB69B65);
+
+  /// Kaydırıcı boş çubuğu.
+  static const track = Color(0xFFCCD7DD);
+
+  /// Parıltı sarısı (başlık ışınları).
+  static const sparkle = Color(0xFFFFCB2E);
 }

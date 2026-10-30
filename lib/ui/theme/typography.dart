@@ -23,6 +23,10 @@ TextStyle nunito(
   shadows: shadows,
 );
 
+/// Lilita One: pencere başlıkları, bölüm başlıkları, satır etiketleri ve düğme yazıları.
+TextStyle display(double size, {Color color = GameColors.text, double? height = 1.1, double? letterSpacing = .2, List<Shadow>? shadows}) =>
+    TextStyle(fontFamily: 'LilitaOne', fontSize: size, color: color, height: height, letterSpacing: letterSpacing, shadows: shadows);
+
 /// text-stroke / çok yönlü text-shadow karşılığı.
 List<Shadow> outlineShadows(Color color, double w, {Offset extra = Offset.zero}) => [
   for (final o in const [

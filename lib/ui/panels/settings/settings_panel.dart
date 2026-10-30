@@ -16,11 +16,12 @@ class SettingsPanel extends StatelessWidget {
     final s = c.state;
     final m = ScreenMetrics.of(context);
     final switchWidth = PrefsMetrics.switchWidth(m.compact);
+    final sliderWidth = PrefsMetrics.sliderWidth(m.compact);
     return GameModal(
       title: 'AYARLAR',
       onClose: c.closeModal,
       closeLabel: 'Ayarları kapat',
-      padding: EdgeInsets.fromLTRB(m.compact ? 6 : 7, m.short ? 26 : 30, m.compact ? 6 : 7, 6),
+      padding: EdgeInsets.fromLTRB(m.compact ? 9 : 12, m.short ? 30 : 36, m.compact ? 9 : 12, 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -30,14 +31,12 @@ class SettingsPanel extends StatelessWidget {
               PrefsRow(
                 icon: 'music',
                 label: 'MÜZİK',
-                wide: true,
-                control: PrefsSlider(value: s.musicVolume, label: 'Müzik', onChanged: c.setMusicVolume),
+                control: PrefsSlider(value: s.musicVolume, label: 'Müzik', onChanged: c.setMusicVolume, width: sliderWidth),
               ),
               PrefsRow(
                 icon: 'sound',
                 label: 'SES',
-                wide: true,
-                control: PrefsSlider(value: s.sound ? s.soundVolume : 0, label: 'Ses', onChanged: c.setSoundVolume),
+                control: PrefsSlider(value: s.sound ? s.soundVolume : 0, label: 'Ses', onChanged: c.setSoundVolume, width: sliderWidth),
               ),
               PrefsRow(
                 icon: 'vibration',
@@ -76,18 +75,18 @@ class SettingsPanel extends StatelessWidget {
               Expanded(
                 child: PrefsActionTile(icon: 'support', label: 'DESTEK', onTap: c.openSupport),
               ),
-              const SizedBox(width: 7),
+              const SizedBox(width: 9),
               Expanded(
                 child: PrefsActionTile(icon: 'reset', label: 'İLERLEMEYİ\nSIFIRLA', onTap: c.askReset),
               ),
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 7),
+            padding: const EdgeInsets.only(top: 10),
             child: Text(
               'SÜRÜM 1.0',
               textAlign: TextAlign.center,
-              style: nunito(13, weight: 1000, color: const Color(0xFF6E7C83), height: 1.1),
+              style: display(14, color: const Color(0xFF7D8A90), height: 1.1, letterSpacing: .6),
             ),
           ),
         ],
