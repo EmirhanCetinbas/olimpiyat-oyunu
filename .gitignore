@@ -46,3 +46,9 @@ app.*.map.json
 
 # Önizleme çıktıları (tool/ ile yeniden üretilir)
 /docs/verification/
+
+# fastlane çıktıları ve gizli anahtarlar (anahtar: ~/.appstoreconnect/private_keys/)
+/fastlane/report.xml
+/fastlane/README.md
+*.p8
+/scan-issuer-id.md

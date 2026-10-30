@@ -1,0 +1,85 @@
+# Pawlympics iOS dağıtımı. Kullanım (proje kökünden):
+#   fastlane create_app   # Bundle ID'yi kaydeder, uygulama kaydını kontrol eder
+#   fastlane build        # İmzalı App Store IPA'sı üretir
+#   fastlane beta         # Build numarasını artırır, IPA üretir ve TestFlight'a yükler
+default_platform(:ios)
+
+APP_ID = "com.olympos.pawlympics"
+APP_NAME = "Pawlympics"
+APP_SKU = "pawlympics-ios"
+TEAM_ID = "ZKCB6VL28Z"
+IPA_DIR = File.expand_path("../build/ios/ipa", __dir__)
+EXPORT_OPTIONS = File.expand_path("../build/ios/ExportOptions.plist", __dir__)
+
+def asc_key
+  app_store_connect_api_key(
+    key_id: ENV.fetch("ASC_KEY_ID", "29FP573NSP"),
+    issuer_id: ENV.fetch("ASC_ISSUER_ID", "6edf47c3-52f8-44b1-bd0e-41943eb57f11"),
+    key_filepath: File.expand_path(ENV.fetch("ASC_KEY_PATH", "~/.appstoreconnect/private_keys/AuthKey_29FP573NSP.p8"))
+  )
+end
+
+def pubspec_build_number
+  File.read(File.expand_path("../pubspec.yaml", __dir__))[/^version: [\d.]+\+(\d+)/, 1].to_i
+end
+
+desc "Bundle ID'yi kaydet; uygulama kaydı yoksa nasıl açılacağını yaz"
+lane :create_app do
+  asc_key
+  if Spaceship::ConnectAPI::BundleId.find(APP_ID)
+    UI.message("Bundle ID zaten var: #{APP_ID}")
+  else
+    Spaceship::ConnectAPI::BundleId.create(name: APP_NAME, platform: "IOS", identifier: APP_ID)
+    UI.success("Bundle ID oluşturuldu: #{APP_ID}")
+  end
+  if Spaceship::ConnectAPI::App.find(APP_ID)
+    UI.success("Uygulama kaydı var: #{APP_ID}")
+  else
+    UI.user_error!(<<~MSG)
+      App Store Connect API uygulama oluşturamaz. Bir kez tarayıcıdan oluştur:
+      App Store Connect > Uygulamalar > + > Yeni Uygulama
+        Platform: iOS, Ad: #{APP_NAME}, Birincil dil: Türkçe
+        Bundle ID: #{APP_ID}, SKU: #{APP_SKU}
+    MSG
+  end
+end
+
+desc "İmzalı App Store IPA'sı üret (yerel Apple Distribution sertifikası + API ile profil)"
+lane :build do |options|
+  asc_key
+  get_provisioning_profile(app_identifier: APP_ID, team_id: TEAM_ID, output_path: "build/ios/profiles")
+  profile_name = lane_context[SharedValues::SIGH_NAME]
+  File.write(EXPORT_OPTIONS, <<~PLIST)
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+      <key>method</key><string>app-store-connect</string>
+      <key>teamID</key><string>#{TEAM_ID}</string>
+      <key>signingStyle</key><string>manual</string>
+      <key>signingCertificate</key><string>Apple Distribution</string>
+      <key>provisioningProfiles</key>
+      <dict><key>#{APP_ID}</key><string>#{profile_name}</string></dict>
+      <key>uploadSymbols</key><true/>
+    </dict>
+    </plist>
+  PLIST
+  build_number = options[:build_number] || pubspec_build_number
+  Dir.chdir(File.expand_path("..", __dir__)) do
+    sh("flutter", "build", "ipa", "--release", "--build-number=#{build_number}",
+       "--export-options-plist=#{EXPORT_OPTIONS}")
+  end
+end
+
+desc "Build numarasını artır, IPA üret ve TestFlight'a yükle"
+lane :beta do
+  latest = latest_testflight_build_number(api_key: asc_key, app_identifier: APP_ID, initial_build_number: 0)
+  build_number = [latest + 1, pubspec_build_number].max
+  build(build_number: build_number)
+  upload_to_testflight(
+    api_key: asc_key,
+    app_identifier: APP_ID,
+    ipa: Dir[File.join(IPA_DIR, "*.ipa")].first,
+    skip_waiting_for_build_processing: true
+  )
+end
