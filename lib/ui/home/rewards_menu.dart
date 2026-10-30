@@ -25,16 +25,14 @@ class RewardsMenu extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             children: [
               const Positioned(bottom: -9, child: _Arrow()),
-              GBox(
-                color: GameColors.cream,
-                borderColor: GameColors.ink,
-                borderWidth: 3,
-                radius: 17,
-                shadows: const [
-                  BoxShadow(color: Color(0x65183629), offset: Offset(0, 6)),
-                  BoxShadow(color: Color(0x77062327), offset: Offset(0, 10), blurRadius: 25),
-                ],
-                padding: const EdgeInsets.fromLTRB(9, 4, 9, 9),
+              Container(
+                decoration: BoxDecoration(
+                  color: GameColors.paper,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: GameColors.ink, width: 3),
+                  boxShadow: const [BoxShadow(color: Color(0x55062327), offset: Offset(0, 8), blurRadius: 18)],
+                ),
+                padding: const EdgeInsets.fromLTRB(10, 2, 10, 10),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -62,7 +60,7 @@ class _Arrow extends StatelessWidget {
       width: 14,
       height: 14,
       decoration: const BoxDecoration(
-        color: GameColors.cream,
+        color: GameColors.paper,
         border: Border(
           right: BorderSide(color: GameColors.ink, width: 3),
           bottom: BorderSide(color: GameColors.ink, width: 3),
@@ -79,19 +77,15 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 5),
+    padding: const EdgeInsets.only(top: 8),
     child: Pressable(
       onTap: onTap,
-      child: GBox(
-        gradient: vGradient(const [Color(0xFFFFFEF8), Color(0xFFE7F1EC)]),
-        borderColor: const Color(0xFFABB9BD),
-        borderWidth: 2,
-        radius: 10,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-        child: SizedBox(
-          width: double.infinity,
-          child: Text(label, style: gameText(15)),
-        ),
+      semanticLabel: label,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+        decoration: flatCardDecoration(radius: 14),
+        child: Text(label, style: gameText(16.5, color: GameColors.ink, height: 1.1)),
       ),
     ),
   );

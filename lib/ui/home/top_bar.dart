@@ -65,10 +65,9 @@ class _ProfileButton extends StatelessWidget {
   Widget build(BuildContext context) => Pressable(
     onTap: () => c.open('profile'),
     semanticLabel: 'Profili aç',
-    child: CreamBox(
-      radius: 12,
+    child: _FlatBox(
       height: 45,
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
       child: Row(
         children: [
           Art('avatar', width: 30, height: 34, radius: BorderRadius.circular(6)),
@@ -102,15 +101,11 @@ class _IncomeDisplay extends StatelessWidget {
       Text('Gelir /sn', style: gameText(12, height: 1.3)),
       FittedBox(
         fit: BoxFit.scaleDown,
-        child: Text(
+        child: OutlinedText(
           '₺${fmt(c.income())}',
-          style: gameText(
-            compact ? 27 : 30,
-            color: const Color(0xFF79F44B),
-            height: 1.05,
-            letterSpacing: -.5,
-            shadows: outlineShadows(GameColors.ink, 1),
-          ),
+          maxLines: 1,
+          shadowOffset: const Offset(0, 2),
+          style: gameText(compact ? 27 : 30, color: const Color(0xFF79F44B), height: 1.05),
         ),
       ),
     ],
@@ -125,8 +120,8 @@ class _GemsButton extends StatelessWidget {
   Widget build(BuildContext context) => Pressable(
     onTap: () => c.open('shop'),
     semanticLabel: 'Elmas mağazası',
-    child: CreamBox(
-      height: 32,
+    child: _FlatBox(
+      height: 34,
       child: Stack(
         children: [
           const Positioned(left: 8, top: 0, bottom: 0, child: Center(child: Art('gem', width: 27, height: 27))),
@@ -153,8 +148,7 @@ class _SquareButton extends StatelessWidget {
     child: Stack(
       clipBehavior: Clip.none,
       children: [
-        CreamBox(
-          radius: 10,
+        _FlatBox(
           width: compact ? 38 : 42,
           height: compact ? 40 : 42,
           padding: const EdgeInsets.all(3),
@@ -205,21 +199,36 @@ class _BoostButton extends StatelessWidget {
   final GameController c;
 
   @override
-  Widget build(BuildContext context) => GameButton(
-    onTap: c.activateBoost,
-    enabled: !c.boostDisabled,
-    skin: ButtonSkin.blue,
-    height: 34,
-    padding: const EdgeInsets.symmetric(horizontal: 3),
-    alignment: Alignment.center,
-    child: FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Text(
-        c.boostText,
-        style: gameText(13, color: Colors.white, shadows: whiteTextShadow),
+  Widget build(BuildContext context) {
+    final enabled = !c.boostDisabled;
+    final label = Padding(
+      padding: const EdgeInsets.fromLTRB(6, 0, 6, 3),
+      child: Center(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: OutlinedText(
+            c.boostText,
+            maxLines: 1,
+            shadowOffset: const Offset(0, 1.5),
+            style: gameText(14.5, color: Colors.white, height: 1),
+          ),
+        ),
       ),
-    ),
-  );
+    );
+    return Pressable(
+      onTap: c.activateBoost,
+      enabled: enabled,
+      semanticLabel: c.boostText,
+      disabledSaturation: 1,
+      disabledOpacity: 1,
+      child: SizedBox(
+        height: 38,
+        child: enabled
+            ? RaisedSurface(color: GameColors.blue, shade: GameColors.blueShade, radius: 14, child: label)
+            : RaisedSurface.locked(radius: 14, child: label),
+      ),
+    );
+  }
 }
 
 class _BranchButton extends StatelessWidget {
@@ -233,31 +242,46 @@ class _BranchButton extends StatelessWidget {
     return Pressable(
       onTap: () => c.open('branches'),
       semanticLabel: 'Branş seç: ${c.branchName}',
-      child: GBox(
-        gradient: vGradient(const [Color(0xFF223951), Color(0xFF102134)]),
-        borderColor: GameColors.ink,
-        borderWidth: outlineWidth,
-        radius: 10,
-        shadows: const [BoxShadow(color: Color(0x66466933), offset: Offset(0, 2))],
+      child: SizedBox(
         height: 42,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Art(art, width: 22, height: 26, emojiSize: art == 'swim-wave' ? 23 : 12),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                c.branchName,
-                textAlign: TextAlign.center,
-                style: gameText(compact ? 11 : 12, color: Colors.white, height: 1.1),
-              ),
+        child: RaisedSurface(
+          color: GameColors.navy,
+          shade: GameColors.navyShade,
+          radius: 14,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(6, 0, 6, 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Art(art, width: 22, height: 26, emojiSize: art == 'swim-wave' ? 23 : 12),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    c.branchName,
+                    textAlign: TextAlign.center,
+                    style: gameText(compact ? 12 : 13, color: Colors.white, height: 1.05),
+                  ),
+                ),
+                const SizedBox(width: 3),
+                Text('⌄', style: gameText(14, color: const Color(0xFF9DB9CC))),
+              ],
             ),
-            const SizedBox(width: 4),
-            Text('⌄', style: gameText(13, color: const Color(0xFF8BABBD))),
-          ],
+          ),
         ),
       ),
     );
   }
+}
+
+/// Üst bardaki düz kart (profil, elmas, kare düğmeler).
+class _FlatBox extends StatelessWidget {
+  const _FlatBox({required this.child, this.width, this.height, this.padding = EdgeInsets.zero});
+  final Widget child;
+  final double? width;
+  final double? height;
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) =>
+      Container(width: width, height: height, padding: padding, decoration: flatCardDecoration(radius: 14, borderWidth: 2.5), child: child);
 }

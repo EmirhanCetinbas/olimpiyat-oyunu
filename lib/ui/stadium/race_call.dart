@@ -14,19 +14,7 @@ class RaceCall extends StatelessWidget {
   Widget build(BuildContext context) {
     final branch = c.state.branch;
     final compact = const {'hurdles', 'swim', 'longjump', 'weights'}.contains(branch);
-    final button = GameButton(
-      onTap: c.beginRace,
-      semanticLabel: c.startText,
-      label: c.startText,
-      skin: compact
-          ? ButtonSkin.primary
-          : ButtonSkin.primary.copyWith(
-              shadows: const [BoxShadow(color: Color(0xFF095E26), offset: Offset(0, 3))],
-              insets: const [Inset(Color(0x77FFFFFF), dy: 2)],
-            ),
-      fontSize: compact ? 13 : 17,
-      padding: compact ? const EdgeInsets.symmetric(horizontal: 10, vertical: 4) : const EdgeInsets.symmetric(horizontal: 17, vertical: 7),
-    );
+    final button = RaisedButton(c.startText, onTap: c.beginRace, height: compact ? 36 : 46, fontSize: compact ? 15 : 20);
     if (compact) {
       final row = Row(mainAxisAlignment: MainAxisAlignment.center, children: [button]);
       Widget band(double top) => Positioned(
@@ -48,12 +36,12 @@ class RaceCall extends StatelessWidget {
     }
     final label = Pill(
       c.raceCallText,
-      style: gameText(11),
-      color: const Color(0xEEFFFDEE),
+      style: gameText(13, color: GameColors.ink, height: 1.1),
+      color: const Color(0xF2FFFBED),
       borderColor: GameColors.ink,
-      borderWidth: 1.5,
-      radius: 9,
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      borderWidth: 2,
+      radius: 12,
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
     );
     final content = Column(mainAxisSize: MainAxisSize.min, children: [label, const SizedBox(height: 8), button]);
     if (branch == 'archery') {

@@ -22,9 +22,13 @@ class RaisedButton extends StatelessWidget {
     this.minWidth = 56,
     this.width,
     this.semanticLabel,
+    this.content,
   });
 
   final String label;
+
+  /// Yazı yerine özel içerik (ör. "Yükselt" + fiyat); [label] erişilebilirlik adı olarak kalır.
+  final Widget? content;
   final VoidCallback? onTap;
   final bool enabled;
   final ButtonTone tone;
@@ -53,20 +57,22 @@ class RaisedButton extends StatelessWidget {
             shadowOffset: const Offset(0, 1.5),
             style: gameText(fontSize, color: Colors.white, height: 1),
           );
-    final content = Padding(
-      // Dudak bandı altta; yazı yüzeyin optik ortasında kalsın.
-      padding: const EdgeInsets.fromLTRB(14, 0, 14, 3),
-      child: Center(
-        widthFactor: 1,
-        child: FittedBox(fit: BoxFit.scaleDown, child: text),
-      ),
-    );
+    final inner =
+        content ??
+        Padding(
+          // Dudak bandı altta; yazı yüzeyin optik ortasında kalsın.
+          padding: const EdgeInsets.fromLTRB(14, 0, 14, 3),
+          child: Center(
+            widthFactor: 1,
+            child: FittedBox(fit: BoxFit.scaleDown, child: text),
+          ),
+        );
     final radius = height * .42;
     final Widget surface = !active
-        ? RaisedSurface.locked(radius: radius, child: content)
+        ? RaisedSurface.locked(radius: radius, child: inner)
         : cream
-        ? RaisedSurface.cream(radius: radius, child: content)
-        : RaisedSurface.green(radius: radius, child: content);
+        ? RaisedSurface.cream(radius: radius, child: inner)
+        : RaisedSurface.green(radius: radius, child: inner);
     return Pressable(
       onTap: onTap,
       enabled: active,

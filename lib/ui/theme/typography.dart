@@ -59,9 +59,6 @@ List<Shadow> outlineShadows(Color color, double w, {Offset extra = Offset.zero})
   if (extra != Offset.zero) Shadow(color: color, offset: extra),
 ];
 
-/// Beyaz düğme metni gölgesi (`text-shadow:0 1px #0003`).
-const whiteTextShadow = [Shadow(color: Color(0x33000000), offset: Offset(0, 1))];
-
 /// CSS `vw` tabanlı clamp(min, n vw, max).
 double vwClamp(BuildContext context, double min, double vw, double max) => (MediaQuery.sizeOf(context).width * vw / 100).clamp(min, max);
 

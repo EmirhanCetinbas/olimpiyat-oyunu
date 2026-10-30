@@ -44,13 +44,9 @@ class UpgradeCard extends StatelessWidget {
     final u = c.activeUpgrades[index];
     final compact = ScreenMetrics.of(context).compact;
     final level = c.upgradeLevels[index];
-    return GBox(
-      gradient: vGradient(const [Color(0xFFFFFDEE), Color(0xFFFFFEEF)]),
-      borderColor: GameColors.ink,
-      borderWidth: outlineWidth,
-      radius: 14,
-      shadows: const [BoxShadow(color: Color(0xFF43873B), offset: Offset(0, 2))],
-      padding: compact ? const EdgeInsets.symmetric(horizontal: 5, vertical: 6) : const EdgeInsets.fromLTRB(6, 7, 6, 6),
+    return Container(
+      decoration: flatCardDecoration(radius: 16, borderWidth: 2.5),
+      padding: compact ? const EdgeInsets.symmetric(horizontal: 6, vertical: 7) : const EdgeInsets.fromLTRB(7, 8, 7, 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -67,14 +63,14 @@ class UpgradeCard extends StatelessWidget {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(right: 11, bottom: 2),
-                          child: Text(u.title, style: gameText(compact ? 11 : 12, height: 1.02, letterSpacing: -.25)),
+                          child: Text(u.title, style: gameText(compact ? 12.5 : 14, color: GameColors.ink, height: 1.05)),
                         ),
                         Pill(
                           'Sv. $level',
-                          style: gameText(11, color: const Color(0xFF56728E)),
-                          color: const Color(0xFFE4EBEE),
-                          radius: 3,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          style: gameText(11, color: GameColors.slate, height: 1.2),
+                          color: const Color(0xFFE6ECEF),
+                          radius: 6,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
                         ),
                       ],
                     ),
@@ -152,20 +148,20 @@ class _StatChange extends StatelessWidget {
     width: double.infinity,
     padding: const EdgeInsets.all(3),
     decoration: BoxDecoration(
-      color: const Color(0xFFEEF0ED),
-      border: Border.all(color: const Color(0xFFD1D9DB)),
-      borderRadius: BorderRadius.circular(6),
+      color: const Color(0xFFF1F3EF),
+      border: Border.all(color: const Color(0xFFD7DDD8), width: 1.5),
+      borderRadius: BorderRadius.circular(9),
     ),
     child: FittedBox(
       fit: BoxFit.scaleDown,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(from, style: gameText(13)),
+          Text(from, style: gameText(14, color: GameColors.ink)),
           const SizedBox(width: 6),
-          Text('➜', style: gameText(13, color: const Color(0xFF8398AA))),
+          Text('➜', style: gameText(14, color: const Color(0xFF8398AA))),
           const SizedBox(width: 6),
-          Text(to, style: gameText(13, color: const Color(0xFF00A328))),
+          Text(to, style: gameText(14, color: GameColors.greenShade)),
         ],
       ),
     ),
@@ -179,50 +175,41 @@ class _UpgradeButton extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final cardWidth = (MediaQuery.sizeOf(context).width.clamp(0.0, 500.0) - 22) / 2;
-    return GameButton(
-      onTap: onTap,
-      enabled: enabled,
-      skin: ButtonSkin.primary.copyWith(borderWidth: 1.5, radius: 7),
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minHeight: 28),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Center(
-                child: Text(
-                  'Yükselt',
-                  style: gameText(13, color: Colors.white, shadows: whiteTextShadow),
-                ),
+  Widget build(BuildContext context) => RaisedButton(
+    'Yükselt, $cost',
+    onTap: onTap,
+    enabled: enabled,
+    width: double.infinity,
+    height: 36,
+    content: Padding(
+      padding: const EdgeInsets.fromLTRB(10, 0, 5, 3),
+      child: Row(
+        children: [
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: OutlinedText(
+                'Yükselt',
+                shadowOffset: const Offset(0, 1.5),
+                style: gameText(15, color: Colors.white, height: 1),
               ),
             ),
-            Container(
-              constraints: BoxConstraints(minWidth: .44 * (cardWidth - 27.8)),
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
-              decoration: BoxDecoration(
-                gradient: vGradient(const [Color(0xFF12B927), Color(0xFF078D18)]),
-                borderRadius: BorderRadius.circular(5),
-                border: const Border(left: BorderSide(color: Color(0xFF087F1B))),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Art('bank', width: 18, height: 18),
-                  const SizedBox(width: 3),
-                  Text(
-                    cost,
-                    style: gameText(11, color: Colors.white, shadows: whiteTextShadow),
-                  ),
-                ],
-              ),
+          ),
+          // Fiyat: koyu yeşil hap içinde para ikonu ve tutar.
+          Container(
+            padding: const EdgeInsets.fromLTRB(4, 2, 7, 2),
+            decoration: BoxDecoration(color: const Color(0x55064A16), borderRadius: BorderRadius.circular(9)),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Art('bank', width: 18, height: 18),
+                const SizedBox(width: 3),
+                Text(cost, style: gameText(12, color: Colors.white, height: 1.1)),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

@@ -63,4 +63,15 @@ abstract final class GameColors {
 
   /// Parıltı sarısı (başlık ışınları).
   static const sparkle = Color(0xFFFFCB2E);
+
+  /// Mavi kabarık düğme (2x gelir).
+  static const blue = Color(0xFF2F8BFF);
+  static const blueShade = Color(0xFF0E3F9E);
+
+  /// Lacivert kabarık düğme (branş seçici).
+  static const navy = Color(0xFF1F3A57);
+  static const navyShade = Color(0xFF06121F);
+
+  /// Alt menüde seçili sekme zemini.
+  static const highlight = Color(0xFFFFE7A0);
 }

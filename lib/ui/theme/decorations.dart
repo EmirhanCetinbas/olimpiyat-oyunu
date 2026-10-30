@@ -119,28 +119,5 @@ LinearGradient angleGradient(double deg, List<Color> colors, [List<double>? stop
   return LinearGradient(begin: Alignment(-dx, -dy), end: Alignment(dx, dy), colors: colors, stops: stops);
 }
 
-// ---- `.cream` ----
-const creamGradient = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [Color(0xFFFFFEF6), Color(0xFFFFFBE6)],
-);
-const creamShadows = [BoxShadow(color: Color(0x4518362A), offset: Offset(0, 2))];
-const creamInsets = [Inset(Colors.white, dy: 1)];
-
-// ---- `.green` / `.blue` ----
-const greenGradient = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [Color(0xFF51EF2F), Color(0xFF08B50D)],
-);
-const blueGradient = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [Color(0xFF3597FF), Color(0xFF1460EB)],
-);
-const buttonInsets = [Inset(Color(0x63FFFFFF), dy: 2)];
-const buttonShadows = [BoxShadow(color: Color(0x66123B42), offset: Offset(0, 2))];
-
 /// `--outline` konturlu standart kutu kenarı.
 const inkBorderColor = GameColors.ink;

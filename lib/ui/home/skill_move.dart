@@ -21,15 +21,7 @@ class SkillMove extends StatelessWidget {
           children: [
             Expanded(child: _TimingTrack(meter: c.skillMeter)),
             const SizedBox(width: 8),
-            GameButton(
-              onTap: c.tapMove,
-              skin: ButtonSkin.primary,
-              label: c.skillButtonText,
-              fontSize: 13,
-              constraints: const BoxConstraints(minWidth: 108, minHeight: 32),
-              padding: const EdgeInsets.symmetric(horizontal: 6),
-              alignment: Alignment.center,
-            ),
+            RaisedButton(c.skillButtonText, onTap: c.tapMove, height: 38, minWidth: 112, fontSize: 15),
           ],
         ),
       ),
