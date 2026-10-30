@@ -37,6 +37,12 @@ class BottomNav extends StatelessWidget {
                 column: i,
                 label: _items[i].$2,
                 selected: c.navSelected == i,
+                badge: switch (i) {
+                  0 => c.inventoryBadge,
+                  2 => c.rewardsBadge,
+                  3 => c.campusBadge,
+                  _ => false,
+                },
                 onTap: () {
                   if (i == 2) {
                     c.selectNav(2);
@@ -55,7 +61,10 @@ class BottomNav extends StatelessWidget {
 }
 
 class _NavItem extends StatelessWidget {
-  const _NavItem({super.key, required this.column, required this.label, required this.selected, required this.onTap});
+  const _NavItem({super.key, required this.column, required this.label, required this.selected, required this.onTap, this.badge = false});
+
+  /// Alınabilir bir şey var: ikonun sağ üstünde kırmızı nokta.
+  final bool badge;
   final int column;
   final String label;
   final bool selected;
@@ -65,7 +74,7 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final compact = ScreenMetrics.of(context).compact;
     return Pressable(
-      semanticLabel: label,
+      semanticLabel: badge ? '$label, yeni' : label,
       onTap: onTap,
       // Seçili sekme kabarık sarı karo üstünde durur.
       child: _SelectedTile(
@@ -76,7 +85,26 @@ class _NavItem extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Sprite(navIcon(column), width: compact ? 33 : 38, height: compact ? 33 : 38),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Sprite(navIcon(column), width: compact ? 33 : 38, height: compact ? 33 : 38),
+                  if (badge)
+                    Positioned(
+                      right: -4,
+                      top: -2,
+                      child: Container(
+                        width: 13,
+                        height: 13,
+                        decoration: BoxDecoration(
+                          color: GameColors.danger,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: GameColors.ink, width: 2),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               const SizedBox(height: 1),
               Text(label, maxLines: 1, style: gameText(11.5, color: GameColors.ink, height: 1.1)),
             ],

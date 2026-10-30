@@ -11,7 +11,6 @@ import 'profile_panel.dart';
 import 'progress_panels.dart';
 import 'shop_panel.dart';
 import 'system_panels.dart';
-import 'team_panel.dart';
 import 'wheel_panel.dart';
 
 /// `openPanel` anahtarından pencere içeriğine.
@@ -24,7 +23,6 @@ Widget panelContent(GameController c, ModalSpec spec) => switch (spec.key) {
   'chests-result' => ChestResultPanel(c, spec.arg as ChestItem),
   'cosmetics' => CosmeticsPanel(c),
   'wheel' => WheelPanel(c),
-  'team' => TeamPanel(c),
   'tournament' => TournamentPanel(c),
   'shop' => ShopPanel(c),
   'branches' => BranchesPanel(c),

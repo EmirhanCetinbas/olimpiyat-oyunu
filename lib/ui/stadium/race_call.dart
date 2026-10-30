@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../game/controller.dart';
 import '../components/components.dart';
+import '../../game/data.dart';
 import '../theme/theme.dart';
+import 'runner_avatar.dart';
 
 /// `.race-call`: başlat düğmesi ve (koşu/okçulukta) bilgi etiketi; branşa göre yerleşir.
 class RaceCall extends StatelessWidget {
@@ -13,21 +15,25 @@ class RaceCall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final branch = c.state.branch;
-    // Tüm branşlarda aynı yer: sahanın ortasında bilgi etiketi + başlat düğmesi.
-    // 100 m ve okçulukta stadyum zaten bulanık; diğer arenalarda hafif karartma sporcuların üstünü örtmeden odak verir.
     final blurred = branch == 'sprint' || branch == 'archery';
-    final label = ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: layout.width * .82),
-      child: Pill(
-        c.raceCallText,
-        style: gameText(13.5, color: GameColors.ink, height: 1.15),
-        textAlign: TextAlign.center,
-        color: const Color(0xF5FFFBED),
-        borderColor: GameColors.ink,
-        borderWidth: 2,
-        radius: 12,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      ),
+    final animal = animals[c.state.selected];
+    // Sahanın ortasında: senin sporcun (çerçevesiyle), kısa çağrı ve başlat düğmesi.
+    final hero = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RunnerAvatar(animalId: c.state.selected, player: true, size: 44, branch: 'longjump', cosmetic: c.state.selectedCosmetic),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(animal.name, style: gameText(16, color: GameColors.ink, height: 1.1)),
+              Text(c.raceCallText, style: gameText(12.5, color: GameColors.slate, height: 1.15)),
+            ],
+          ),
+        ),
+      ],
     );
     return Positioned.fill(
       child: ColoredBox(
@@ -36,7 +42,14 @@ class RaceCall extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              label,
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: layout.width * .84),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(8, 6, 14, 6),
+                  decoration: flatCardDecoration(radius: 16, color: const Color(0xF5FFFBED)),
+                  child: hero,
+                ),
+              ),
               const SizedBox(height: 10),
               RaisedButton(c.startText, onTap: c.beginRace, height: 46, fontSize: 20),
             ],

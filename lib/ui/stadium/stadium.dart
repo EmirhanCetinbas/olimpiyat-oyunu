@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../game/controller.dart';
-import '../../game/format.dart';
 import '../components/components.dart';
 import '../theme/theme.dart';
 import 'field.dart';
@@ -62,85 +61,96 @@ class Stadium extends StatelessWidget {
   }
 }
 
-/// `.race-head`: para, tur/sayaç ve takım gücü.
+/// Stadyum başlığı: solda branş seçici, ortada yarış/sayaç, sağda takım gücü (sporculara gider).
 class _RaceHead extends StatelessWidget {
   const _RaceHead(this.c);
   final GameController c;
 
-  static const _darkShadow = [Shadow(color: Color(0xBB000000), offset: Offset(0, 1), blurRadius: 2)];
+  static const _shadow = [Shadow(color: Color(0xBB000000), offset: Offset(0, 1), blurRadius: 2)];
 
   @override
   Widget build(BuildContext context) {
-    final hurdle = c.state.branch == 'hurdles';
-    // Koyu şerit: tüm branşlarda aynı, sahne görselinin üstünde de okunur.
+    final art = c.branchArt;
     return Container(
-      constraints: const BoxConstraints(minHeight: 46),
-      padding: const EdgeInsets.all(4),
+      height: 52,
+      padding: const EdgeInsets.fromLTRB(6, 6, 8, 6),
       color: const Color(0xFF15392F),
       child: Row(
         children: [
-          Expanded(
-            flex: 100,
-            child: SizedBox(
-              height: 29,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Art('bank', width: 25, height: 25),
-                  Text(
-                    fmt(c.state.money),
-                    style: gameText(16, color: Colors.white, shadows: _darkShadow),
-                  ),
-                ],
+          // Branş seçici
+          Pressable(
+            onTap: () => c.open('branches'),
+            semanticLabel: 'Branş: ${c.branchName}, değiştir',
+            child: RaisedSurface(
+              color: GameColors.navy,
+              shade: GameColors.navyShade,
+              radius: 13,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(6, 0, 4, 3),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Art(art, width: 24, height: 24, emojiSize: 20),
+                    const SizedBox(width: 4),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 92),
+                      child: Text(c.branchName, maxLines: 2, style: gameText(12.5, color: Colors.white, height: 1.05)),
+                    ),
+                    const Icon(Icons.expand_more_rounded, size: 18, color: Color(0xFF9DB9CC)),
+                  ],
+                ),
               ),
             ),
           ),
-          const SizedBox(width: 4),
+          // Yarış / sayaç
           Expanded(
-            flex: 115,
-            child: Padding(
-              padding: const EdgeInsets.all(3.5),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
                     c.roundText,
-                    style: gameText(hurdle ? 18 : 19, color: const Color(0xFF92D7FF), height: 1, shadows: _darkShadow),
+                    maxLines: 1,
+                    style: gameText(18, color: const Color(0xFF92D7FF), height: 1, shadows: _shadow),
                   ),
-                  Text(
+                ),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
                     c.timerText,
-                    style: gameText(hurdle ? 11 : 10, color: Colors.white, height: 1, letterSpacing: .3, shadows: _darkShadow),
+                    maxLines: 1,
+                    style: gameText(11.5, color: Colors.white, height: 1.15, shadows: _shadow),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 4),
-          Expanded(
-            flex: 100,
-            child: Pressable(
-              onTap: () => c.open('team'),
-              semanticLabel: 'Takımın',
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'TAKIM GÜCÜ',
-                    style: gameText(11, color: const Color(0xFF91D6FF), shadows: _darkShadow),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Art('team', width: 22, height: 22),
-                      const SizedBox(width: 3),
-                      Text(
-                        '${c.power}',
-                        style: gameText(15, color: Colors.white, shadows: _darkShadow),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+          // Takım gücü
+          Pressable(
+            onTap: () => c.open('team'),
+            semanticLabel: 'Takım gücü ${c.power}, sporcular',
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'TAKIM GÜCÜ',
+                  style: gameText(10.5, color: const Color(0xFF91D6FF), height: 1, shadows: _shadow),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Art('team', width: 20, height: 20),
+                    const SizedBox(width: 3),
+                    Text(
+                      '${c.power}',
+                      style: gameText(17, color: Colors.white, height: 1, shadows: _shadow),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],

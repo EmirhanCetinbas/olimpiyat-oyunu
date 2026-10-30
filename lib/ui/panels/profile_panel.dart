@@ -63,7 +63,9 @@ class _ProfilePanelState extends State<ProfilePanel> {
         // Sonraki seviyeye XP (her 100 XP bir seviye).
         Row(
           children: [
-            Expanded(child: GameProgressBar(value: (c.state.xp % 100) / 100, label: 'Seviye ilerlemesi', height: 14)),
+            Expanded(
+              child: GameProgressBar(value: (c.state.xp % 100) / 100, label: 'Seviye ilerlemesi', height: 14),
+            ),
             const SizedBox(width: 8),
             Text('${c.state.xp % 100} / 100 XP', style: gameText(13, color: GameColors.ink, height: 1)),
           ],

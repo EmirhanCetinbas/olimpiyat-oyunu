@@ -7,7 +7,7 @@ extension InventoryLogic on GameController {
       state.selected = i;
       runners();
       save();
-      openPanel(activeModal == 'inventory' ? 'inventory' : 'team');
+      openPanel('inventory');
       toast('${animals[i].name} takım liderin oldu.');
     }
   }

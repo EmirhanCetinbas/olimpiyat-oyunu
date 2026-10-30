@@ -12,8 +12,8 @@ import 'bottom_nav.dart';
 import 'race_strip.dart';
 import 'rewards_menu.dart';
 import 'toast_overlay.dart';
-import 'top_bar.dart';
-import 'upgrade_grid.dart';
+import 'hud.dart';
+import 'upgrade_list.dart';
 
 /// Oyun kabuğu: oyun döngüsü (Ticker), yaşam döngüsü ve katmanlar.
 class GameScreen extends StatefulWidget {
@@ -158,11 +158,11 @@ class _GameBody extends StatelessWidget {
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TopBar(),
+                  Hud(),
                   SizedBox(height: 7),
                   RepaintBoundary(child: Stadium()),
                   RaceStrip(),
-                  UpgradeGrid(),
+                  UpgradeList(),
                 ],
               ),
             ),

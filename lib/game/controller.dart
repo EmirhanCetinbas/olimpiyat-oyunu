@@ -262,6 +262,19 @@ class GameController extends ChangeNotifier {
 
   bool get boostDisabled => state.boostReady - now > 0;
 
+  /// 2x gelir şu an etkin mi.
+  bool get boostActive => now < state.boostUntil;
+
+  /// Alt menü rozetleri: oyuncunun alabileceği bir şey var mı.
+  bool get rewardsBadge => achievementDot || !dayClaimed || state.spinDate != todayKey;
+  bool get inventoryBadge =>
+      state.pendingChest != null ||
+      state.chests + state.cupChests + state.championChests > 0 ||
+      (state.equipmentParts >= 5 && state.equipmentStars.any((s) => s < 3));
+  bool get campusBadge => campusFacilities.any(
+    (f) => !f.locked && [0, 1, 2].any((i) => campusRank(f.id, i) < 5 && state.skillPoints >= f.rows[i].base + campusRank(f.id, i)),
+  );
+
   bool get achievementDot => achievements.any((a) => a.done(state) && !state.claims.contains(a.id));
 
   String get branchName => switch (state.branch) {
