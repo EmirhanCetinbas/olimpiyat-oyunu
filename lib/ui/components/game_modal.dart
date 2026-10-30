@@ -35,13 +35,15 @@ class GameModal extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
       final width = box.maxWidth;
-      // Plaka yazıyı sarar: en az panelin %52'si, en çok %76'sı (pati izleri ve kapat düğmesi dışarıda kalır).
+      // Plaka yazıyı sarar; uzun başlıkta yazı küçülür.
       final textWidth = (TextPainter(
         text: TextSpan(text: title, style: ModalBanner.textStyle),
         textDirection: TextDirection.ltr,
         maxLines: 1,
       )..layout()).width;
-      final bannerWidth = (textWidth + 2 * ModalBanner.horizontalPadding + 8).clamp(width * .52, width * .76);
+      // Sağdaki pati, köşedeki kapat düğmesine değmeden sığmalı: plaka en çok width − 2 × (pati + düğme payı).
+      final maxBanner = width - 2 * (PawMark.defaultSize + 40);
+      final bannerWidth = (textWidth + 2 * ModalBanner.horizontalPadding + 8).clamp(width * .52, maxBanner);
       return Stack(
         clipBehavior: Clip.none,
         children: [

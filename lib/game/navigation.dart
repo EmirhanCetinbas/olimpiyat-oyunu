@@ -1,6 +1,6 @@
 part of 'controller.dart';
 
-enum ModalStyle { normal, reward, exactAchievements, exactDaily, settings }
+enum ModalStyle { normal, reward, settings }
 
 class ModalSpec {
   const ModalSpec(this.key, this.title, {this.style = ModalStyle.normal, this.arg});
@@ -46,9 +46,9 @@ extension NavigationLogic on GameController {
       case 'campus':
         openCampus();
       case 'achievements':
-        modal = const ModalSpec('achievements', 'Başarımlar', style: ModalStyle.exactAchievements);
+        modal = const ModalSpec('achievements', 'Başarımlar', style: ModalStyle.reward);
       case 'daily-rewards':
-        modal = const ModalSpec('daily-rewards', 'Günlük Ödül', style: ModalStyle.exactDaily);
+        modal = const ModalSpec('daily-rewards', 'Günlük Ödül', style: ModalStyle.reward);
       case 'wheel':
         modal = const ModalSpec('wheel', 'Çarkıfelek', style: ModalStyle.reward);
       case 'settings':

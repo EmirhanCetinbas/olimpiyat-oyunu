@@ -5,7 +5,8 @@ import '../theme/theme.dart';
 /// Sarı, koyu konturlu pati izi: başlık plakasının iki yanında (Pati Şampiyonları imzası).
 /// [mirrored] sol taraftaki patiyi aynalar; ikisi de plakadan dışa doğru yatar.
 class PawMark extends StatelessWidget {
-  const PawMark({super.key, this.mirrored = false, this.size = 28});
+  const PawMark({super.key, this.mirrored = false, this.size = defaultSize});
+  static const defaultSize = 28.0;
   final bool mirrored;
   final double size;
 

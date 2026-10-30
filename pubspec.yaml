@@ -58,6 +58,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/settings/
+    - assets/images/rewards/
   fonts:
     # Oyunun tek yazı ailesi (SIL OFL 1.1, assets/fonts/OFL-Baloo2.txt)
     - family: Baloo2

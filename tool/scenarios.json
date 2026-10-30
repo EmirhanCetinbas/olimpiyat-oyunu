@@ -1,60 +1,743 @@
 {
-  "base": { "races": 6, "wins": 3, "money": 117000, "gems": 8, "xp": 40, "auto": false },
+  "base": {
+    "races": 6,
+    "wins": 3,
+    "money": 117000,
+    "gems": 8,
+    "xp": 40,
+    "auto": false
+  },
   "scenarios": [
-    { "name": "sprint-idle" },
-    { "name": "sprint-countdown", "steps": [["begin"], ["advance", 1.2]] },
-    { "name": "sprint-running", "steps": [["begin"], ["advance", 5]] },
-    { "name": "sprint-finished", "steps": [["begin"], ["advance", 20]] },
-    { "name": "hurdles-idle", "state": { "branch": "hurdles" } },
-    { "name": "hurdles-running", "state": { "branch": "hurdles" }, "steps": [["begin"], ["advance", 7.6]] },
-    { "name": "hurdles-finished", "state": { "branch": "hurdles" }, "steps": [["begin"], ["advance", 20]] },
-    { "name": "swim-idle", "state": { "branch": "swim" } },
-    { "name": "swim-running", "state": { "branch": "swim" }, "steps": [["begin"], ["advance", 7.6]] },
-    { "name": "longjump-idle", "state": { "branch": "longjump" } },
-    { "name": "longjump-running", "state": { "branch": "longjump" }, "steps": [["begin"], ["advance", 1.5]] },
-    { "name": "longjump-flight", "state": { "branch": "longjump" }, "steps": [["begin"], ["advance", 13.3]] },
-    { "name": "longjump-finished", "state": { "branch": "longjump" }, "steps": [["begin"], ["advance", 40]] },
-    { "name": "weights-idle", "state": { "branch": "weights" } },
-    { "name": "weights-running", "state": { "branch": "weights" }, "steps": [["begin"], ["advance", 2.9]] },
-    { "name": "weights-hold", "state": { "branch": "weights" }, "steps": [["begin"], ["advance", 3.8]] },
-    { "name": "weights-finished", "state": { "branch": "weights", "weightRisk": "record" }, "steps": [["begin"], ["advance", 40]] },
-    { "name": "archery-idle", "state": { "branch": "archery" } },
-    { "name": "archery-running", "state": { "branch": "archery" }, "steps": [["begin"], ["advance", 1.4]] },
-    { "name": "archery-flight", "state": { "branch": "archery" }, "steps": [["begin"], ["advance", 2.6]] },
-    { "name": "archery-finished", "state": { "branch": "archery" }, "steps": [["begin"], ["advance", 80]] },
-    { "name": "auto-countdown", "state": { "auto": true }, "steps": [["begin"], ["advance", 15]] },
-    { "name": "toast", "steps": [["upgrade", 0], ["keepToast"]] },
-    { "name": "rewards-menu", "steps": [["rewardsMenu"]] },
-    { "name": "panel-profile", "steps": [["open", "profile"]] },
-    { "name": "panel-inventory", "steps": [["open", "inventory"]] },
-    { "name": "panel-equipment", "state": { "equipmentParts": 6, "equipmentStars": [1, 0, 2, 3] }, "steps": [["open", "equipment"]] },
-    { "name": "panel-items", "state": { "spinTickets": 2, "chests": 1, "cupChests": 1, "boostTokens": 1, "trainingCards": { "sprint": 1 }, "cosmetics": [0], "equipmentParts": 3 }, "steps": [["inventoryTab", "items"]] },
-    { "name": "panel-chests", "state": { "chests": 2, "cupChests": 1 }, "steps": [["open", "chests"]] },
-    { "name": "panel-chests-pending", "state": { "chests": 1 }, "steps": [["openChest", "normal"]] },
-    { "name": "panel-chest-result", "state": { "chests": 1 }, "steps": [["openChest", "normal"], ["chooseChest", 0]] },
-    { "name": "panel-cosmetics", "state": { "cosmetics": [0, 2], "selectedCosmetic": 0 }, "steps": [["open", "cosmetics"]] },
-    { "name": "panel-cosmetics-empty", "steps": [["open", "cosmetics"]] },
-    { "name": "panel-wheel", "steps": [["open", "wheel"]] },
-    { "name": "panel-wheel-used", "steps": [["spinUsed"], ["open", "wheel"]] },
-    { "name": "panel-team", "steps": [["open", "team"]] },
-    { "name": "panel-tournament", "steps": [["open", "tournament"]] },
-    { "name": "panel-tournament-active", "state": { "tournament": { "branch": "sprint", "attempts": 1, "podiums": 1 }, "tournamentCups": 2 }, "steps": [["open", "tournament"]] },
-    { "name": "panel-shop", "steps": [["open", "shop"]] },
-    { "name": "panel-branches", "steps": [["open", "branches"]] },
-    { "name": "panel-info", "steps": [["info", 0]] },
-    { "name": "panel-support", "steps": [["open", "settings"], ["support"]] },
-    { "name": "panel-reset", "steps": [["open", "settings"], ["reset"]] },
-    { "name": "panel-settings", "steps": [["open", "settings"]] },
-    { "name": "panel-settings-alt", "state": { "musicVolume": 0.2, "soundVolume": 0, "sound": false, "vibration": false, "auto": true }, "steps": [["open", "settings"]] },
-    { "name": "panel-achievements", "state": { "levels": [1, 1, 1, 1, 5, 1], "claims": ["first"] }, "steps": [["open", "achievements"]] },
-    { "name": "panel-daily", "state": { "dailyStep": 2 }, "steps": [["open", "daily-rewards"]] },
-    { "name": "panel-daily-claimed", "state": { "dailyStep": 3 }, "steps": [["dailyClaimed"], ["open", "daily-rewards"]] },
-    { "name": "campus", "steps": [["open", "campus"]] },
-    { "name": "campus-sprint", "state": { "campusUpgrades": { "sprint": [2, 1, 0] }, "skillPoints": 3 }, "steps": [["open", "campus"], ["campusFacility", "sprint"]] },
-    { "name": "campus-stadium", "state": { "campusUpgrades": { "stadium": [5, 0, 1] }, "skillPoints": 12 }, "steps": [["open", "campus"], ["campusFacility", "stadium"]] },
-    { "name": "small-sprint-idle", "size": [360, 640] },
-    { "name": "small-settings", "size": [360, 640], "steps": [["open", "settings"]] },
-    { "name": "small-campus-dialog", "size": [360, 640], "steps": [["open", "campus"], ["campusFacility", "stadium"]] },
-    { "name": "large-sprint-idle", "size": [430, 932] }
+    {
+      "name": "sprint-idle"
+    },
+    {
+      "name": "sprint-countdown",
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          1.2
+        ]
+      ]
+    },
+    {
+      "name": "sprint-running",
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          5
+        ]
+      ]
+    },
+    {
+      "name": "sprint-finished",
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          20
+        ]
+      ]
+    },
+    {
+      "name": "hurdles-idle",
+      "state": {
+        "branch": "hurdles"
+      }
+    },
+    {
+      "name": "hurdles-running",
+      "state": {
+        "branch": "hurdles"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          7.6
+        ]
+      ]
+    },
+    {
+      "name": "hurdles-finished",
+      "state": {
+        "branch": "hurdles"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          20
+        ]
+      ]
+    },
+    {
+      "name": "swim-idle",
+      "state": {
+        "branch": "swim"
+      }
+    },
+    {
+      "name": "swim-running",
+      "state": {
+        "branch": "swim"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          7.6
+        ]
+      ]
+    },
+    {
+      "name": "longjump-idle",
+      "state": {
+        "branch": "longjump"
+      }
+    },
+    {
+      "name": "longjump-running",
+      "state": {
+        "branch": "longjump"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          1.5
+        ]
+      ]
+    },
+    {
+      "name": "longjump-flight",
+      "state": {
+        "branch": "longjump"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          13.3
+        ]
+      ]
+    },
+    {
+      "name": "longjump-finished",
+      "state": {
+        "branch": "longjump"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          40
+        ]
+      ]
+    },
+    {
+      "name": "weights-idle",
+      "state": {
+        "branch": "weights"
+      }
+    },
+    {
+      "name": "weights-running",
+      "state": {
+        "branch": "weights"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          2.9
+        ]
+      ]
+    },
+    {
+      "name": "weights-hold",
+      "state": {
+        "branch": "weights"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          3.8
+        ]
+      ]
+    },
+    {
+      "name": "weights-finished",
+      "state": {
+        "branch": "weights",
+        "weightRisk": "record"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          40
+        ]
+      ]
+    },
+    {
+      "name": "archery-idle",
+      "state": {
+        "branch": "archery"
+      }
+    },
+    {
+      "name": "archery-running",
+      "state": {
+        "branch": "archery"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          1.4
+        ]
+      ]
+    },
+    {
+      "name": "archery-flight",
+      "state": {
+        "branch": "archery"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          2.6
+        ]
+      ]
+    },
+    {
+      "name": "archery-finished",
+      "state": {
+        "branch": "archery"
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          80
+        ]
+      ]
+    },
+    {
+      "name": "auto-countdown",
+      "state": {
+        "auto": true
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          15
+        ]
+      ]
+    },
+    {
+      "name": "toast",
+      "steps": [
+        [
+          "upgrade",
+          0
+        ],
+        [
+          "keepToast"
+        ]
+      ]
+    },
+    {
+      "name": "rewards-menu",
+      "steps": [
+        [
+          "rewardsMenu"
+        ]
+      ]
+    },
+    {
+      "name": "panel-profile",
+      "steps": [
+        [
+          "open",
+          "profile"
+        ]
+      ]
+    },
+    {
+      "name": "panel-inventory",
+      "steps": [
+        [
+          "open",
+          "inventory"
+        ]
+      ]
+    },
+    {
+      "name": "panel-equipment",
+      "state": {
+        "equipmentParts": 6,
+        "equipmentStars": [
+          1,
+          0,
+          2,
+          3
+        ]
+      },
+      "steps": [
+        [
+          "open",
+          "equipment"
+        ]
+      ]
+    },
+    {
+      "name": "panel-items",
+      "state": {
+        "spinTickets": 2,
+        "chests": 1,
+        "cupChests": 1,
+        "boostTokens": 1,
+        "trainingCards": {
+          "sprint": 1
+        },
+        "cosmetics": [
+          0
+        ],
+        "equipmentParts": 3
+      },
+      "steps": [
+        [
+          "inventoryTab",
+          "items"
+        ]
+      ]
+    },
+    {
+      "name": "panel-chests",
+      "state": {
+        "chests": 2,
+        "cupChests": 1
+      },
+      "steps": [
+        [
+          "open",
+          "chests"
+        ]
+      ]
+    },
+    {
+      "name": "panel-chests-pending",
+      "state": {
+        "chests": 1
+      },
+      "steps": [
+        [
+          "openChest",
+          "normal"
+        ]
+      ]
+    },
+    {
+      "name": "panel-chest-result",
+      "state": {
+        "chests": 1
+      },
+      "steps": [
+        [
+          "openChest",
+          "normal"
+        ],
+        [
+          "chooseChest",
+          0
+        ]
+      ]
+    },
+    {
+      "name": "panel-cosmetics",
+      "state": {
+        "cosmetics": [
+          0,
+          2
+        ],
+        "selectedCosmetic": 0
+      },
+      "steps": [
+        [
+          "open",
+          "cosmetics"
+        ]
+      ]
+    },
+    {
+      "name": "panel-cosmetics-empty",
+      "steps": [
+        [
+          "open",
+          "cosmetics"
+        ]
+      ]
+    },
+    {
+      "name": "panel-wheel",
+      "steps": [
+        [
+          "open",
+          "wheel"
+        ]
+      ]
+    },
+    {
+      "name": "panel-wheel-used",
+      "steps": [
+        [
+          "spinUsed"
+        ],
+        [
+          "open",
+          "wheel"
+        ]
+      ]
+    },
+    {
+      "name": "panel-team",
+      "steps": [
+        [
+          "open",
+          "team"
+        ]
+      ]
+    },
+    {
+      "name": "panel-tournament",
+      "steps": [
+        [
+          "open",
+          "tournament"
+        ]
+      ]
+    },
+    {
+      "name": "panel-tournament-active",
+      "state": {
+        "tournament": {
+          "branch": "sprint",
+          "attempts": 1,
+          "podiums": 1
+        },
+        "tournamentCups": 2
+      },
+      "steps": [
+        [
+          "open",
+          "tournament"
+        ]
+      ]
+    },
+    {
+      "name": "panel-shop",
+      "steps": [
+        [
+          "open",
+          "shop"
+        ]
+      ]
+    },
+    {
+      "name": "panel-branches",
+      "steps": [
+        [
+          "open",
+          "branches"
+        ]
+      ]
+    },
+    {
+      "name": "panel-info",
+      "steps": [
+        [
+          "info",
+          0
+        ]
+      ]
+    },
+    {
+      "name": "panel-support",
+      "steps": [
+        [
+          "open",
+          "settings"
+        ],
+        [
+          "support"
+        ]
+      ]
+    },
+    {
+      "name": "panel-reset",
+      "steps": [
+        [
+          "open",
+          "settings"
+        ],
+        [
+          "reset"
+        ]
+      ]
+    },
+    {
+      "name": "panel-settings",
+      "steps": [
+        [
+          "open",
+          "settings"
+        ]
+      ]
+    },
+    {
+      "name": "panel-settings-alt",
+      "state": {
+        "musicVolume": 0.2,
+        "soundVolume": 0,
+        "sound": false,
+        "vibration": false,
+        "auto": true
+      },
+      "steps": [
+        [
+          "open",
+          "settings"
+        ]
+      ]
+    },
+    {
+      "name": "panel-achievements",
+      "state": {
+        "levels": [
+          1,
+          1,
+          1,
+          1,
+          5,
+          1
+        ],
+        "claims": [
+          "first"
+        ]
+      },
+      "steps": [
+        [
+          "open",
+          "achievements"
+        ]
+      ]
+    },
+    {
+      "name": "panel-daily",
+      "state": {
+        "dailyStep": 2
+      },
+      "steps": [
+        [
+          "open",
+          "daily-rewards"
+        ]
+      ]
+    },
+    {
+      "name": "panel-daily-claimed",
+      "state": {
+        "dailyStep": 3
+      },
+      "steps": [
+        [
+          "dailyClaimed"
+        ],
+        [
+          "open",
+          "daily-rewards"
+        ]
+      ]
+    },
+    {
+      "name": "campus",
+      "steps": [
+        [
+          "open",
+          "campus"
+        ]
+      ]
+    },
+    {
+      "name": "campus-sprint",
+      "state": {
+        "campusUpgrades": {
+          "sprint": [
+            2,
+            1,
+            0
+          ]
+        },
+        "skillPoints": 3
+      },
+      "steps": [
+        [
+          "open",
+          "campus"
+        ],
+        [
+          "campusFacility",
+          "sprint"
+        ]
+      ]
+    },
+    {
+      "name": "campus-stadium",
+      "state": {
+        "campusUpgrades": {
+          "stadium": [
+            5,
+            0,
+            1
+          ]
+        },
+        "skillPoints": 12
+      },
+      "steps": [
+        [
+          "open",
+          "campus"
+        ],
+        [
+          "campusFacility",
+          "stadium"
+        ]
+      ]
+    },
+    {
+      "name": "small-sprint-idle",
+      "size": [
+        360,
+        640
+      ]
+    },
+    {
+      "name": "small-settings",
+      "size": [
+        360,
+        640
+      ],
+      "steps": [
+        [
+          "open",
+          "settings"
+        ]
+      ]
+    },
+    {
+      "name": "small-campus-dialog",
+      "size": [
+        360,
+        640
+      ],
+      "steps": [
+        [
+          "open",
+          "campus"
+        ],
+        [
+          "campusFacility",
+          "stadium"
+        ]
+      ]
+    },
+    {
+      "name": "large-sprint-idle",
+      "size": [
+        430,
+        932
+      ]
+    },
+    {
+      "name": "small-achievements",
+      "size": [
+        360,
+        640
+      ],
+      "state": {
+        "levels": [
+          1,
+          1,
+          1,
+          1,
+          5,
+          1
+        ],
+        "claims": [
+          "first"
+        ]
+      },
+      "steps": [
+        [
+          "open",
+          "achievements"
+        ]
+      ]
+    },
+    {
+      "name": "small-daily",
+      "size": [
+        360,
+        640
+      ],
+      "state": {
+        "dailyStep": 2
+      },
+      "steps": [
+        [
+          "open",
+          "daily-rewards"
+        ]
+      ]
+    }
   ]
 }
