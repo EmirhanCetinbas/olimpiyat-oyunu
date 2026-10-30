@@ -12,3 +12,6 @@ export 'pressable.dart';
 export 'progress_bar.dart';
 export 'sprite.dart';
 export 'stat_grid.dart';
+export 'game_modal.dart';
+export 'gloss.dart';
+export 'outlined_text.dart';

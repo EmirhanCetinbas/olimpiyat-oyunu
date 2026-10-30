@@ -8,6 +8,8 @@ node tool/web_reference.mjs docs/verification            # web referansları (<e
 flutter test --no-pub tool/preview_game.dart --dart-define=PREVIEW_OUTPUT_ROOT=docs/verification
 python3 tool/compare_shots.py                              # <ekran>-compare.png + compare-<tarih>/overview-*.png
 # Tek ekran: node tool/web_reference.mjs docs/verification panel-   /   --dart-define=PREVIEW_ONLY=panel-
+# Yüksek çözünürlük (ör. 3x): --dart-define=PREVIEW_DPR=3
+# Ayarlar ↔ tasarım referansı: python3 tool/settings_vs_reference.py <png> <çıktı>
 ```
 
 Çıktı `docs/verification/<ekran>-<tarih>/` altına yazılır ve git'e eklenmez. Test ortamında renkli emoji fontu yüklenemez;

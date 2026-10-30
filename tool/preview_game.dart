@@ -18,6 +18,7 @@ import 'mulberry32.dart';
 final _date = DateTime.now().toIso8601String().substring(0, 10);
 const _root = String.fromEnvironment('PREVIEW_OUTPUT_ROOT', defaultValue: 'docs/verification');
 const _only = String.fromEnvironment('PREVIEW_ONLY');
+final _dpr = double.parse(const String.fromEnvironment('PREVIEW_DPR', defaultValue: '1'));
 
 Future<void> loadPreviewFonts() async {
   final manifest = jsonDecode(await rootBundle.loadString('FontManifest.json')) as List;
@@ -87,7 +88,7 @@ void main() {
 
   testWidgets('pati screens', (tester) async {
     addTearDown(tester.view.reset);
-    tester.view.devicePixelRatio = 1;
+    tester.view.devicePixelRatio = _dpr;
     await tester.runAsync(loadPreviewFonts);
     await tester.runAsync(SpriteCache.preload);
 
@@ -102,7 +103,7 @@ void main() {
       final name = s['name'] as String;
       if (_only.isNotEmpty && !name.startsWith(_only)) continue;
       final size = (s['size'] as List?)?.cast<num>() ?? [390, 844];
-      tester.view.physicalSize = Size(size[0].toDouble(), size[1].toDouble());
+      tester.view.physicalSize = Size(size[0] * _dpr, size[1] * _dpr);
 
       final now = DateTime.now().millisecondsSinceEpoch;
       final preset = {...GameState.initial(now).toJson(), ...base, ...?s['state'] as Map<String, dynamic>?, 'last': now};
@@ -127,7 +128,7 @@ void main() {
       await settle();
 
       await tester.runAsync(() async {
-        final image = await (boundary.currentContext!.findRenderObject()! as RenderRepaintBoundary).toImage(pixelRatio: 1);
+        final image = await (boundary.currentContext!.findRenderObject()! as RenderRepaintBoundary).toImage(pixelRatio: _dpr);
         final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
         File('$_root/$name-$_date/$name.png')
           ..createSync(recursive: true)

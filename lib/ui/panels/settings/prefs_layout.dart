@@ -4,12 +4,16 @@ import '../../components/components.dart';
 import '../../theme/theme.dart';
 import 'settings_icon.dart';
 
-bool _narrow(BuildContext context) => ScreenMetrics.of(context).compact;
+const _rowShadow = [BoxShadow(color: Color(0xFFE3D0A6), offset: Offset(0, 2.5))];
+const _rowGradient = LinearGradient(
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+  colors: [Color(0xFFFFFCF2), Color(0xFFFDF3DE)],
+);
 
-/// Kısa ekranlarda (≤690pt) Ayarlar sıkışır (web `@media(max-height:690px)`).
-bool _short(BuildContext context) => ScreenMetrics.of(context).short;
+TextStyle _label(double size) => nunito(size, weight: 1000, color: GameColors.panelInk, height: 1.1, letterSpacing: -.2);
 
-/// `.prefs-section`: başlık ve satırlar.
+/// `.prefs-section`: SES / OYUN / KAYIT başlığı ve satırları.
 class PrefsSection extends StatelessWidget {
   const PrefsSection({super.key, required this.title, required this.rows});
   final String title;
@@ -17,16 +21,13 @@ class PrefsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: EdgeInsets.only(bottom: _short(context) ? 7 : 9),
+    padding: EdgeInsets.only(bottom: ScreenMetrics.of(context).short ? 4 : 7),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 7, bottom: 5),
-          child: Text(
-            title,
-            style: nunito(17, weight: 1000, color: GameColors.panelInk, height: 20 / 17, letterSpacing: -.3),
-          ),
+          padding: const EdgeInsets.only(left: 10, bottom: 4),
+          child: Text(title, style: nunito(19, weight: 1000, color: GameColors.panelInk, height: 1.1, letterSpacing: -.2)),
         ),
         ...rows,
       ],
@@ -34,8 +35,7 @@ class PrefsSection extends StatelessWidget {
   );
 }
 
-/// `.prefs-row`: ikon, etiket ve kontrol. `wide` satırlarda kontrol kalan alanı kullanır
-/// (ses satırları: `grid-template-columns: 35px 76px 1fr`).
+/// `.prefs-row`: ikon, etiket ve kontrol. `wide` satırlarda kontrol kalan alanı kullanır (kaydırıcılar).
 class PrefsRow extends StatelessWidget {
   const PrefsRow({super.key, required this.icon, required this.label, required this.control, this.wide = false});
   final String icon;
@@ -45,31 +45,30 @@ class PrefsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final narrow = _narrow(context);
-    final text = Text(label, style: nunito(narrow ? 12 : 13, weight: 850, color: GameColors.panelInk, height: 1.1, letterSpacing: -.3));
-    final gap = SizedBox(width: narrow ? 5 : 8);
-    final aligned = Align(alignment: Alignment.centerRight, child: control);
+    final m = ScreenMetrics.of(context);
+    final text = Text(label, maxLines: 1, softWrap: false, style: _label(m.compact ? 14 : 15));
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: 5),
       child: GBox(
-        gradient: angleGradient(110, const [Color(0xFFFFFCF1), Color(0xFFFFF9E9)]),
-        borderColor: const Color(0xFF142A3B),
-        borderWidth: 2,
+        gradient: _rowGradient,
+        borderColor: GameColors.ink,
+        borderWidth: 2.5,
         radius: 15,
-        shadows: const [BoxShadow(color: Color(0x75D8CAA5), offset: Offset(0, 3))],
-        insets: const [Inset(Colors.white, dy: 2)],
-        padding: EdgeInsets.symmetric(horizontal: narrow ? 6 : 9, vertical: _short(context) ? 4 : 6),
-        constraints: BoxConstraints(minHeight: _short(context) ? 49 : 54),
+        shadows: _rowShadow,
+        constraints: BoxConstraints(minHeight: m.short ? 46 : 50),
+        padding: EdgeInsets.only(left: m.compact ? 8 : 11, right: m.compact ? 7 : 9),
         child: Row(
           children: [
-            SizedBox(
-              width: narrow ? 30 : 35,
-              child: Center(child: SettingsIcon(icon, size: narrow ? 30 : 34)),
-            ),
-            gap,
-            if (wide) SizedBox(width: narrow ? 66 : 76, child: text) else Expanded(child: text),
-            gap,
-            if (wide) Expanded(child: aligned) else SizedBox(width: narrow ? 96 : 108, child: aligned),
+            SettingsIcon(icon, size: m.compact ? 30 : 34),
+            SizedBox(width: m.compact ? 10 : 14),
+            if (wide)
+              SizedBox(width: m.compact ? 62 : 70, child: text)
+            else
+              Expanded(
+                child: FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: text),
+              ),
+            const SizedBox(width: 8),
+            if (wide) Expanded(child: control) else control,
           ],
         ),
       ),
@@ -77,7 +76,7 @@ class PrefsRow extends StatelessWidget {
   }
 }
 
-/// `.prefs-actions button`: Destek / Sıfırla kutucukları.
+/// `.prefs-actions button`: Destek / İlerlemeyi sıfırla kutucukları.
 class PrefsActionTile extends StatelessWidget {
   const PrefsActionTile({super.key, required this.icon, required this.label, required this.onTap});
   final String icon;
@@ -85,26 +84,33 @@ class PrefsActionTile extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Pressable(
-    onTap: onTap,
-    child: GBox(
-      constraints: BoxConstraints(minHeight: _short(context) ? 46 : 50),
-      gradient: vGradient(const [Color(0xFFFFFDF3), Color(0xFFFFF7E5)]),
-      borderColor: const Color(0xFF102B40),
-      borderWidth: 2,
-      radius: 15,
-      shadows: const [BoxShadow(color: Color(0x75D8CAA5), offset: Offset(0, 3))],
-      padding: const EdgeInsets.all(6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SettingsIcon(icon, size: 31),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(label, style: nunito(_narrow(context) ? 11 : 12, color: GameColors.panelInk, height: 1.1)),
-          ),
-        ],
+  Widget build(BuildContext context) {
+    final m = ScreenMetrics.of(context);
+    return Pressable(
+      onTap: onTap,
+      semanticLabel: label.replaceAll('\n', ' '),
+      child: GBox(
+        gradient: _rowGradient,
+        borderColor: GameColors.ink,
+        borderWidth: 2.5,
+        radius: 15,
+        shadows: _rowShadow,
+        constraints: BoxConstraints(minHeight: m.short ? 44 : 50),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        child: Row(
+          children: [
+            SettingsIcon(icon, size: m.compact ? 32 : 38),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: _label(label.contains('\n') ? (m.compact ? 12.5 : 13.5) : (m.compact ? 14 : 15)),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

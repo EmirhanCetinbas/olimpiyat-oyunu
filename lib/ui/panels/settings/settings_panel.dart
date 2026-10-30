@@ -6,7 +6,7 @@ import '../../theme/theme.dart';
 import 'prefs_controls.dart';
 import 'prefs_layout.dart';
 
-/// Ayarlar: tamamen kodla kurulan panel (görsel ya da koordinat yaması yok).
+/// Ayarlar: ortak pencere dilinin (GameModal) örnek ekranı; tamamen kodla kurulur.
 class SettingsPanel extends StatelessWidget {
   const SettingsPanel(this.c, {super.key});
   final GameController c;
@@ -14,25 +14,16 @@ class SettingsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = c.state;
-    final narrow = MediaQuery.sizeOf(context).width <= 360;
-    final switchWidth = narrow ? 96.0 : 108.0;
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF0B2635), width: 3),
-        borderRadius: BorderRadius.circular(25),
-        gradient: const RadialGradient(
-          center: Alignment(-.4, -.5),
-          radius: 1.1,
-          colors: [Color(0xFFFFFBED), Color(0xFFFFF5DF)],
-          stops: [0, .75],
-        ),
-        boxShadow: const [BoxShadow(color: Color(0x20061D25), offset: Offset(0, 8))],
-      ),
-      padding: EdgeInsets.fromLTRB(narrow ? 9 : 12, 0, narrow ? 9 : 12, 8),
+    final m = ScreenMetrics.of(context);
+    final switchWidth = PrefsMetrics.switchWidth(m.compact);
+    return GameModal(
+      title: 'AYARLAR',
+      onClose: c.closeModal,
+      closeLabel: 'Ayarları kapat',
+      padding: EdgeInsets.fromLTRB(m.compact ? 6 : 7, m.short ? 26 : 30, m.compact ? 6 : 7, 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _Heading(onClose: c.closeModal),
           PrefsSection(
             title: 'SES',
             rows: [
@@ -51,7 +42,6 @@ class SettingsPanel extends StatelessWidget {
               PrefsRow(
                 icon: 'vibration',
                 label: 'TİTREŞİM',
-                wide: true,
                 control: PrefsSwitch(value: s.vibration, label: 'Titreşim', onChanged: c.setVibration, width: switchWidth),
               ),
             ],
@@ -77,90 +67,31 @@ class SettingsPanel extends StatelessWidget {
               PrefsRow(
                 icon: 'save',
                 label: 'CİHAZ KAYDI',
-                control: PrefsStatus(active: c.storageOK),
+                control: PrefsStatus(active: c.storageOK, width: PrefsMetrics.statusWidth(m.compact)),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: PrefsActionTile(icon: 'support', label: 'DESTEK', onTap: c.openSupport),
+              ),
+              const SizedBox(width: 7),
+              Expanded(
+                child: PrefsActionTile(icon: 'reset', label: 'İLERLEMEYİ\nSIFIRLA', onTap: c.askReset),
               ),
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Row(
-              children: [
-                Expanded(
-                  child: PrefsActionTile(icon: 'support', label: 'DESTEK', onTap: c.openSupport),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: PrefsActionTile(icon: 'reset', label: 'İLERLEMEYİ\nSIFIRLA', onTap: c.askReset),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: 7),
             child: Text(
               'SÜRÜM 1.0',
               textAlign: TextAlign.center,
-              style: nunito(11, color: const Color(0xFF7B8988), height: 14 / 11),
+              style: nunito(13, weight: 1000, color: const Color(0xFF6E7C83), height: 1.1),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-/// AYARLAR başlığı ve yeşil kapat düğmesi.
-class _Heading extends StatelessWidget {
-  const _Heading({required this.onClose});
-  final VoidCallback onClose;
-
-  static const _shadowOffsets = [
-    Offset(-2, -2),
-    Offset(0, -2),
-    Offset(2, -2),
-    Offset(2, 0),
-    Offset(2, 2),
-    Offset(0, 3),
-    Offset(-2, 2),
-    Offset(-2, 0),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final narrow = MediaQuery.sizeOf(context).width <= 360;
-    final short = ScreenMetrics.of(context).short;
-    return LayoutBuilder(
-      builder: (context, box) {
-        return Padding(
-          padding: EdgeInsets.only(left: box.maxWidth * (narrow ? .08 : .11), bottom: short ? 8 : 10),
-          child: Row(
-            children: [
-              Expanded(
-                child: BannerTitle(
-                  'AYARLAR',
-                  semanticsLabel: 'Ayarlar',
-                  fontSize: vwClamp(context, 27, 7.7, 38),
-                  weight: 900,
-                  height: 1.12,
-                  gradient: angleGradient(
-                    170,
-                    const [Color(0xFFFF8270), Color(0xFFFF6456), Color(0xFFFF6254), Color(0xFFFF5347)],
-                    const [0, .2, .7, 1],
-                  ),
-                  borderColor: const Color(0xFF0A2033),
-                  radius: 21,
-                  padding: EdgeInsets.fromLTRB(3, short ? 7 : 9, 3, short ? 9 : 11),
-                  shadows: const [BoxShadow(color: Color(0x75D4C39A), offset: Offset(0, 5))],
-                  insets: const [Inset(Color(0xFFFFAD9F), dy: 5), Inset(Color(0xFFE34137), dy: -4)],
-                  textShadows: [for (final o in _shadowOffsets) Shadow(color: const Color(0xFF102633), offset: o)],
-                ),
-              ),
-              SizedBox(width: narrow ? 7 : 10),
-              RoundCloseButton.settings(onTap: onClose, semanticLabel: 'Ayarları kapat'),
-            ],
-          ),
-        );
-      },
     );
   }
 }
