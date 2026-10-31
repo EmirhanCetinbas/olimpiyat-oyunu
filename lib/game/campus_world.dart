@@ -10,8 +10,10 @@ class CampusCamera {
   /// Dünya birimi harita görselinden bağımsızdır (campus-map.png 1024×1536 → ×2).
   static const worldSize = Size(2048, 3072);
 
-  /// Haritanın kenarından bu kadar öteye bakılabilir; köşeler ekranın ortasına getirilebilir.
-  static const margin = 160.0;
+  /// Haritanın kenarından bu kadar öteye bakılabilir. Kenarın ötesinde çizici haritayı aynalar;
+  /// paylar haritanın kenarındaki orman şeridinin derinliği kadardır, aynada hep orman ve yol
+  /// görünür (tesis ya da nehir kopyası görünmez). Yanlarda tesisler kenara yakın: pay dar.
+  static const edgeTop = 300.0, edgeBottom = 450.0, edgeSide = 60.0;
 
   /// Çizici, harita görselinin taşıdığı ayrıntıya göre ayarlar (bulanık büyütme olmasın).
   double maxZoom = .5;
@@ -21,12 +23,10 @@ class CampusCamera {
   Offset _anchor = Offset.zero;
   double _gestureZoom = .2;
 
-  /// Ekranın üstünü ve altını örten arayüz şeritleri: harita o kadar ötesine çekilebilir.
-  double insetTop = 0, insetBottom = 0;
-
-  /// En uzakta harita ve kenar payı ekranı doldurur.
-  double get minZoom =>
-      viewport.isEmpty ? .1 : math.max(viewport.width / (worldSize.width + 2 * margin), viewport.height / (worldSize.height + 2 * margin));
+  /// En uzakta harita ve kenar payları ekranı doldurur (boş kenar yok).
+  double get minZoom => viewport.isEmpty
+      ? .1
+      : math.max(viewport.width / (worldSize.width + 2 * edgeSide), viewport.height / (worldSize.height + edgeTop + edgeBottom));
 
   Rect get visible => Rect.fromCenter(center: center, width: viewport.width / zoom, height: viewport.height / zoom);
   Offset toWorld(Offset screen) => center + (screen - viewport.center(Offset.zero)) / zoom;
@@ -46,8 +46,8 @@ class CampusCamera {
     }
 
     center = Offset(
-      axis(center.dx, worldSize.width, viewport.width / zoom, margin, margin),
-      axis(center.dy, worldSize.height, viewport.height / zoom, margin + insetTop / zoom, margin + insetBottom / zoom),
+      axis(center.dx, worldSize.width, viewport.width / zoom, edgeSide, edgeSide),
+      axis(center.dy, worldSize.height, viewport.height / zoom, edgeTop, edgeBottom),
     );
   }
 
@@ -64,6 +64,7 @@ class CampusCamera {
     constrain();
   }
 
+  /// En uzak görünüm, haritanın ortasında.
   void overview() {
     zoom = minZoom;
     center = worldSize.center(Offset.zero);
@@ -139,9 +140,6 @@ class CampusWorld {
     return best;
   }
 
-  /// Kamera açılışta stadyuma (haritanın ortası) bakar, harita genişliği ekranı doldurur.
-  void openingView() {
-    final stadium = campusSpots['stadium']!;
-    camera.focus(stadium.art.center, scale: camera.viewport.width / CampusCamera.worldSize.width);
-  }
+  /// Açılışta haritanın tamamı görünür; tesisler yakınlaştırınca ayrıntılanır.
+  void openingView() => camera.overview();
 }

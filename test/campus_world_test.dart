@@ -6,7 +6,11 @@ import 'package:pati_sampiyonlari/game/campus_world.dart';
 void main() {
   test('camera: fits the map, keeps the pinched point under the fingers, stays inside', () {
     final camera = CampusCamera()..resize(const Size(390, 844));
-    expect(camera.minZoom, closeTo(844 / (3072 + 2 * CampusCamera.margin), 1e-9));
+    // En uzakta harita ve kenar payları ekranı doldurur; kenar payının ötesi görünmez.
+    expect(camera.minZoom, closeTo(844 / (3072 + CampusCamera.edgeTop + CampusCamera.edgeBottom), 1e-9));
+    camera.overview();
+    expect(camera.visible.top, closeTo(-CampusCamera.edgeTop, 1e-6));
+    expect(camera.visible.bottom, closeTo(3072 + CampusCamera.edgeBottom, 1e-6));
     camera.maxZoom = 1;
     camera.focus(const Offset(1024, 1536), scale: .5);
     const focal = Offset(120, 300);
@@ -18,8 +22,8 @@ void main() {
     expect((camera.toScreen(camera.toWorld(focal)) - focal).distance, lessThan(1e-6));
     // Haritanın çok dışına çekilemez.
     camera.focus(const Offset(-5000, -5000), scale: .5);
-    expect(camera.visible.left, greaterThanOrEqualTo(-CampusCamera.margin - 1e-6));
-    expect(camera.visible.top, greaterThanOrEqualTo(-CampusCamera.margin - 1e-6));
+    expect(camera.visible.left, greaterThanOrEqualTo(-CampusCamera.edgeSide - 1e-6));
+    expect(camera.visible.top, greaterThanOrEqualTo(-CampusCamera.edgeTop - 1e-6));
     camera.gesture(focal, 100);
     expect(camera.zoom, 1);
     final saved = camera.snapshot();

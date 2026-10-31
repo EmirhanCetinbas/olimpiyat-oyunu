@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../theme/theme.dart';
@@ -42,8 +44,9 @@ class GameModal extends StatelessWidget {
         maxLines: 1,
       )..layout()).width;
       // Sağdaki pati, köşedeki kapat düğmesine değmeden sığmalı: plaka en çok width − 2 × (pati + düğme payı).
+      // Dar ekranda (320 pt) en az genişlik üst sınırı geçmesin: clamp alt sınırı üstten büyükse hata verir.
       final maxBanner = width - 2 * (PawMark.defaultSize + 40);
-      final bannerWidth = (textWidth + 2 * ModalBanner.horizontalPadding + 8).clamp(width * .52, maxBanner);
+      final bannerWidth = (textWidth + 2 * ModalBanner.horizontalPadding + 8).clamp(math.min(width * .52, maxBanner), maxBanner).toDouble();
       return Stack(
         clipBehavior: Clip.none,
         children: [

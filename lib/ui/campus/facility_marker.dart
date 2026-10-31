@@ -46,16 +46,19 @@ class FacilityMarker extends StatelessWidget {
               shadows: const [BoxShadow(color: GameColors.cardShadow, offset: Offset(0, 2.5), blurRadius: 3)],
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
             ),
-            Transform.translate(
-              offset: const Offset(0, -1),
-              child: Pill(
-                upgradable ? '$level ↑' : level,
-                style: gameText(size * .9, color: Colors.white),
-                maxLines: 1,
-                color: upgradable ? GameColors.greenShade : GameColors.navy,
-                borderColor: GameColors.ink,
-                borderWidth: 2.5,
-                radius: 12,
+            _Pulse(
+              on: upgradable,
+              child: Transform.translate(
+                offset: const Offset(0, -1),
+                child: Pill(
+                  upgradable ? '$level ↑' : level,
+                  style: gameText(size * .9, color: Colors.white),
+                  maxLines: 1,
+                  color: upgradable ? GameColors.greenShade : GameColors.navy,
+                  borderColor: GameColors.ink,
+                  borderWidth: 2.5,
+                  radius: 12,
+                ),
               ),
             ),
           ],
@@ -63,4 +66,53 @@ class FacilityMarker extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Geliştirilebilir tesisin seviye rozeti hafifçe büyüyüp küçülür (azaltılmış harekette durur).
+class _Pulse extends StatefulWidget {
+  const _Pulse({required this.on, required this.child});
+  final bool on;
+  final Widget child;
+
+  @override
+  State<_Pulse> createState() => _PulseState();
+}
+
+class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
+  late final _anim = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
+
+  void _sync() {
+    final run = widget.on && !MediaQuery.disableAnimationsOf(context);
+    if (run && !_anim.isAnimating) {
+      _anim.repeat(reverse: true);
+    } else if (!run && _anim.isAnimating) {
+      _anim
+        ..stop()
+        ..value = 0;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _sync();
+  }
+
+  @override
+  void didUpdateWidget(_Pulse old) {
+    super.didUpdateWidget(old);
+    _sync();
+  }
+
+  @override
+  void dispose() {
+    _anim.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ScaleTransition(
+    scale: Tween(begin: 1.0, end: 1.12).animate(CurvedAnimation(parent: _anim, curve: Curves.easeInOut)),
+    child: widget.child,
+  );
 }
