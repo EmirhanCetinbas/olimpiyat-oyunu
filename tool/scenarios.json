@@ -863,6 +863,24 @@
           "tournament"
         ]
       ]
+    },
+    {
+      "name": "upgrades-grid",
+      "size": [
+        390,
+        1240
+      ]
+    },
+    {
+      "name": "upgrades-grid-small",
+      "size": [
+        320,
+        1100
+      ],
+      "state": {
+        "branch": "swim",
+        "money": 900
+      }
     }
   ]
 }

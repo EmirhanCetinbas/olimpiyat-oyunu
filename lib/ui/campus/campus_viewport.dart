@@ -36,17 +36,19 @@ class _CampusViewportState extends State<CampusViewport> with WidgetsBindingObse
   double _scaleBase = 1;
 
   /// Düğmeyle kamera geçişi (duck-gacha `_glideCamera`): 320 ms, zoom logaritmik ölçekte.
-  late final _glide = AnimationController(vsync: this, duration: const Duration(milliseconds: 320))
-    ..addListener(_glideStep)
-    ..addStatusListener((status) {
-      if (status == AnimationStatus.completed) _save();
-    });
+  /// initState'te kurulur: tembel kurulum dispose'a kalırsa kapanırken ata aranır (hata).
+  late final AnimationController _glide;
   Offset _fromCenter = Offset.zero, _toCenter = Offset.zero;
   double _fromZoom = 1, _toZoom = 1;
 
   @override
   void initState() {
     super.initState();
+    _glide = AnimationController(vsync: this, duration: const Duration(milliseconds: 320))
+      ..addListener(_glideStep)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) _save();
+      });
     WidgetsBinding.instance.addObserver(this);
   }
 
