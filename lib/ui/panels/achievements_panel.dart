@@ -53,7 +53,7 @@ class _AchievementCard extends StatelessWidget {
         : const LockedMark();
     return ListRow(
       children: [
-        RewardIcon(a.art, size: compact ? 50 : 58, radius: 12),
+        RewardIcon(a.art, size: compact ? 50 : 58),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +84,7 @@ class _AchievementCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (a.gems > 0) RewardPill(icon: 'gem', label: '${a.gems}'),
-                  if (a.chest) ...[const SizedBox(width: 3), const RewardIcon('gift', size: 28)],
+                  if (a.chest) ...[const SizedBox(width: 3), const RewardIcon('chest-champion', size: 30)],
                 ],
               ),
             ],

@@ -434,7 +434,9 @@
       "state": {
         "cosmetics": [
           0,
-          2
+          1,
+          2,
+          3
         ],
         "selectedCosmetic": 0
       },
@@ -880,6 +882,43 @@
       "state": {
         "branch": "swim",
         "money": 900
+      }
+    },
+    {
+      "name": "swim-running-frame",
+      "state": {
+        "branch": "swim",
+        "cosmetics": [
+          1
+        ],
+        "selectedCosmetic": 1
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          7.6
+        ]
+      ]
+    },
+    {
+      "name": "sprint-countdown-frame",
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          1.2
+        ]
+      ],
+      "state": {
+        "cosmetics": [
+          2
+        ],
+        "selectedCosmetic": 2
       }
     }
   ]

@@ -4,7 +4,6 @@ import '../../game/controller.dart';
 import '../../game/data.dart';
 import '../../game/state.dart';
 import '../components/components.dart';
-import '../stadium/runner_avatar.dart';
 import '../theme/theme.dart';
 
 /// Spor Çantaları: bekleyen seçim ya da sahip olunan çantalar.
@@ -97,7 +96,7 @@ class _ChestChoice extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const RewardIcon('gift', size: 52),
+              const RewardIcon('chest-normal', size: 58),
               const SizedBox(height: 6),
               Text('${index + 1}. Çanta', style: gameText(14, color: GameColors.ink, height: 1)),
             ],
@@ -180,11 +179,11 @@ class _ChestTile extends StatelessWidget {
                         color: color,
                         shade: shade,
                         radius: 18,
-                        child: const Center(child: RewardIcon('gift', size: 62)),
+                        child: Center(child: RewardIcon('chest-$type', size: 70)),
                       )
-                    : const RaisedSurface.locked(
+                    : RaisedSurface.locked(
                         radius: 18,
-                        child: Opacity(opacity: .5, child: Center(child: RewardIcon('gift', size: 62))),
+                        child: Opacity(opacity: .5, child: Center(child: RewardIcon('chest-$type', size: 70))),
                       ),
               ),
               Positioned(
@@ -233,16 +232,11 @@ class CosmeticsPanel extends StatelessWidget {
         for (var k = 0; k < s.cosmetics.length; k++)
           ListRow(
             children: [
-              // Çerçevenin gerçek rengiyle önizleme.
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: GameColors.row,
-                  border: Border.all(color: RunnerAvatar.cosmeticColors[s.cosmetics[k]][0], width: 4),
-                  boxShadow: [BoxShadow(color: RunnerAvatar.cosmeticColors[s.cosmetics[k]][1], blurRadius: 6)],
-                ),
+              // Seçili sporcunun yüzü bu çerçeveyle.
+              AvatarFrame(
+                cosmetic: s.cosmetics[k],
+                size: 40,
+                child: ClipOval(child: Art(animals[s.selected].art, width: 40, height: 40)),
               ),
               RowTitle(cosmeticNames[s.cosmetics[k]]),
               if (s.selectedCosmetic == s.cosmetics[k])

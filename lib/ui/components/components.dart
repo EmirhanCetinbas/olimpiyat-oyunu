@@ -17,3 +17,4 @@ export 'reward_widgets.dart';
 export 'prize_wheel.dart';
 export 'medal_badge.dart';
 export 'notification_dot.dart';
+export 'avatar_frame.dart';

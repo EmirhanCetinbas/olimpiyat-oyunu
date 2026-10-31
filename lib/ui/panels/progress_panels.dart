@@ -60,7 +60,7 @@ class TournamentPanel extends StatelessWidget {
           decoration: flatCardDecoration(radius: 16, color: won ? const Color(0xFFF0FBE6) : GameColors.row),
           child: Row(
             children: [
-              const RewardIcon('gift', size: 38),
+              const RewardIcon('chest-cup', size: 40),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(

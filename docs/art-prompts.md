@@ -238,4 +238,6 @@ Bitince: kaydettiğin dosyaların listesini, her birini açıp kontrol ettiğini
 düşündüklerini yaz.
 ```
 
-İnceleme: (görseller gelince doldurulacak)
+İnceleme (2026-11-01): 27 dosyanın hepsi ayrı üretilmiş; kesik ya da komşu parçası yok, adlar içerikle uyuşuyor.
+Alındı: çantalar (`rewards/chest-<tür>.png`), başarım ikonları (`rewards/ach-<id>.png`, her başarının kendi ikonu),
+kilit ve saat, avatar çerçeveleri (`art/frames/`, deliğe ortalanır; `AvatarFrame`), ok ve mesafe bayrağı (`art/field/`).

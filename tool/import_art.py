@@ -11,6 +11,7 @@ python3 tool/import_art.py
 KAYNAK_ADI: ChatGPT ilk teslimde sporcu ve yükseltme dosyalarını istem sırasıyla üretip alfabetik
 adlarla kaydetti; tablo dosyayı içindeki görsele eşler (ad = içerik).
 """
+import math
 from collections import deque
 from pathlib import Path
 
@@ -58,7 +59,20 @@ GRUPLAR = {
 TEKLER = {
     'ui/calendar.png': 'rewards/calendar.png',
     'ui/boost.png': 'rewards/boost.png',
+    'ui/lock.png': 'rewards/lock.png',
+    'ui/clock.png': 'rewards/clock.png',
+    **{f'chests/{t}.png': f'rewards/chest-{t}.png' for t in ('normal', 'cup', 'champion')},
 }
+
+# Başarım ikonları: achievements/<id>.png → rewards/ach-<id>.png
+BASARIMLAR = 'achievements'
+
+# Saha parçaları: kareye konmaz, şeklin sınırına kırpılır (uzun kenar 256 px).
+SAHA = ('field/arrow.png', 'field/flag.png')
+
+# Avatar çerçeveleri: deliğin ortasına ortalanır, delik çapı kenarın FRAME_HOLE katı olur
+# (kod avatarı bu oranla çerçeveler: lib/ui/components/avatar_frame.dart).
+FRAME_HOLE = .54
 
 
 def clean(im: Image.Image) -> Image.Image:
@@ -110,6 +124,29 @@ def fit(im: Image.Image) -> Image.Image:
     return canvas
 
 
+def frame(im: Image.Image) -> Image.Image:
+    """Deliği (ortadaki saydam daire) bulur; deliğin ortasına ve ölçüsüne göre kareye koyar."""
+    a = im.getchannel('A')
+    w, h = im.size
+    # Ortadan dışa her yönde ilk dolu piksele kadar: deliğin sınırı.
+    cx, cy = w / 2, h / 2
+    edge = []
+    for k in range(72):
+        t = k * math.pi / 36
+        for r in range(min(w, h) // 2):
+            x, y = int(cx + r * math.cos(t)), int(cy + r * math.sin(t))
+            if a.getpixel((x, y)) > 40:
+                edge.append((x, y))
+                break
+    hx = (min(p[0] for p in edge) + max(p[0] for p in edge)) / 2
+    hy = (min(p[1] for p in edge) + max(p[1] for p in edge)) / 2
+    radius = sum(math.dist((hx, hy), p) for p in edge) / len(edge)
+    side = round(2 * radius / FRAME_HOLE)
+    canvas = Image.new('RGBA', (side, side), (0, 0, 0, 0))
+    canvas.paste(im, (round(side / 2 - hx), round(side / 2 - hy)), im)
+    return canvas
+
+
 def save(im: Image.Image, dest: Path):
     dest.parent.mkdir(parents=True, exist_ok=True)
     im.resize((SIZE, SIZE), Image.LANCZOS).save(dest, optimize=True)
@@ -125,6 +162,18 @@ def main():
             save(fit(im) if trim else im, OUT / folder / f'{name}.png')
     for rel, dest in TEKLER.items():
         save(fit(clean(Image.open(SRC / rel).convert('RGBA'))), OUT / dest)
+    for src in sorted((SRC / BASARIMLAR).glob('*.png')):
+        save(fit(clean(Image.open(src).convert('RGBA'))), OUT / f'rewards/ach-{src.stem}.png')
+    for src in sorted((SRC / 'frames').glob('*.png')):
+        save(frame(Image.open(src).convert('RGBA')), OUT / f'art/frames/{src.name}')
+    for rel in SAHA:
+        im = clean(Image.open(SRC / rel).convert('RGBA'))
+        im = im.crop(im.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox())
+        scale = SIZE / max(im.size)
+        dest = OUT / 'art' / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS).save(dest, optimize=True)
+        print(dest.relative_to(ROOT), im.size)
 
 
 if __name__ == '__main__':

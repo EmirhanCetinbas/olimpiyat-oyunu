@@ -83,18 +83,8 @@ class ArcheryHud extends StatelessWidget {
               layout.point(
                 c.archeryArrowLeft,
                 c.archeryArrowTop,
-                Text(
-                  '➶',
-                  style: TextStyle(
-                    fontSize: 28,
-                    height: 1,
-                    color: const Color(0xFFFFCF2C),
-                    shadows: [
-                      ...outlineShadows(const Color(0xFF14293F), 1.5),
-                      const Shadow(color: Color(0xFF102539), offset: Offset(0, 1), blurRadius: 3),
-                    ],
-                  ),
-                ),
+                // Ok sağa uçar (görsel yatay, ucu sağda; 398×126).
+                Image.asset('assets/images/art/field/arrow.png', width: 40, height: 12.7, filterQuality: FilterQuality.medium),
               ),
             if (score.isNotEmpty)
               Positioned(
@@ -143,14 +133,14 @@ class JumpFlag extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              Text(
-                '⚑',
-                style: TextStyle(
-                  fontSize: 24,
-                  height: 21 / 24,
-                  color: Color(jumpColors[index]),
-                  shadows: outlineShadows(GameColors.ink, 1),
-                ),
+              // Beyaz bez kulvar rengine boyanır (direk de hafifçe renk alır).
+              Image.asset(
+                'assets/images/art/field/flag.png',
+                width: 18,
+                height: 21,
+                color: Color(jumpColors[index]),
+                colorBlendMode: BlendMode.modulate,
+                filterQuality: FilterQuality.medium,
               ),
               Positioned(
                 left: 8,
