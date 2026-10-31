@@ -89,7 +89,7 @@ class _RaceHead extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Art(art, width: 24, height: 24, emojiSize: 20),
+                    Art(art, width: 24, height: 24),
                     const SizedBox(width: 4),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 92),

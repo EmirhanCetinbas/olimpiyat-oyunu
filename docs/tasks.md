@@ -51,7 +51,7 @@ Oyun tasarımı incelemesinden (2026-10-31) çıkan sorunlar. Sırayla ele alın
 ## Görseller
 
 - [x] **15. Ödül ikonları net olsun.** Elmas, bilet, madalya, para ve hediye panel ekran görüntülerinden kırpılmıştı (70–110 px, kenarları kesik). Oyunun 256 px'lik ikon setinden yeniden üretildi (`tool/hires_reward_icons.py`).
-- [ ] **16. Görsel yenileme (58 görsel).** Denetim tablosu ve ChatGPT görevi: `docs/art-prompts.md` §1. Sporcu portreleri, 16 yükseltme ikonu, 6 branş ikonu, 3 çanta, 4 avatar çerçevesi, 16 başarım ikonu, kilit/saat/takvim/kupon, ok ve mesafe bayrağı, 100 m stadyumu. Görseller `design/art/` altına gelince `tool/import_art.py` yazılacak; yeni stadyumda 100 m pist geometrisi (`track.dart`) yeniden ölçülecek.
+- [ ] **16. Görsel yenileme (58 görsel).** Denetim ve ChatGPT görevleri: `docs/art-prompts.md`. Alındı (`tool/import_art.py`): sporcu portreleri, 16 yükseltme ikonu (emoji ve ekran görüntüsü kırpıntısı kalmadı), 6 branş ikonu, takvim, 2x kupon, yeni 100 m stadyumu (pist ölçüleri yeniden alındı, görsel ortalı kırpılıyor). Bekleyen (§2, ilk teslimde kesik geldi): 3 çanta, 4 avatar çerçevesi, 16 başarım ikonu, kilit, saat, ok, mesafe bayrağı.
 
 ## Oynanış ve arayüz (cihaz testi, 2026-10-31)
 

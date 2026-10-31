@@ -102,7 +102,7 @@ class UpgradeCard extends StatelessWidget {
                       height: icon,
                       decoration: BoxDecoration(color: const Color(0xFFFFF1D2), borderRadius: BorderRadius.circular(12)),
                       alignment: Alignment.center,
-                      child: Art(u.icon, width: icon - 8, height: icon - 8, emojiSize: icon * .55),
+                      child: Art(u.icon, width: icon - 8, height: icon - 8),
                     ),
                     SizedBox(width: compact ? 5 : 7),
                     Expanded(

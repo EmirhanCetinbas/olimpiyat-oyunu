@@ -9,12 +9,12 @@ class BranchesPanel extends StatelessWidget {
   final GameController c;
 
   static const _branches = [
-    ('sprint', '100 metre koşu', 'shoe'),
-    ('hurdles', 'Engelli koşu', 'speed'),
-    ('swim', 'Yüzme', 'swim-wave'),
-    ('longjump', 'Uzun atlama', 'jump-start'),
-    ('weights', 'Halter', 'weight-strength'),
-    ('archery', 'Okçuluk', 'archery-bow'),
+    ('sprint', '100 metre koşu', 'branch-sprint'),
+    ('hurdles', 'Engelli koşu', 'branch-hurdles'),
+    ('swim', 'Yüzme', 'branch-swim'),
+    ('longjump', 'Uzun atlama', 'branch-longjump'),
+    ('weights', 'Halter', 'branch-weights'),
+    ('archery', 'Okçuluk', 'branch-archery'),
   ];
 
   @override
@@ -41,7 +41,7 @@ class BranchesPanel extends StatelessWidget {
         for (final (id, name, art) in _branches)
           ListRow(
             children: [
-              Art(art, width: 36, height: 36, emojiSize: 28),
+              Art(art, width: 36, height: 36),
               RowTitle(name),
               if (c.state.branch == id)
                 const SelectedTag()

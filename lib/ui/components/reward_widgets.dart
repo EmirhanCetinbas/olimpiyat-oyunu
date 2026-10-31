@@ -134,7 +134,8 @@ class RewardKindIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (kind) {
-    'money' || 'boost' => RewardIcon('money', size: size),
+    'money' => RewardIcon('money', size: size),
+    'boost' => RewardIcon('boost', size: size),
     'gems' => RewardIcon('gem', size: size),
     'ticket' => RewardIcon('ticket', size: size),
     'bundle' || 'chest' => RewardIcon('gift', size: size),

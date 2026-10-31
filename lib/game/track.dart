@@ -16,27 +16,32 @@ double hurdleX(double progress) => hurdleStartX + progress * (hurdleFinishX - hu
 const swimStartX = 7.0, swimFinishX = 93.8;
 double swimLaneY(int lane) => 38.0 + lane * 8;
 
-/// 100 m sahası görseli `BoxFit.cover` ile alttan hizalı çizilir: saha oranı 1,72, görsel 1,5;
-/// görselin üst %12,8'i kırpılır.
+/// 100 m sahası görseli `BoxFit.cover` ile ortalı çizilir: saha oranı 1,72, görsel 1,5;
+/// görselin üstünden ve altından %6,4'er kırpılır (üstte tribün, altta süsler yarım görünür).
 const sprintFieldAspect = 1.72;
 const _imageW = 1536.0, _imageH = 1024.0;
 const _visibleH = 1.5 / sprintFieldAspect;
+const _cropTop = (1 - _visibleH) / 2;
 
-/// Stadyum pisti: 4 kulvar, saat yönünün tersine. Başlangıç sağ üstteki kademeli çizgilerde
-/// (dış kulvar önde), rota üst düzlük → sol viraj → alt düzlük, bitiş alt düzlükteki damalı
-/// çizgi. Kulvar 0 en içte. Ölçüler görsel pikseli.
+/// Stadyum pisti: 4 kulvar, saat yönünün tersine. Başlangıç sağ virajın girişindeki kademeli
+/// çizgilerde (dış kulvar önde), rota üst düzlük → sol viraj → alt düzlük, bitiş alt düzlükteki
+/// damalı çizgi. Kulvar 0 en içte. Ölçüler görsel pikseli (kulvar ortaları, virajlara elips oturtuldu).
 class SprintTrack {
   SprintTrack._(this._points, this._lengths);
 
   static const lanes = 4;
-  static const _finishX = 768.0, _cy = 598.4;
+  static const _finishX = 768.0;
 
-  /// İç ve dış kulvar sınırları: viraj merkezleri (sol, sağ) ve yarıçaplar (yatay, dikey).
-  static const _inner = (left: 359.0, right: 1180.0, rx: 75.0, ry: 70.5);
-  static const _outer = (left: 376.0, right: 1156.0, rx: 301.0, ry: 237.5);
+  /// Kulvar ortası: dikey merkez ve yarıçap; sol ve sağ virajın merkezi ve yatay yarıçapı.
+  static const _lane = [
+    (cy: 534.3, ry: 225.8, left: 433.9, leftRx: 266.0, right: 1102.8, rightRx: 260.0),
+    (cy: 535.5, ry: 259.0, left: 435.1, leftRx: 303.0, right: 1103.1, rightRx: 296.0),
+    (cy: 536.5, ry: 292.5, left: 438.9, leftRx: 342.0, right: 1098.6, rightRx: 336.0),
+    (cy: 538.0, ry: 325.5, left: 444.1, leftRx: 383.0, right: 1088.3, rightRx: 383.0),
+  ];
 
   /// Kademeli başlangıç çizgilerinin sağ virajdaki açısı (tepeden, derece), içten dışa.
-  static const _startAngle = [44.0, 25.5, 16.0, 8.0];
+  static const _startAngle = [23.3, 14.8, 8.9, 4.0];
 
   static final List<SprintTrack> _lanes = [for (var k = 0; k < lanes; k++) _build(k)];
 
@@ -44,24 +49,21 @@ class SprintTrack {
   final List<double> _lengths;
 
   static SprintTrack _build(int lane) {
-    final f = (lane + .5) / lanes;
-    double mix(double a, double b) => a + (b - a) * f;
-    final left = mix(_inner.left, _outer.left), right = mix(_inner.right, _outer.right);
-    final rx = mix(_inner.rx, _outer.rx), ry = mix(_inner.ry, _outer.ry);
+    final l = _lane[lane];
     final pts = <Point<double>>[];
     // Sağ viraj: başlangıç açısından tepeye (saat yönünün tersine).
     final start = _startAngle[lane] * pi / 180;
     for (var i = 0; i <= 12; i++) {
       final a = start * (1 - i / 12);
-      pts.add(Point(right + rx * sin(a), _cy - ry * cos(a)));
+      pts.add(Point(l.right + l.rightRx * sin(a), l.cy - l.ry * cos(a)));
     }
     // Üst düzlük sola, sol viraj (tepeden dibe), alt düzlük sağa bitiş çizgisine.
-    pts.add(Point(left, _cy - ry));
+    pts.add(Point(l.left, l.cy - l.ry));
     for (var i = 1; i <= 36; i++) {
       final a = pi * i / 36;
-      pts.add(Point(left - rx * sin(a), _cy - ry * cos(a)));
+      pts.add(Point(l.left - l.leftRx * sin(a), l.cy - l.ry * cos(a)));
     }
-    pts.add(Point(_finishX, _cy + ry));
+    pts.add(Point(_finishX, l.cy + l.ry));
     final lengths = <double>[0];
     for (var i = 1; i < pts.length; i++) {
       lengths.add(lengths.last + pts[i].distanceTo(pts[i - 1]));
@@ -81,6 +83,6 @@ class SprintTrack {
     final span = t._lengths[i] - t._lengths[i - 1];
     final u = span == 0 ? 0.0 : (target - t._lengths[i - 1]) / span;
     final px = a.x + (b.x - a.x) * u, py = a.y + (b.y - a.y) * u;
-    return (x: px / _imageW * 100, y: (py / _imageH - (1 - _visibleH)) / _visibleH * 100);
+    return (x: px / _imageW * 100, y: (py / _imageH - _cropTop) / _visibleH * 100);
   }
 }

@@ -87,7 +87,7 @@ class _BranchButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Art(c.branchArt, width: 24, height: 24, emojiSize: 20),
+              Art(c.branchArt, width: 24, height: 24),
               const SizedBox(width: 5),
               Text(c.branchName, maxLines: 1, style: gameText(13, color: Colors.white, height: 1)),
               const SizedBox(width: 4),

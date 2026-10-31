@@ -160,4 +160,82 @@ varsa yeniden üret.
 Bitince: kaydettiğin dosyaların listesini ve yeniden üretilmesi gerektiğini düşündüklerini yaz.
 ```
 
+İnceleme (ilk teslim, 2026-10-31): ChatGPT görselleri büyük tabakalar halinde üretip 512 px'lik karelere kesti.
+- Alındı: branş ikonları (6), sporcu portreleri (6), yükseltme ikonları (16), takvim, kupon, 100 m stadyumu.
+  Sporcu ve yükseltme dosyaları istem sırasıyla üretilip alfabetik adlarla kaydedilmişti; `tool/import_art.py`
+  içindeki `KAYNAK_ADI` tablosu dosyayı içeriğine eşler ve kenara değen komşu parçalarını siler.
+  Stadyum aynı yerleşimde (kademeli başlangıç sağ virajda, bitiş alt düzlükte); pist ölçüleri yeniden alındı.
+  Üslubu diğer arenalardan daha resimsi ama tribün ve seyirciler ailede.
+- Kullanılamadı (kesik, komşu görselle karışık): çantalar (3), avatar çerçeveleri (4), başarım ikonları (16),
+  ok ve bayrak, kilit ve saat (altı kesik). Yeniden istendi: §2.
+
+## 2. Yeniden üretim: kesik gelen 27 görsel (2026-10-31)
+
+```text
+Görev: Pawlympics görsel teslimindeki 27 dosya kullanılamadı: görseller büyük bir tabakada üretilip
+512 px'lik karelere kesildiği için nesneler kesik, karelerde komşu görselin parçaları var ve bazı
+dosyaların içeriği adıyla uyuşmuyor. Aşağıdaki 27 dosyayı yeniden üret ve aynı yollara kaydet
+(bu 27 dosyanın üzerine yazabilirsin).
+
+En önemli kural: HER GÖRSELİ AYRI ÜRET. Tabaka, ızgara ya da kolaj üretip kesme. Her dosya kendi
+tuvalinde tek bir nesne; nesnenin tamamı tuvalin içinde, dört kenarda da en az %6 boş saydam pay.
+Kaydetmeden önce her dosyayı aç ve kontrol et: içerik dosya adıyla aynı mı, nesne kesik mi, kenarda
+başka bir şeyin parçası var mı.
+
+Önce bak:
+- design/art/branches/*.png ve design/art/upgrades/*.png → ilk teslimden kabul edilen ikonlar; üslup,
+  kontur ve ışık bunlarla aynı olsun.
+- assets/images/ui-icons.png, assets/images/rewards/gift.png, medal.png → oyunun ikon ailesi.
+- docs/art-prompts.md §1 → üslup kuralları ve aşağıdaki görsellerin ayrıntılı tarifleri (D, E, F, G, H).
+
+Üslup: kalın koyu lacivert kontur (#14293F civarı), parlak doygun renkler, yumuşak iç gölge, üstte küçük
+parlama, sol üstten ışık. Zemin gerçekten saydam (alfa); kutu, daire, gölge ya da dama deseni yok.
+Yazı, harf, rakam, logo, marka yok.
+
+Liste:
+Çantalar (üçü aynı açı ve boyutta, açıkça kademeli; alt menüdeki mavi sırt çantasına benzemesin)
+- design/art/chests/normal.png → Spor Çantası: yeşil-turuncu spor çantası, önünde yıldız arması.
+- design/art/chests/cup.png → Kupa Çantası: kırmızı, altın şeritli çanta, önünde küçük kupa arması.
+- design/art/chests/champion.png → Şampiyon Çantası: mor-altın gösterişli çanta, üstünde taç, parıltı.
+Avatar çerçeveleri (yuvarlak yüzün etrafına oturan halka; ortası tamamen saydam daire, çapı genişliğin
+~68 %'i; süs iç daireye taşmasın; halka tuvalin ortasında ve tamamı görünür)
+- design/art/frames/gold.png → parlak altın halka, küçük perçinler.
+- design/art/frames/lightning.png → mavi halka, iki yanda sarı şimşekler.
+- design/art/frames/star.png → mor halka, üstünde ve yanlarda altın yıldızlar.
+- design/art/frames/paw.png → pembe halka, üstüne dizili beyaz pati izleri.
+Başarım ikonları (madalyon/rozet hissi, her biri farklı)
+- design/art/achievements/first.png → damalı bayrak ve tek yıldız.
+- design/art/achievements/fast-paws.png → hız çizgili koşan pati.
+- design/art/achievements/full-stand.png → hayvan seyircilerle dolu küçük tribün.
+- design/art/achievements/ticket-office.png → çizgili tenteli bilet gişesi.
+- design/art/achievements/first-cup.png → küçük altın kupa, tek yıldız.
+- design/art/achievements/races-25.png → kronometre ve koşu ayakkabısı.
+- design/art/achievements/full-team.png → yan yana altı küçük hayvan başı (çita, rakun, ayı, tavşan,
+  kaplumbağa, tilki); design/art/athletes/ altındaki portrelerle aynı hayvanlar.
+- design/art/achievements/medals-25.png → üst üste altın, gümüş, bronz madalyalar.
+- design/art/achievements/campus-10.png → küçük stadyum binası ve yükselen ok.
+- design/art/achievements/level-10.png → yıldızlı rütbe nişanı (şeritli).
+- design/art/achievements/wins-50.png → defne yapraklı altın kupa.
+- design/art/achievements/cups-5.png → yan yana üç kupa.
+- design/art/achievements/full-gear.png → atlet forması, ayakkabı ve bileklik yığını, üstünde yıldızlar.
+- design/art/achievements/archer.png → tam ortadan vurulmuş hedef, parıltı.
+- design/art/achievements/races-250.png → kanatlı koşu ayakkabısı.
+- design/art/achievements/wins-250.png → taçlı, defne yapraklı büyük altın kupa ve pati arması.
+Arayüz
+- design/art/ui/lock.png → gri-gümüş asma kilit (tamamı görünür, altı kesik olmasın).
+- design/art/ui/clock.png → sarı çalar saat (ayakları dahil tamamı görünür).
+Saha parçaları
+- design/art/field/arrow.png → altın uçlu, kırmızı tüylü ahşap ok; YATAY, ucu sağa; ok tek parça ve
+  tamamı bu dosyada (uç da tüyler de).
+- design/art/field/flag.png → mesafe bayrağı: ince direk ve BEYAZ bez, bez sağa dalgalı; yalnız bayrak.
+
+Teknik: PNG, RGBA (saydam zemin), 512×512.
+
+Sınırlar: yalnız bu 27 dosyayı yaz. design/art altındaki diğer dosyalara, koda, assets/, pubspec.yaml ve
+dokümanlara dokunma; commit ya da push yapma.
+
+Bitince: kaydettiğin dosyaların listesini, her birini açıp kontrol ettiğini ve yeniden üretilmesi gerektiğini
+düşündüklerini yaz.
+```
+
 İnceleme: (görseller gelince doldurulacak)

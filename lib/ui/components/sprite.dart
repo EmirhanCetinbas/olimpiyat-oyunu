@@ -64,37 +64,14 @@ class Sprite extends StatelessWidget {
   );
 }
 
-/// Ortalanmış emoji ikon.
-class EmojiArt extends StatelessWidget {
-  const EmojiArt(this.emoji, {super.key, this.size = 16, this.width, this.height});
-  final String emoji;
-  final double size;
-  final double? width;
-  final double? height;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    width: width,
-    height: height,
-    child: Center(
-      child: Text(emoji, style: TextStyle(fontSize: size, height: 1)),
-    ),
-  );
-}
-
-/// `<span class="art" data-art="...">` karşılığı: sprite ya da emoji.
+/// `<span class="art" data-art="...">` karşılığı.
 class Art extends StatelessWidget {
-  const Art(this.artKey, {super.key, this.width = 31, this.height = 31, this.emojiSize = 16, this.radius});
+  const Art(this.artKey, {super.key, this.width = 31, this.height = 31, this.radius});
   final String artKey;
   final double width;
   final double height;
-  final double emojiSize;
   final BorderRadius? radius;
 
   @override
-  Widget build(BuildContext context) {
-    final spec = artSpec(artKey);
-    if (spec.emoji != null) return EmojiArt(spec.emoji!, size: emojiSize, width: width, height: height);
-    return Sprite(spec.sprite!, width: width, height: height, radius: radius);
-  }
+  Widget build(BuildContext context) => Sprite(artSprite(artKey), width: width, height: height, radius: radius);
 }

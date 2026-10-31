@@ -320,14 +320,7 @@ class GameController extends ChangeNotifier {
     _ => '100 METRE',
   };
 
-  String get branchArt => switch (state.branch) {
-    'swim' => 'swim-wave',
-    'hurdles' => 'speed',
-    'longjump' => 'jump-start',
-    'weights' => 'weight-strength',
-    'archery' => 'archery-bow',
-    _ => 'shoe',
-  };
+  String get branchArt => 'branch-${state.branch}';
 
   String get arenaImage => switch (state.branch) {
     'swim' => 'assets/images/swim-arena.png',

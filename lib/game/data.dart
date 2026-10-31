@@ -330,45 +330,33 @@ class SpriteRef {
   final Rect src;
 }
 
-/// Bir `data-art` anahtarı ya sprite kırpıntısı ya da emoji olarak çizilir.
-class ArtSpec {
-  const ArtSpec.sprite(SpriteRef this.sprite) : emoji = null;
-  const ArtSpec.emoji(String this.emoji) : sprite = null;
-  final SpriteRef? sprite;
-  final String? emoji;
-}
-
-const imgReference = 'assets/images/reference.png';
 const imgUiIcons = 'assets/images/ui-icons.png';
 const imgNavIcons = 'assets/images/nav-icons.png';
 const imgEquipment = 'assets/images/equipment-icons.png';
-const imgJumpIcons = 'assets/images/jump-icons-source.png';
-const imgWeightIcons = 'assets/images/weights-icons-source.png';
 
-const spriteImages = [imgReference, imgUiIcons, imgNavIcons, imgEquipment, imgJumpIcons, imgWeightIcons];
+/// Tek parça çizimler (`tool/import_art.py`, 256 px): sporcu portreleri, yükseltme ve branş ikonları.
+const _athleteArt = ['cheetah', 'raccoon', 'bear', 'rabbit', 'turtle', 'fox'];
+const _upgradeArt = [
+  'jump-start', 'jump-steps', 'jump-power', 'jump-land', //
+  'weight-strength', 'weight-grip', 'weight-balance', 'weight-finish',
+  'archery-aim', 'archery-bow', 'archery-wind', 'archery-last',
+  'swim-dive', 'swim-paw', 'swim-breath', 'swim-wave',
+];
+const branchIds = ['sprint', 'hurdles', 'swim', 'longjump', 'weights', 'archery'];
 
-Rect _r(List<num> r) => Rect.fromLTWH(r[0].toDouble(), r[1].toDouble(), r[2].toDouble(), r[3].toDouble());
+String? _singleArt(String key) {
+  if (_athleteArt.contains(key)) return 'assets/images/art/athletes/$key.png';
+  if (_upgradeArt.contains(key)) return 'assets/images/art/upgrades/$key.png';
+  if (key.startsWith('branch-') && branchIds.contains(key.substring(7))) return 'assets/images/art/branches/${key.substring(7)}.png';
+  return null;
+}
 
-const _referenceArt = {
-  'avatar': [69.0, 58, 73, 75],
-  'trophy': [67.0, 163, 77, 74],
-  'shoe': [64.0, 1009, 75, 72],
-  'speed': [515.0, 1009, 76, 71],
-  'stamina': [66.0, 1273, 80, 64],
-  'finish': [514.0, 1267, 77, 69],
-  'clipboard': [35.0, 1524, 96, 97],
-  'bag': [174.0, 1528, 79, 93],
-  'cards': [301.0, 1530, 75, 91],
-  'camp': [553.0, 1530, 85, 92],
-  'medal': [685.0, 1529, 74, 93],
-  'shop': [805.0, 1527, 101, 93],
-  'cheetah': [705.0, 524, 38, 38],
-  'raccoon': [623.0, 576, 36, 35],
-  'bear': [493.0, 609, 36, 35],
-  'rabbit': [374.0, 650, 36, 35],
-  'turtle': [404.0, 710, 33, 31],
-  'fox': [521.0, 758, 36, 35],
-};
+final spriteImages = [
+  imgUiIcons,
+  imgNavIcons,
+  imgEquipment,
+  for (final k in [..._athleteArt, ..._upgradeArt, for (final b in branchIds) 'branch-$b']) _singleArt(k)!,
+];
 
 const _iconGrid = {
   'avatar': [0, 0],
@@ -391,37 +379,13 @@ const _iconGrid = {
   'shop': [5, 2],
 };
 
-const _jumpIcons = {
-  'jump-start': [46.0, 999, 107, 88],
-  'jump-steps': [500.0, 998, 110, 92],
-  'jump-power': [43.0, 1252, 111, 92],
-  'jump-land': [498.0, 1252, 111, 92],
-};
-
-const _weightIcons = {
-  'weight-strength': [48.0, 1000, 105, 90],
-  'weight-grip': [500.0, 1000, 110, 92],
-  'weight-balance': [48.0, 1252, 106, 94],
-  'weight-finish': [500.0, 1252, 110, 94],
-};
-
-const _archeryEmoji = {'archery-aim': '🎯', 'archery-bow': '🏹', 'archery-wind': '🍃', 'archery-last': '➶'};
-const _swimEmoji = {'swim-dive': '🏊', 'swim-paw': '🐾', 'swim-breath': '🤿', 'swim-wave': '🌊'};
-
-ArtSpec artSpec(String key) {
-  final weight = _weightIcons[key];
-  if (weight != null) return ArtSpec.sprite(SpriteRef(imgWeightIcons, _r(weight)));
-  final archery = _archeryEmoji[key];
-  if (archery != null) return ArtSpec.emoji(archery);
-  final jump = _jumpIcons[key];
-  if (jump != null) return ArtSpec.sprite(SpriteRef(imgJumpIcons, _r(jump)));
-  final swim = _swimEmoji[key];
-  if (swim != null) return ArtSpec.emoji(swim);
-  final grid = _iconGrid[key];
-  if (grid != null) {
-    return ArtSpec.sprite(SpriteRef(imgUiIcons, Rect.fromLTWH(grid[0] * 256.0, grid[1] * 256.0, 256, 256)));
-  }
-  return ArtSpec.sprite(SpriteRef(imgReference, _r(_referenceArt[key] ?? _referenceArt['avatar']!)));
+/// Bir `data-art` anahtarının görseli: tek parça çizim ya da ikon setinden 256 px'lik kare.
+/// Bilinmeyen anahtar avatar ikonuna düşer.
+SpriteRef artSprite(String key) {
+  final single = _singleArt(key);
+  if (single != null) return SpriteRef(single, const Rect.fromLTWH(0, 0, 256, 256));
+  final grid = _iconGrid[key] ?? _iconGrid['avatar']!;
+  return SpriteRef(imgUiIcons, Rect.fromLTWH(grid[0] * 256.0, grid[1] * 256.0, 256, 256));
 }
 
 SpriteRef navIcon(int column) => SpriteRef(imgNavIcons, Rect.fromLTWH(column * 256.0, 0, 256, 256));

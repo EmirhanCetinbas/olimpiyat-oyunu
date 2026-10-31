@@ -45,9 +45,7 @@ class RaceField extends StatelessWidget {
               children: [
                 // 100 m: pist görseli alttan hizalı kırpılır (bkz. SprintTrack); diğerleri sahayı doldurur.
                 Positioned.fill(
-                  child: branch == 'sprint'
-                      ? Image.asset(c.arenaImage, fit: BoxFit.cover, alignment: Alignment.bottomCenter)
-                      : Image.asset(c.arenaImage, fit: BoxFit.fill),
+                  child: branch == 'sprint' ? Image.asset(c.arenaImage, fit: BoxFit.cover) : Image.asset(c.arenaImage, fit: BoxFit.fill),
                 ),
                 if (branch == 'hurdles')
                   for (var lane = 0; lane < 6; lane++)
