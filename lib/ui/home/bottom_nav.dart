@@ -89,20 +89,7 @@ class _NavItem extends StatelessWidget {
                 clipBehavior: Clip.none,
                 children: [
                   Sprite(navIcon(column), width: compact ? 33 : 38, height: compact ? 33 : 38),
-                  if (badge)
-                    Positioned(
-                      right: -4,
-                      top: -2,
-                      child: Container(
-                        width: 13,
-                        height: 13,
-                        decoration: BoxDecoration(
-                          color: GameColors.danger,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: GameColors.ink, width: 2),
-                        ),
-                      ),
-                    ),
+                  if (badge) const Positioned(right: -4, top: -2, child: NotificationDot()),
                 ],
               ),
               const SizedBox(height: 1),

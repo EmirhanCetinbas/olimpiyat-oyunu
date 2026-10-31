@@ -139,6 +139,9 @@ class GameController extends ChangeNotifier {
   bool rewardsOpen = false;
   int navSelected = 1;
   bool campusOpen = false;
+
+  /// Kampüs haritasının son kamera görünümü (oturum boyunca).
+  List<double>? campusView;
   String campusSelection = 'sprint';
   bool campusDialogOpen = false;
 

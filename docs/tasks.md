@@ -68,3 +68,13 @@ Not alınan benzer iyileştirmeler:
 - [ ] **24. Branşa göre uzman önerisi.** Tek takım lideri tüm branşlarda koşuyor; branş penceresinde her branşın uzmanını göster, branşa geçerken uzmana geçmeyi öner.
 - [x] **25. Çevrimdışı gelir karşılaması.** Uzun aradan sonra kazanç yalnız bildirim olarak geçiyor; ayrı bir karşılama penceresi daha görünür olur.
   - Çözüm: "Tekrar Hoş Geldin" penceresi (süre, sayarak artan kazanç, 8 saat sınırı notu, Topla). Başka pencere açıksa bildirim olarak geçer.
+
+## Kampüs haritası (duck-gacha Duck Park düzeni)
+
+Mimari Duck Park'tan alındı: saf Dart dünya + kamera (`lib/game/campus_world.dart`), bileşensiz tek tuvale çizen Flame sahnesi (`lib/game/campus_game.dart`, sabit 30 Hz simülasyon), üstte Flutter katmanı (`lib/ui/campus/campus_viewport.dart`: jestler, ekran uzayında etiketler, düğmeler). Pencere açıkken, uygulama arka plandayken ya da sayfa görünmezken döngü durur.
+
+- [x] **K1. Harita temeli.** Tam ekran harita; kaydırma, parmak altında sabit kalan kıstırarak yakınlaştırma, sınırlar ve kenar payı, tamamını göster düğmesi, son görünüm oturum boyunca saklı. Tesise ya da etiketine dokununca tesis penceresi. Geliştirilebilir tesislerin çevresinde nabız gibi atan altın çerçeve. Tesis listesi alttan açılan pencerede.
+- [ ] **K2. Duck Park sanat düzeni.** Binalar haritaya gömülü değil, ayrı çizimler olarak boş arsalara oturur; seviyeye göre görünüm değişebilir. Yakınlaştırınca net görünmesi için yüksek çözünürlüklü harita (ve gerekirse karolar). Gereken görseller: binasız kampüs zemini (aynı yol ve nehir düzeni, en az 2048×3072), 7 tesis için saydam bina çizimleri (seviye kademeleriyle). Yürünebilir alan maskesi yol renklerinden kodla çıkarılabilir.
+- [ ] **K3. Yürüyen seyirciler.** Duck Park `ParkWalker` modeli: yol maskesi üzerinde hedef seçip yürüme, çarpışmadan kaçınma, binalarla derinlik sırası, dokununca tepki.
+- [ ] **K4. Bina efektleri.** Binalarda canlı efektler (bayrak, havuzda su, ok atışı, tribün coşkusu) ve geliştirme kutlaması (bina sıçraması + toz, kamera tesise kayar; Duck Park `celebrateBuild`).
+- [ ] **K5. Ortam.** Kenar bulutları, ortam parçacıkları, sesler, küçük ödüller.

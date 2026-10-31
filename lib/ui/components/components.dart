@@ -16,3 +16,4 @@ export 'raised_button.dart';
 export 'reward_widgets.dart';
 export 'prize_wheel.dart';
 export 'medal_badge.dart';
+export 'notification_dot.dart';

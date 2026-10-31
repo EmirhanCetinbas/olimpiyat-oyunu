@@ -5,80 +5,92 @@ import '../../game/data.dart';
 import '../components/components.dart';
 import '../theme/theme.dart';
 import 'campus_dialog.dart';
-import 'facility_marker.dart';
+import 'campus_viewport.dart';
 
-/// Kampüs: harita yalnızca arazi çizimidir; başlık, SP, etiketler ve pencere koddur.
-/// Tüm koordinatlar haritanın kendi en-boy oranına göredir.
-class CampusPage extends StatelessWidget {
+/// Kampüs: tam ekran, kaydırılıp yakınlaştırılan harita (bkz. [CampusViewport]); üstte sabit
+/// başlık, altta tesis listesi düğmesi. Tesise ya da etiketine dokunmak tesis penceresini açar.
+class CampusPage extends StatefulWidget {
   const CampusPage({super.key});
+
+  @override
+  State<CampusPage> createState() => _CampusPageState();
+}
+
+class _CampusPageState extends State<CampusPage> {
+  bool _listOpen = false;
+
+  void _setList(bool open) => setState(() => _listOpen = open);
 
   @override
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
-    final size = MediaQuery.sizeOf(context);
     final padding = MediaQuery.paddingOf(context);
-    final worldWidth = (size.width - 16).clamp(0.0, 640.0);
-    final layout = PercentLayout(worldWidth, worldWidth * 1536 / 1024);
-
-    final world = SizedBox(
-      width: layout.width,
-      height: layout.height,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(child: Image.asset('assets/images/campus-map.png', fit: BoxFit.fill)),
-          for (final f in campusFacilities) layout.area(f.area, HotSpot(onTap: () => c.showCampusFacility(f.id), label: f.name)),
-          for (final f in campusFacilities)
-            layout.point(
-              f.x,
-              f.y,
-              FacilityMarker(
-                label: f.label,
-                level: f.locked ? 'YAKINDA' : 'Sv. ${c.facilityLevel(f.id)}',
-                upgradable: c.canUpgradeFacility(f.id),
-                maxWidth: layout.x(35),
-                semanticLabel: f.name,
-                onTap: () => c.showCampusFacility(f.id),
-              ),
-            ),
-        ],
-      ),
-    );
-
+    final narrow = MediaQuery.sizeOf(context).width <= 350;
+    final topInset = padding.top + 12 + (narrow ? 37 : 42);
+    final bottomInset = padding.bottom + 66;
+    final anyUpgrade = campusFacilities.any((f) => c.canUpgradeFacility(f.id));
     return Positioned.fill(
       child: Stack(
         children: [
           Positioned.fill(
-            child: DecoratedBox(
-              decoration: const BoxDecoration(
-                color: Color(0xFF2B983C),
-                image: DecorationImage(image: AssetImage('assets/images/park-background.png'), fit: BoxFit.cover),
-              ),
-              child: Column(
-                children: [
-                  // Başlık haritanın üstünde sabit; harita ve tesis listesi kayar.
-                  Padding(padding: EdgeInsets.fromLTRB(8, padding.top + 6, 8, 6), child: _CampusTop(c)),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.only(bottom: padding.bottom + 12),
-                      child: Center(
-                        child: SizedBox(
-                          width: layout.width,
-                          child: Column(
-                            children: [
-                              ClipRRect(borderRadius: BorderRadius.circular(18), child: world),
-                              const SizedBox(height: 10),
-                              _FacilityList(c),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+            child: CampusViewport(topInset: topInset, bottomInset: bottomInset, suspended: c.campusDialogOpen || _listOpen),
+          ),
+          // Başlık haritanın üstünde sabit; arkasındaki koyu geçiş okunurluk için.
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            child: IgnorePointer(
+              child: Container(
+                height: topInset + 24,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0x88123018), Color(0x00123018)],
                   ),
-                ],
+                ),
               ),
             ),
           ),
+          Positioned(left: 8, right: 8, top: padding.top + 6, child: _CampusTop(c)),
+          Positioned(
+            left: 12,
+            bottom: padding.bottom + 12,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                RaisedButton('TESİSLER', onTap: () => _setList(true), height: 46, minWidth: 128, fontSize: 17),
+                if (anyUpgrade) const Positioned(right: -4, top: -4, child: NotificationDot()),
+              ],
+            ),
+          ),
+          if (_listOpen) ...[
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () => _setList(false),
+                child: const ColoredBox(color: Color(0x66000000)),
+              ),
+            ),
+            Positioned(
+              left: 8,
+              right: 8,
+              bottom: padding.bottom + 8,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .62),
+                child: SingleChildScrollView(
+                  child: _FacilityList(
+                    c,
+                    onOpen: (id) {
+                      _setList(false);
+                      c.showCampusFacility(id);
+                    },
+                    onClose: () => _setList(false),
+                  ),
+                ),
+              ),
+            ),
+          ],
           if (c.campusDialogOpen) const CampusDialog(),
         ],
       ),
@@ -152,10 +164,12 @@ class _CampusTop extends StatelessWidget {
   }
 }
 
-/// Haritanın altında tesis listesi: seviye ve geliştirilebilirlik bir bakışta.
+/// Tesis listesi (alttan açılır): seviye ve geliştirilebilirlik bir bakışta.
 class _FacilityList extends StatelessWidget {
-  const _FacilityList(this.c);
+  const _FacilityList(this.c, {required this.onOpen, required this.onClose});
   final GameController c;
+  final ValueChanged<String> onOpen;
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -171,7 +185,14 @@ class _FacilityList extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text('TESİSLER', style: gameText(TextSizes.section, color: GameColors.ink, height: 1)),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text('TESİSLER', style: gameText(TextSizes.section, color: GameColors.ink, height: 1)),
+              ),
+              ModalCloseButton(onTap: onClose),
+            ],
+          ),
         ),
         for (final f in campusFacilities)
           ListRow(
@@ -179,9 +200,9 @@ class _FacilityList extends StatelessWidget {
               Art(f.icon, width: 38, height: 38),
               RowTitle(f.name, small: 'Sv. ${c.facilityLevel(f.id)} · ${[for (final r in f.rows) r.name].join(', ')}'),
               if (c.canUpgradeFacility(f.id))
-                ActionButton('Geliştir', onTap: () => c.showCampusFacility(f.id))
+                ActionButton('Geliştir', onTap: () => onOpen(f.id))
               else
-                RaisedButton('Gör', tone: ButtonTone.cream, onTap: () => c.showCampusFacility(f.id), height: 40),
+                RaisedButton('Gör', tone: ButtonTone.cream, onTap: () => onOpen(f.id), height: 40),
             ],
           ),
         const PanelText.muted('Başlangıçta 8 SP; tamamlanan her 5 yarışta +1 SP.', align: TextAlign.center),
