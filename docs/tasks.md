@@ -47,3 +47,8 @@ Oyun tasarımı incelemesinden (2026-10-31) çıkan sorunlar. Sırayla ele alın
   - Çözüm: `appVisible` 60 saniyeden uzun aradan sonra kazancı bildiriyor.
 - [x] **14. Halterde başarısızlar sıralaması.** Başarısız olan herkes 6. sayılıyor, herkes başarısız olsa bile.
   - Çözüm: başarısız kaldırış başarılıların ardından sayılıyor (herkes başarısızsa ortak 1.); zafer, madalya, kupa ve sıra ödülü başarı istiyor.
+
+## Görseller
+
+- [x] **15. Ödül ikonları net olsun.** Elmas, bilet, madalya, para ve hediye panel ekran görüntülerinden kırpılmıştı (70–110 px, kenarları kesik). Oyunun 256 px'lik ikon setinden yeniden üretildi (`tool/hires_reward_icons.py`).
+- [ ] **16. Sporcu portreleri ve yükseltme ikonları.** Sporcu yüzleri tasarım referansından 33–38 px kırpılmış (bulanık, köşelerde pist rengi); uzun atlama/halter ikonları beyaz kutulu ve kesik; okçuluk/yüzme ikonları emoji; kilit ve saat 45–57 px. ChatGPT görevi: `docs/art-prompts.md` §1. Görseller `design/art/` altına gelince içe alma aracı yazılacak.
