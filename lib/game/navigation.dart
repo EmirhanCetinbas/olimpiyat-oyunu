@@ -107,6 +107,22 @@ extension NavigationLogic on GameController {
   /// Yükseltme açıklaması: pencere açmadan kısa bildirim.
   void showInfo(int i) => toast('${upgradeDef(i).title}: ${upgradeDef(i).desc}');
 
+  /// Uzun aradan dönüşte kazancı gösteren pencere; başka pencere açıksa kısa bildirim.
+  void showWelcome(int earned, double seconds) {
+    if (modal != null) {
+      toast('Tekrar hoş geldin! Çevrimdışı gelir: ₺${fmt(earned)}');
+      return;
+    }
+    modal = ModalSpec('welcome', 'Tekrar Hoş Geldin', style: ModalStyle.reward, arg: OfflineEarnings(earned, seconds));
+    _changed();
+  }
+
+  /// Karşılama penceresini kapatır (kazanç açılışta zaten eklendi).
+  void collectWelcome() {
+    beep(880, .12);
+    closeModal();
+  }
+
   void openSupport() => panel('support', 'Destek');
   void askReset() => panel('reset', 'Sıfırlansın mı?');
 }

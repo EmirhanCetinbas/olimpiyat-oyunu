@@ -455,6 +455,24 @@
       ]
     },
     {
+      "name": "panel-welcome",
+      "steps": [
+        [
+          "welcome",
+          8100
+        ]
+      ]
+    },
+    {
+      "name": "panel-welcome-capped",
+      "steps": [
+        [
+          "welcome",
+          28800
+        ]
+      ]
+    },
+    {
       "name": "panel-wheel",
       "steps": [
         [

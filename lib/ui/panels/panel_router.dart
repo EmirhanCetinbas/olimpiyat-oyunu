@@ -13,6 +13,7 @@ import 'result_panel.dart';
 import 'progress_panels.dart';
 import 'shop_panel.dart';
 import 'system_panels.dart';
+import 'welcome_panel.dart';
 import 'wheel_panel.dart';
 
 /// `openPanel` anahtarından pencere içeriğine.
@@ -31,5 +32,6 @@ Widget panelContent(GameController c, ModalSpec spec) => switch (spec.key) {
   'branches' => BranchesPanel(c),
   'support' => SupportPanel(c),
   'reset' => ResetPanel(c),
+  'welcome' => WelcomePanel(c, spec.arg as OfflineEarnings),
   _ => const SizedBox.shrink(),
 };

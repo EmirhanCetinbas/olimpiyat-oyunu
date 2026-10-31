@@ -22,6 +22,9 @@ extension MovesLogic on GameController {
     skillMoveHidden = false;
     skillButtonText = label;
     skillMeter = 0;
+    // Göz başka yerdeyken (otomatik yarış) kaçmasın: kısa ses ve titreşimle haber ver.
+    beep(1040, .06);
+    if (state.vibration) vibrate?.call(20);
   }
 
   void clearMove() {

@@ -518,12 +518,14 @@ void main() {
     expect(game.state.medals, medals);
     expect(game.state.tournament!.podiums, 0);
 
+    game.closeModal();
     final money = game.state.money;
     game.appHidden();
     clock += 120000;
     game.appVisible();
     expect(game.state.money, greaterThan(money));
-    expect(game.toastText, contains('Çevrimdışı gelir'));
+    expect(game.modal!.key, 'welcome');
+    expect((game.modal!.arg as OfflineEarnings).seconds, closeTo(120, 1));
   });
 
   test('perfect timing helps but does not decide the race alone', () {

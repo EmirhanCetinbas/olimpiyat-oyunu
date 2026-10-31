@@ -33,6 +33,16 @@ part 'scene.dart';
 part 'running.dart';
 part 'rivals.dart';
 
+/// Çevrimdışı kazanç (karşılama penceresi).
+class OfflineEarnings {
+  const OfflineEarnings(this.money, this.seconds);
+  final int money;
+  final double seconds;
+
+  /// Süre [offlineLimit]e takıldı mı.
+  bool get capped => seconds >= offlineLimit;
+}
+
 class UpgradeResult {
   const UpgradeResult(this.ok, {this.reason, this.level});
   final bool ok;
@@ -69,7 +79,7 @@ class GameController extends ChangeNotifier {
     if (away > 60) {
       final earned = (away * passiveIncome()).floor();
       state.money += earned;
-      _welcomeTimer = Timer(const Duration(milliseconds: 700), () => toast('Tekrar hoş geldin! Çevrimdışı gelir: ₺${fmt(earned)}'));
+      _welcomeTimer = Timer(const Duration(milliseconds: 700), () => showWelcome(earned, away.toDouble()));
     }
     renderHurdles();
     update();
@@ -387,7 +397,7 @@ class GameController extends ChangeNotifier {
       final earned = (away * passiveIncome()).floor();
       state.money += earned;
       _hiddenAt = 0;
-      if (away > 60) toast('Tekrar hoş geldin! Çevrimdışı gelir: ₺${fmt(earned)}');
+      if (away > 60) showWelcome(earned, away.toDouble());
     }
     update();
     _changed();

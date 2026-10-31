@@ -81,6 +81,10 @@ void runStep(GameController c, String action, Object? arg) {
       break;
     case 'tapMove':
       c.tapMove();
+    case 'welcome':
+      // Çevrimdışı dönüş: [arg] saniye uzakta kalınmış gibi.
+      final seconds = (arg as num).toDouble();
+      c.showWelcome((seconds * c.passiveIncome()).floor(), seconds);
     default:
       throw ArgumentError('Bilinmeyen eylem: $action');
   }

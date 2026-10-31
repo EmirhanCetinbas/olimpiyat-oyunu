@@ -62,7 +62,9 @@ Oyun tasarımı incelemesinden (2026-10-31) çıkan sorunlar. Sırayla ele alın
 Not alınan benzer iyileştirmeler:
 - [ ] **20. Hamle paneli alt kulvarları örtüyor.** Engelli koşu ve yüzmede 5–6. kulvardaki sporcular panelin altında kalıyor; panel inceltilebilir ya da sahanın dışına (yarış şeridinin yerine) alınabilir.
 - [ ] **21. 100 m pisti dar.** 4 kulvar 24 pt'lik avatarlara dar; başlangıçta sporcular üst üste biniyor. Avatar küçültülebilir ya da daha geniş kulvarlı pist görseli çizilebilir.
-- [ ] **22. Hamle açılınca haber ver.** Hamle yalnız görsel olarak açılıyor; otomatik yarışta göz başka yerdeyken kaçıyor. Açılışta kısa titreşim ve ses.
+- [x] **22. Hamle açılınca haber ver.** Hamle yalnız görsel olarak açılıyor; otomatik yarışta göz başka yerdeyken kaçıyor. Açılışta kısa titreşim ve ses.
+  - Çözüm: `offerMove` açılışta kısa ses ve titreşim veriyor; kusursuz dokunuşta daha güçlü titreşim.
 - [ ] **23. Basılı tutunca art arda yükseltme.** İdle oyunlarda beklenen davranış; şu an her seviye için ayrı dokunuş gerekiyor.
 - [ ] **24. Branşa göre uzman önerisi.** Tek takım lideri tüm branşlarda koşuyor; branş penceresinde her branşın uzmanını göster, branşa geçerken uzmana geçmeyi öner.
-- [ ] **25. Çevrimdışı gelir karşılaması.** Uzun aradan sonra kazanç yalnız bildirim olarak geçiyor; ayrı bir karşılama penceresi daha görünür olur.
+- [x] **25. Çevrimdışı gelir karşılaması.** Uzun aradan sonra kazanç yalnız bildirim olarak geçiyor; ayrı bir karşılama penceresi daha görünür olur.
+  - Çözüm: "Tekrar Hoş Geldin" penceresi (süre, sayarak artan kazanç, 8 saat sınırı notu, Topla). Başka pencere açıksa bildirim olarak geçer.
