@@ -6,10 +6,9 @@ import '../../game/controller.dart';
 import '../campus/campus_page.dart';
 import '../components/components.dart';
 import '../panels/modal_host.dart';
-import '../stadium/stadium.dart';
+import '../stadium/play_area.dart';
 import '../theme/theme.dart';
 import 'bottom_nav.dart';
-import 'race_strip.dart';
 import 'rewards_menu.dart';
 import 'toast_overlay.dart';
 import 'hud.dart';
@@ -157,13 +156,7 @@ class _GameBody extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(side, 10 + top, side, 8),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Hud(),
-                  SizedBox(height: 7),
-                  RepaintBoundary(child: Stadium()),
-                  RaceStrip(),
-                  UpgradeList(),
-                ],
+                children: [Hud(), SizedBox(height: 7), PlayArea(), UpgradeList()],
               ),
             ),
           ),

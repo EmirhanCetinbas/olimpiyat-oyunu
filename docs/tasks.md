@@ -52,3 +52,17 @@ Oyun tasarımı incelemesinden (2026-10-31) çıkan sorunlar. Sırayla ele alın
 
 - [x] **15. Ödül ikonları net olsun.** Elmas, bilet, madalya, para ve hediye panel ekran görüntülerinden kırpılmıştı (70–110 px, kenarları kesik). Oyunun 256 px'lik ikon setinden yeniden üretildi (`tool/hires_reward_icons.py`).
 - [ ] **16. Sporcu portreleri ve yükseltme ikonları.** Sporcu yüzleri tasarım referansından 33–38 px kırpılmış (bulanık, köşelerde pist rengi); uzun atlama/halter ikonları beyaz kutulu ve kesik; okçuluk/yüzme ikonları emoji; kilit ve saat 45–57 px. ChatGPT görevi: `docs/art-prompts.md` §1. Görseller `design/art/` altına gelince içe alma aracı yazılacak.
+
+## Oynanış ve arayüz (cihaz testi, 2026-10-31)
+
+- [x] **17. Zamanlama hamlesi.** İmleç çubukta durmadan sağa sola gidip geliyor (bir geçiş 0,7 sn), kusursuz bölge her hamlede çubuğun ortasına yakın başka bir yere düşüyor. Hamle açıkken stadyumun ve yarış şeridinin herhangi bir yerine dokunmak hamle sayılıyor (`PlayArea`). Halterde oyuncunun kaldırış penceresi 1,6 sn.
+- [x] **18. Başlangıç ve bitiş çizgileri.** Konumlar arena görsellerinden ölçüldü (`lib/game/track.dart`). Engelli koşu %7,2 → %94, yüzme %7 → %93,8, engeller aynı eşlemeyle çiziliyor. 100 m: sporcular sağ üstteki kademeli başlangıç çizgilerinden çıkıp saat yönünün tersine koşuyor ve alt düzlükteki damalı çizgide bitiriyor (eskiden sağ virajda başlayıp tam tur atıyorlardı).
+- [x] **19. Branş değiştirme tek elle.** Yarış şeridinde solda otomatik anahtarı, en sağda büyük branş düğmesi (44 pt). Başlıktaki branş etiketi yalnız gösterge.
+
+Not alınan benzer iyileştirmeler:
+- [ ] **20. Hamle paneli alt kulvarları örtüyor.** Engelli koşu ve yüzmede 5–6. kulvardaki sporcular panelin altında kalıyor; panel inceltilebilir ya da sahanın dışına (yarış şeridinin yerine) alınabilir.
+- [ ] **21. 100 m pisti dar.** 4 kulvar 24 pt'lik avatarlara dar; başlangıçta sporcular üst üste biniyor. Avatar küçültülebilir ya da daha geniş kulvarlı pist görseli çizilebilir.
+- [ ] **22. Hamle açılınca haber ver.** Hamle yalnız görsel olarak açılıyor; otomatik yarışta göz başka yerdeyken kaçıyor. Açılışta kısa titreşim ve ses.
+- [ ] **23. Basılı tutunca art arda yükseltme.** İdle oyunlarda beklenen davranış; şu an her seviye için ayrı dokunuş gerekiyor.
+- [ ] **24. Branşa göre uzman önerisi.** Tek takım lideri tüm branşlarda koşuyor; branş penceresinde her branşın uzmanını göster, branşa geçerken uzmana geçmeyi öner.
+- [ ] **25. Çevrimdışı gelir karşılaması.** Uzun aradan sonra kazanç yalnız bildirim olarak geçiyor; ayrı bir karşılama penceresi daha görünür olur.

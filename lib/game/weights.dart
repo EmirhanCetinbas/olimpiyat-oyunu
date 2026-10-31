@@ -144,8 +144,9 @@ extension WeightsLogic on GameController {
         beep(500, .05);
       } else if (w.phase == 'pull') {
         w.phase = 'push';
-        w.duration = 1;
-        if (id == state.selected) offerMove('weights', 1, 'Kaldır!');
+        // Oyuncunun kaldırışında hamle için biraz daha uzun süre (imleç iki kez gidip gelir).
+        w.duration = id == state.selected ? 1.6 : 1;
+        if (id == state.selected) offerMove('weights', w.duration, 'Kaldır!');
       } else if (w.phase == 'push') {
         if (id == state.selected) {
           attempt.success = attempt.roll < min(.99, attempt.chance + moveQuality() * moveEffect['weights']!);

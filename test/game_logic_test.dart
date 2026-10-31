@@ -273,7 +273,7 @@ void main() {
 
   test('timing input, tournament, specialties and weight risk', () {
     game.offerMove('archery', 2, 'Nişanı bırak!');
-    game.tickMove(1);
+    game.tickMove(game.activeMove!.target * ActiveMove.sweep);
     expect(game.tapMove(), true);
     expect(game.moveQuality(), 1);
     expect(game.tapMove(), false);
@@ -339,30 +339,36 @@ void main() {
     expect(game.beginRace().ok, false);
   });
 
-  test('timing moves: perfect moment matches the race, bonus applies on tap', () {
+  test('timing moves: cursor sweeps back and forth, bonus applies on tap', () {
+    // İmleç çubukta gidip gelir.
+    final m = ActiveMove('sprint', 3, target: .5);
+    m.elapsed = ActiveMove.sweep * .8;
+    expect(m.cursor, closeTo(.8, 1e-9));
+    m.elapsed = ActiveMove.sweep * 1.2;
+    expect(m.cursor, closeTo(.8, 1e-9));
+    m.elapsed = ActiveMove.sweep * 2.3;
+    expect(m.cursor, closeTo(.3, 1e-9));
+
     game.state.auto = false;
-    // 100 m: kusursuz an "BAŞLA!" (geri sayım bitişi).
     game.beginRace();
     final move = game.activeMove!;
-    expect(move.target * move.duration, closeTo(3, .001));
-    // 3 sn geri sayım + bir kare (kayan nokta payı).
-    for (var i = 0; i < 181; i++) {
+    expect(move.target, inInclusiveRange(.35, .65));
+    // İmleç kusursuz bölgedeyken dokun (geri sayım sırasında); bonus yarış başlayınca uygulanır.
+    move.elapsed = move.target * ActiveMove.sweep;
+    expect(game.tapMove(), true);
+    expect(game.moveQuality(), greaterThan(.95));
+    expect(game.moveFeedback, 'MÜKEMMEL!');
+    for (var i = 0; i < 200 && game.race!.phase != 'running'; i++) {
       game.tick(1 / 60);
     }
-    expect(game.race!.phase, 'running');
-    expect(game.activeMove, isNotNull, reason: 'hamle BAŞLA! anını kapsar');
-    expect(game.tapMove(), true);
-    expect(game.moveQuality(), greaterThan(.9));
-    expect(game.moveFeedback, 'MÜKEMMEL!');
     game.tick(1 / 60);
-    expect(game.race!.manualBonus, greaterThan(.05), reason: 'bonus dokunulduğu an uygulanır');
+    expect(game.race!.manualBonus, greaterThan(.1), reason: 'kusursuz çıkış: ilk 25 m +%12');
     expect(game.activeMove, isNull);
 
-    // Erken dokunuş ve kaçırılan hamle geri bildirimi.
+    // Iska ve kaçırılan hamle geri bildirimi.
     game.offerMove('weights', 1, 'Kaldır!');
-    game.tickMove(.05);
-    game.tapMove();
-    expect(game.moveFeedback, 'ERKEN!');
+    game.tapMove(); // imleç 0'da, hedef en az .35 uzakta
+    expect(game.moveFeedback, 'ISKA!');
     game.offerMove('weights', 1, 'Kaldır!');
     game.tickMove(1);
     expect(game.moveFeedback, 'KAÇTI!');
@@ -530,7 +536,7 @@ void main() {
     game.beginRace();
     game.race!.weights!.attempts[0] = WeightAttempt(kg: 100, chance: .3, roll: .9, success: false);
     ticks(400, dt: .05, until: () => game.activeMove == null);
-    game.activeMove!.elapsed = game.activeMove!.duration * game.activeMove!.target;
+    game.activeMove!.elapsed = game.activeMove!.target * ActiveMove.sweep;
     game.tapMove();
     ticks(400, dt: .05, until: () => game.weightCompleted.isEmpty);
     expect(game.weightCompleted.first.success, false);

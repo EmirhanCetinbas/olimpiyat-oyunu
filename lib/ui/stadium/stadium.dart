@@ -25,8 +25,6 @@ class Stadium extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Stack(
           children: [
-            if (branch == 'sprint' || branch == 'archery')
-              Positioned.fill(child: Image.asset('assets/images/stadium.png', fit: BoxFit.fill)),
             // Sahne katmanı; başlık yeri boş tutulur.
             Column(
               children: [
@@ -61,7 +59,8 @@ class Stadium extends StatelessWidget {
   }
 }
 
-/// Stadyum başlığı: solda branş seçici, ortada yarış/sayaç, sağda takım gücü (sporculara gider).
+/// Stadyum başlığı: solda branş etiketi (değiştirme düğmesi yarış şeridinde), ortada yarış/sayaç,
+/// sağda takım gücü (sporculara gider).
 class _RaceHead extends StatelessWidget {
   const _RaceHead(this.c);
   final GameController c;
@@ -77,7 +76,7 @@ class _RaceHead extends StatelessWidget {
       color: const Color(0xFF15392F),
       child: Row(
         children: [
-          // Branş seçici
+          // Branş etiketi (dokununca yine branş penceresi açılır)
           Pressable(
             onTap: () => c.open('branches'),
             semanticLabel: 'Branş: ${c.branchName}, değiştir',
@@ -96,7 +95,6 @@ class _RaceHead extends StatelessWidget {
                       constraints: const BoxConstraints(maxWidth: 92),
                       child: Text(c.branchName, maxLines: 2, style: gameText(12.5, color: Colors.white, height: 1.05)),
                     ),
-                    const Icon(Icons.expand_more_rounded, size: 18, color: Color(0xFF9DB9CC)),
                   ],
                 ),
               ),

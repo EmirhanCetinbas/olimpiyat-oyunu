@@ -13,9 +13,11 @@ import 'format.dart';
 import 'ports.dart';
 import 'race.dart';
 import 'state.dart';
+import 'track.dart';
 
 export 'achievements.dart';
 export 'ports.dart';
+export 'track.dart';
 
 part 'moves.dart';
 part 'chests.dart';
@@ -456,9 +458,7 @@ class GameController extends ChangeNotifier {
           if (stopwatchBranch && !r.moveOffered && r.progress[r.playerLane] > (state.branch == 'hurdles' ? .55 : .4)) {
             r.moveOffered = true;
             if (state.branch == 'hurdles') {
-              // Kusursuz an: oyuncunun .64'teki engele varacağı tahmini an.
-              final eta = (.64 - r.progress[r.playerLane]) / (r.speeds[r.playerLane] / 100);
-              offerMove('hurdles', 1.5, 'Engeli geç!', target: (eta / 1.5).clamp(.25, .8));
+              offerMove('hurdles', 1.5, 'Engeli geç!');
             } else {
               offerMove('swim', 1.5, 'Güçlü kulaç!');
             }

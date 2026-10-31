@@ -4,8 +4,8 @@ import '../../game/controller.dart';
 import '../components/components.dart';
 import '../theme/theme.dart';
 
-/// Zamanlama hamlesi sahanın içinde: sahanın her yerine dokunmak hamleyi yapar,
-/// altta hedef bölgeli çubuk ve büyük düğme durur, sonuç ortada kısa süre görünür.
+/// Zamanlama hamlesi sahanın içinde: altta gidip gelen imleçli çubuk ve büyük düğme durur,
+/// sonuç ortada kısa süre görünür. Dokunuşu oyun alanının tamamı yakalar (bkz. PlayArea).
 class SkillOverlay extends StatelessWidget {
   const SkillOverlay({super.key, required this.c});
   final GameController c;
@@ -17,14 +17,6 @@ class SkillOverlay extends StatelessWidget {
     return Positioned.fill(
       child: Stack(
         children: [
-          if (active)
-            Positioned.fill(
-              child: Semantics(
-                button: true,
-                label: c.skillButtonText,
-                child: GestureDetector(behavior: HitTestBehavior.opaque, onTapDown: (_) => c.tapMove()),
-              ),
-            ),
           if (active)
             Positioned(
               left: 10,

@@ -13,11 +13,12 @@ const moveEffect = <String, double>{
 
 /// moves.js: zamanlama düğmesi ve üç yarışlık kupa.
 extension MovesLogic on GameController {
-  /// Kusursuz pencere: hedefin iki yanında sürenin %15'i (kalite > .7).
+  /// Kusursuz pencere: hedefin iki yanında çubuğun %15'i (kalite > .7).
   static const perfectWindow = .15;
 
-  void offerMove(String kind, double duration, String label, {double target = .5}) {
-    activeMove = ActiveMove(kind, duration, target: target);
+  /// Hamleyi açar; kusursuz bölge her seferinde çubuğun ortasına yakın başka bir yere düşer.
+  void offerMove(String kind, double duration, String label) {
+    activeMove = ActiveMove(kind, duration, target: .35 + rand() * .3);
     skillMoveHidden = false;
     skillButtonText = label;
     skillMeter = 0;
@@ -30,12 +31,11 @@ extension MovesLogic on GameController {
 
   double moveQuality() => activeMove?.quality ?? 0;
 
-  /// Sahaya ya da hamle düğmesine dokunuş: kalite hedefe uzaklıkla düşer.
+  /// Oyun alanına ya da hamle düğmesine dokunuş: kalite, imlecin hedefe uzaklığıyla düşer.
   bool tapMove() {
     final move = activeMove;
     if (move == null || move.tapped || paused) return false;
-    final t = move.elapsed / move.duration;
-    move.quality = max(0, 1 - (t - move.target).abs() * 2);
+    move.quality = max(0, 1 - (move.cursor - move.target).abs() * 2);
     move.tapped = true;
     skillButtonText = move.quality > .7 ? 'MÜKEMMEL!' : 'HAMLE!';
     showMoveFeedback(
@@ -43,12 +43,11 @@ extension MovesLogic on GameController {
           ? 'MÜKEMMEL!'
           : move.quality > .35
           ? 'İYİ!'
-          : t < move.target
-          ? 'ERKEN!'
-          : 'GEÇ!',
+          : 'ISKA!',
       move.quality > .7,
     );
     beep(720 + move.quality * 260, .08);
+    if (state.vibration) vibrate?.call(move.quality > .7 ? 30 : 12);
     _changed();
     return true;
   }
@@ -58,7 +57,7 @@ extension MovesLogic on GameController {
     final move = activeMove;
     if (move == null) return;
     move.elapsed = min(move.duration, move.elapsed + dt);
-    skillMeter = move.elapsed / move.duration;
+    skillMeter = move.cursor;
     if (move.elapsed >= move.duration) {
       if (!move.tapped) showMoveFeedback('KAÇTI!', false);
       move.tapped = true;
@@ -73,7 +72,6 @@ extension MovesLogic on GameController {
     moveFeedbackTime = .9;
   }
 
-  /// [success]: halterde başarısız kaldırış sırası ne olursa olsun madalya sayılmaz.
   void recordTournament(String branch, int place, {bool success = true}) {
     final t = state.tournament;
     if (t == null || t.branch != branch || t.attempts >= 3) return;

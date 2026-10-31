@@ -129,14 +129,24 @@ class ArcheryRound {
 class ActiveMove {
   ActiveMove(this.kind, this.duration, {this.target = .5});
   final String kind;
+
+  /// Hamlenin açık kaldığı süre; bitince dokunulmamışsa kaçar.
   final double duration;
 
-  /// Kusursuz anın süre içindeki yeri (0–1): yarıştaki gerçek ana denk gelir
-  /// (ör. 100 m'de "BAŞLA!", uzun atlamada tahta, engelli koşuda engel).
+  /// İmlecin çubuğun bir ucundan öbürüne gidiş süresi (sn).
+  static const sweep = .7;
+
+  /// Kusursuz bölgenin çubuktaki yeri (0–1).
   final double target;
   double elapsed = 0;
   bool tapped = false;
   double quality = 0;
+
+  /// İmleç çubukta durmadan sağa sola gidip gelir (0–1).
+  double get cursor {
+    final t = elapsed / sweep % 2;
+    return t < 1 ? t : 2 - t;
+  }
 }
 
 /// Bir sporcunun sahnedeki yüzde konumu.

@@ -33,7 +33,7 @@ extension RunningLogic on GameController {
     liveTagHidden = false;
     timerText = b == 'hurdles' || b == 'swim' ? '◴ 00:00' : '3';
     raceStatus = 'Hazırlan… 3, 2, 1!';
-    if (b == 'sprint') offerMove('sprint', 3.4, 'Çıkış yap!', target: 3 / 3.4);
+    if (b == 'sprint') offerMove('sprint', 3.4, 'Çıkış yap!');
     beep(400);
     _changed();
     return const UpgradeResult(true);
@@ -118,7 +118,7 @@ extension RunningLogic on GameController {
     if (player) speed *= 1 + move + (r.trainingCard ? cardBoost : 0);
     if (state.branch == 'hurdles') {
       final h = player ? r.hurdleLevels : rivalLevels(r.hurdleLevels);
-      final nearHurdle = const [.2, .42, .64, .84].any((x) => (p - x).abs() < .023);
+      final nearHurdle = hurdleMarks.any((x) => (p - x).abs() < .023);
       if (nearHurdle) speed *= min(.96, .55 + (h[0] - 1) * .025) * (1 + campus[0] * .025);
       speed *= 1 + campus[1] * .01 + (h[1] - 1) * .01 + shoe * .02;
       if (p > .5) speed *= 1 + (h[2] - 1) * .012;

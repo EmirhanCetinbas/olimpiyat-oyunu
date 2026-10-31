@@ -18,8 +18,6 @@ class RaceField extends StatelessWidget {
   const RaceField({super.key, required this.layer});
   final FieldLayer layer;
 
-  static const _hurdleX = [24.0, 44.0, 64.0, 83.0];
-
   @override
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
@@ -33,7 +31,7 @@ class RaceField extends StatelessWidget {
       _ => 24.0,
     };
     return AspectRatio(
-      aspectRatio: branch == 'sprint' ? 1.72 : 1.5,
+      aspectRatio: branch == 'sprint' ? sprintFieldAspect : 1.5,
       child: LayoutBuilder(
         builder: (context, box) {
           final layout = PercentLayout(box.maxWidth, box.maxHeight);
@@ -45,13 +43,18 @@ class RaceField extends StatelessWidget {
             return Stack(
               clipBehavior: Clip.hardEdge,
               children: [
-                if (branch != 'sprint') Positioned.fill(child: Image.asset(c.arenaImage, fit: BoxFit.fill)),
+                // 100 m: pist görseli alttan hizalı kırpılır (bkz. SprintTrack); diğerleri sahayı doldurur.
+                Positioned.fill(
+                  child: branch == 'sprint'
+                      ? Image.asset(c.arenaImage, fit: BoxFit.cover, alignment: Alignment.bottomCenter)
+                      : Image.asset(c.arenaImage, fit: BoxFit.fill),
+                ),
                 if (branch == 'hurdles')
                   for (var lane = 0; lane < 6; lane++)
-                    for (final x in _hurdleX)
+                    for (final mark in hurdleMarks)
                       layout.point(
-                        x,
-                        35.5 + lane * 9.2,
+                        hurdleX(mark),
+                        hurdleLaneY(lane),
                         SizedBox(
                           width: 22,
                           height: layout.y(7.8),
