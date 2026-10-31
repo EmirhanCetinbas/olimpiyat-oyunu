@@ -2,17 +2,19 @@ part of 'controller.dart';
 
 /// Sporcu dizilişi, sahne yerleşimi ve branş değiştirme (renderHurdles / positionRunners).
 extension SceneLogic on GameController {
-  List<int> lineup() {
-    final ids = [
-      state.selected,
+  /// Sahadaki sporcular: oyuncu önde, kalan yerler diğer sporcularla dolar.
+  /// [shuffle]: yarış başında rakipler rastgele seçilir (100 m'de beş rakipten üçü koşar).
+  List<int> lineup({bool shuffle = false}) {
+    final others = [
       for (var i = 0; i < animals.length; i++)
         if (i != state.selected) i,
     ];
-    return ids.sublist(0, state.branch == 'sprint' ? 4 : 6);
+    if (shuffle) others.shuffle(_random);
+    return [state.selected, ...others].sublist(0, fieldSize(state.branch));
   }
 
   void runners() {
-    runnerIds = lineup();
+    runnerIds = race?.ids ?? lineup();
     runnerPos = [for (final _ in runnerIds) RunnerPos(0, 0)];
     positionRunners([for (final _ in runnerIds) 0.0]);
   }

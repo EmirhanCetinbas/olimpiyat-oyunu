@@ -33,6 +33,12 @@ String istanbulDayKey(int millis) {
   return '${d.year}-${_two(d.month)}-${_two(d.day)}';
 }
 
+/// Kısa süre: bir dakikadan uzunsa dakika ("15 dk"), değilse saniye ("42 sn").
+String shortDuration(int ms) {
+  final seconds = (ms / 1000).ceil();
+  return seconds >= 60 ? '${(seconds / 60).ceil()} dk' : '$seconds sn';
+}
+
 String jumpMetres(num n) => '${n.toStringAsFixed(2).replaceAll('.', ',')} m';
 
 String stopwatch(double seconds) => '◴ ${_two((seconds / 60).floor())}:${_two((seconds % 60).floor())}';

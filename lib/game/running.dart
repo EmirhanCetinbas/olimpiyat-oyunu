@@ -9,7 +9,7 @@ extension RunningLogic on GameController {
     if (race != null || paused) return const UpgradeResult(false, reason: 'Yarış zaten sürüyor');
     resultDelay = 0;
     const base = 9.3;
-    final ids = lineup(), n = ids.length, b = state.branch;
+    final ids = lineup(shuffle: true), n = ids.length, b = state.branch;
     race = Race(
       branch: b,
       phase: 'countdown',
@@ -18,10 +18,7 @@ extension RunningLogic on GameController {
       times: List.filled(n, null),
       ids: ids,
       playerLane: ids.indexOf(state.selected),
-      speeds: [
-        for (final id in ids)
-          id == state.selected ? base * animals[id].speed * specialty(b, id) : base * (.96 + rand() * .12 + min(state.wins * .003, .12)),
-      ],
+      speeds: [for (final id in ids) base * specialty(b, id) * raceForm()],
       levels: [...state.levels],
       hurdleLevels: [...state.hurdleLevels],
       swimLevels: [...state.swimLevels],
@@ -50,19 +47,19 @@ extension RunningLogic on GameController {
     final place = order.indexWhere((x) => x.i == playerLane) + 1;
     final time = order.firstWhere((x) => x.i == playerLane).time;
     state.races++;
-    state.xp += place == 1 ? 30 : 15;
+    gainXp(place == 1 ? 30 : 15);
     if (state.races % 5 == 0) {
       state.chests++;
       state.skillPoints++;
     }
     if (place == 1) state.wins++;
-    if (place <= 3) state.medals++;
+    if (isMedal(state.branch, place)) state.medals++;
     recordTournament(state.branch, place);
     // 100 m rekoru (state.best orijinalde koşu branşlarının ortak süresi; rekor yalnız 100 m'de anlamlı).
     final record = state.branch == 'sprint' && (state.best == null || time < state.best!);
     state.best = state.best == null ? time : min(state.best!, time);
     final total = r.ids.length;
-    final reward = (_placeReward(place) * (1 + (state.races / 10).floor() * .1) * (1 + campusRank('stadium', 2) * .03)).round();
+    final reward = raceReward(place);
     state.money += reward;
     clearMove();
     race = null;
@@ -83,7 +80,7 @@ extension RunningLogic on GameController {
       ),
       '${place == 1
           ? '🏆 Zafer!'
-          : place <= 3
+          : isMedal(state.branch, place)
           ? '🏅 Madalya!'
           : '🏁 Yarış bitti'} $place. sıra · +₺${fmt(reward)}',
     );
@@ -96,6 +93,10 @@ extension RunningLogic on GameController {
     update();
   }
 
+  /// Yarış ödülü, bütün branşlarda aynı: sıra ödülü × branş gücü (rakipler oyuncunun
+  /// düzeyinde yarıştığı için gelişmiş takım daha güçlü rakipleri yener) × kampüs sponsorluğu.
+  int raceReward(int place) => (_placeReward(place) * power / 100 * (1 + campusRank('stadium', 2) * .03)).round();
+
   int _placeReward(int place) => place == 1
       ? 1250
       : place == 2
@@ -104,39 +105,40 @@ extension RunningLogic on GameController {
       ? 650
       : 400;
 
+  /// Yükseltme, kampüs ve ekipman etkisi her kulvarda aynı formülle; rakipler
+  /// kendi düzeylerini [rivalLevels] / [rivalCampus] ile alır.
   double _advanceRunner(Race r, int i, double p, double dt) {
     if (p >= 1) return 1;
     var speed = r.speeds[i];
     final player = i == r.playerLane;
-    if (player) speed *= 1 + r.manualBonus + (r.trainingCard ? .03 : 0);
+    final campus = player ? r.campus : rivalCampus(r.campus);
+    final stars = r.equipmentStars, shoe = stars[0] + r.equipmentLegacy;
+    // Çıkış hamlesi yalnızca çıkış bölümünü (ilk 25 m) hızlandırır; diğer hamleler yarışın kalanını.
+    final move = state.branch == 'sprint' && p >= .25 ? 0 : r.manualBonus;
+    if (player) speed *= 1 + move + (r.trainingCard ? cardBoost : 0);
     if (state.branch == 'hurdles') {
-      final h = r.hurdleLevels;
+      final h = player ? r.hurdleLevels : rivalLevels(r.hurdleLevels);
       final nearHurdle = const [.2, .42, .64, .84].any((x) => (p - x).abs() < .023);
-      if (nearHurdle) speed *= player ? min(.96, .55 + (h[0] - 1) * .025) : .58;
-      if (player) {
-        speed *= 1 + r.campus[1] * .01 + (h[1] - 1) * .01 + (r.equipmentStars[0] + r.equipmentLegacy) * .02;
-        if (p > .5) speed *= 1 + (h[2] - 1) * .012;
-        if (p > .84) speed *= 1 + r.campus[2] * .01 + (h[3] - 1) * .02;
-        if (nearHurdle) speed *= 1 + r.campus[0] * .025;
-      }
+      if (nearHurdle) speed *= min(.96, .55 + (h[0] - 1) * .025) * (1 + campus[0] * .025);
+      speed *= 1 + campus[1] * .01 + (h[1] - 1) * .01 + shoe * .02;
+      if (p > .5) speed *= 1 + (h[2] - 1) * .012;
+      if (p > .84) speed *= 1 + campus[2] * .01 + (h[3] - 1) * .02;
     } else if (state.branch == 'swim') {
-      if (player) {
-        final l = r.swimLevels;
-        speed *= 1 + r.campus[1] * .01 + (l[1] - 1) * .012;
-        if (p < .25) speed *= 1 + r.campus[0] * .01 + (l[0] - 1) * .02;
-        if (p > .5) speed *= 1 + r.campus[2] * .01 + (l[2] - 1) * .015;
-        if (p > .75) speed *= 1 + (l[3] - 1) * .017;
-        speed *= 1 + (r.equipmentStars[0] + r.equipmentLegacy) * .012;
-      }
-    } else if (player) {
-      final l = r.levels;
-      speed *= 1 + r.campus[1] * .01;
-      if (p < .25) speed *= 1 + r.campus[0] * .01;
-      if (p > .8) speed *= 1 + r.campus[2] * .01;
-      speed *= 1 + (l[1] - 1) * .01 + (r.equipmentStars[0] + r.equipmentLegacy) * .03;
-      if (p < .25) speed *= (1 + (l[0] - 1) * .02) * (1 + r.equipmentStars[1] * .04);
-      if (p > .5) speed *= (1 + (l[2] - 1) * .015) * (1 + r.equipmentStars[2] * .025);
-      if (p > .8) speed *= (1 + (l[3] - 1) * .02) * (1 + r.equipmentStars[3] * .04);
+      final l = player ? r.swimLevels : rivalLevels(r.swimLevels);
+      speed *= 1 + campus[1] * .01 + (l[1] - 1) * .012;
+      if (p < .25) speed *= 1 + campus[0] * .01 + (l[0] - 1) * .02;
+      if (p > .5) speed *= 1 + campus[2] * .01 + (l[2] - 1) * .015;
+      if (p > .75) speed *= 1 + (l[3] - 1) * .017;
+      speed *= 1 + shoe * .012;
+    } else {
+      final l = player ? r.levels : rivalLevels(r.levels);
+      speed *= 1 + campus[1] * .01;
+      if (p < .25) speed *= 1 + campus[0] * .01;
+      if (p > .8) speed *= 1 + campus[2] * .01;
+      speed *= 1 + (l[1] - 1) * .01 + shoe * .03;
+      if (p < .25) speed *= (1 + (l[0] - 1) * .02) * (1 + stars[1] * .04);
+      if (p > .5) speed *= (1 + (l[2] - 1) * .015) * (1 + stars[2] * .025);
+      if (p > .8) speed *= (1 + (l[3] - 1) * .02) * (1 + stars[3] * .04);
     }
     final next = p + speed * dt / 100;
     if (next >= 1) r.times[i] = r.elapsed;

@@ -66,7 +66,7 @@ class _ProfileChip extends StatelessWidget {
               children: [
                 Text('Sv.${c.level}', maxLines: 1, style: gameText(14, color: GameColors.ink, height: 1.1)),
                 const SizedBox(height: 4),
-                GameProgressBar.xp(value: (c.state.xp % 100) / 100),
+                GameProgressBar.xp(value: c.levelInfo.into / c.levelInfo.need),
               ],
             ),
           ),
@@ -123,7 +123,7 @@ class _MoneyCard extends StatelessWidget {
   );
 }
 
-/// 2x gelir: hazırken mavi "2x", etkinken ve beklemede kalan saniye.
+/// 2x gelir: hazırken mavi "2x", etkinken ve beklemede kalan süre (dakika ya da saniye).
 class _BoostButton extends StatelessWidget {
   const _BoostButton(this.c);
   final GameController c;
@@ -131,11 +131,16 @@ class _BoostButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ready = !c.boostDisabled;
+    String left(int ms) {
+      final s = (ms / 1000).ceil();
+      return s >= 60 ? '${(s / 60).ceil()}dk' : '${s}s';
+    }
+
     final label = c.boostActive
-        ? '${((c.state.boostUntil - c.now) / 1000).ceil()}s'
+        ? left(c.state.boostUntil - c.now)
         : ready
         ? '2x'
-        : '${((c.state.boostReady - c.now) / 1000).ceil()}s';
+        : left(c.state.boostReady - c.now);
     final text = Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Center(

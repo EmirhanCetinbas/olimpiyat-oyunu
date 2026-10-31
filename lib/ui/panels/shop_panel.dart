@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../game/controller.dart';
+import '../../game/data.dart';
+import '../../game/format.dart';
 import '../components/components.dart';
 import '../theme/theme.dart';
 
@@ -11,44 +13,57 @@ class ShopPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dailyReady = !c.dayClaimed;
+    final dailyReady = !c.dayClaimed, gems = c.state.gems;
+    Widget price(String key, VoidCallback onTap) =>
+        RaisedButton('${shopPrices[key]} elmas', onTap: onTap, enabled: gems >= shopPrices[key]!, width: double.infinity, height: 40);
+    Widget pair(Widget a, Widget b) => IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: a),
+          const SizedBox(width: 9),
+          Expanded(child: b),
+        ],
+      ),
+    );
     return Column(
       children: [
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: _Offer(
-                  title: 'Günlük ödül',
-                  art: const RewardIcon('calendar', size: 64),
-                  detail: dailyReady ? 'Bugünün ödülü hazır' : 'Yarın yeni ödül',
-                  highlight: dailyReady,
-                  button: RaisedButton(
-                    dailyReady ? 'Al' : 'Gör',
-                    onTap: () => c.openPanel('daily-rewards'),
-                    width: double.infinity,
-                    height: 40,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 9),
-              Expanded(
-                child: _Offer(
-                  title: 'Sponsor paketi',
-                  art: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RewardIcon('gem', size: 34),
-                      Icon(Icons.arrow_forward_rounded, color: GameColors.slate),
-                      RewardIcon('money', size: 44),
-                    ],
-                  ),
-                  detail: '5 elmas → ₺10.000',
-                  button: RaisedButton('5 elmas', onTap: c.buyCoins, enabled: c.state.gems >= 5, width: double.infinity, height: 40),
-                ),
-              ),
-            ],
+        pair(
+          _Offer(
+            title: 'Günlük ödül',
+            art: const RewardIcon('calendar', size: 64),
+            detail: dailyReady ? 'Bugünün ödülü hazır' : 'Yarın yeni ödül',
+            highlight: dailyReady,
+            button: RaisedButton(dailyReady ? 'Al' : 'Gör', onTap: () => c.openPanel('daily-rewards'), width: double.infinity, height: 40),
+          ),
+          _Offer(
+            title: 'Sponsor paketi',
+            art: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RewardIcon('gem', size: 34),
+                Icon(Icons.arrow_forward_rounded, color: GameColors.slate),
+                RewardIcon('money', size: 44),
+              ],
+            ),
+            // 10 dakikalık pasif gelir: ilerledikçe değeri korunur.
+            detail: '₺${fmt(c.sponsorAmount)} · 10 dk gelir',
+            button: price('coins', c.buyCoins),
+          ),
+        ),
+        const SizedBox(height: 9),
+        pair(
+          _Offer(
+            title: 'Spor Çantası',
+            art: const RewardKindIcon('chest', size: 60),
+            detail: '3 seçenekten birini al',
+            button: price('chest', c.buyChest),
+          ),
+          _Offer(
+            title: 'Antrenman kartı',
+            art: const RewardKindIcon('card', size: 60),
+            detail: '${branchLabel(c.state.branch)}\nbir yarışlık +%${trNumber(cardBoost * 100)}',
+            button: price('card', c.buyTrainingCard),
           ),
         ),
         const SizedBox(height: 10),

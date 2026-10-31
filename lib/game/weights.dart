@@ -1,5 +1,8 @@
 part of 'controller.dart';
 
+/// Rekor denemesi: kilo çarpanı ve başarı şansından düşülen pay.
+const recordKg = 1.10, recordChancePenalty = .25;
+
 ({double x, double y}) weightBench(int i) => (x: 27.0 + i * 9, y: 81.5);
 
 /// weights.js: sahne yalnızca dekordur; sporcular, halter ve kilogram canlı bileşenlerdir.
@@ -7,7 +10,7 @@ extension WeightsLogic on GameController {
   WeightAttempt weightAttempt(int id, List<int> levels, [double? noise, double? roll]) {
     final n = noise ?? rand(), r = roll ?? rand();
     final strength = 1 + (levels[0] - 1) * .025 + (levels[3] - 1) * .01;
-    final kg = max(20, ((70 + n * 25) * strength * specialty('weights', id) * const [.98, 1, 1.07, .94, 1.02, 1][id] / 5).round() * 5);
+    final kg = max(20, ((70 + n * 25) * strength * specialty('weights', id) / 5).round() * 5);
     final chance = min(.98, .72 + (levels[1] - 1) * .008 + (levels[2] - 1) * .009 + (levels[3] - 1) * .003);
     return WeightAttempt(kg: kg, chance: chance, roll: r, success: r < chance);
   }
@@ -87,7 +90,7 @@ extension WeightsLogic on GameController {
     if (race != null || paused) return const UpgradeResult(false, reason: 'Yarış zaten sürüyor');
     resultDelay = 0;
     weightCompleted = [];
-    final ids = lineup(), levels = [...state.weightLevels];
+    final ids = lineup(shuffle: true), levels = [...state.weightLevels];
     final campus = [for (var i = 0; i < 3; i++) campusRank('weights', i)];
     final trainingCard = consumeTrainingCard('weights');
     race = Race(
@@ -101,14 +104,14 @@ extension WeightsLogic on GameController {
         attempts: [
           for (final id in ids)
             () {
-              final attempt = weightAttempt(id, id == state.selected ? levels : const [1, 1, 1, 1]);
-              if (id == state.selected) {
-                final risk = state.weightRisk == 'record';
-                attempt.kg =
-                    (attempt.kg * (1 + campus[0] * .01 + campus[2] * .006 + (trainingCard ? .03 : 0)) * (risk ? 1.15 : 1) / 5).round() * 5;
-                attempt.chance = min(.98, max(.12, attempt.chance + campus[1] * .009 - (risk ? .18 : 0)));
-                attempt.success = attempt.roll < attempt.chance;
-              }
+              final player = id == state.selected;
+              final c = player ? campus : rivalCampus(campus);
+              final attempt = weightAttempt(id, player ? levels : rivalLevels(levels));
+              final risk = player && state.weightRisk == 'record';
+              final card = player && trainingCard ? cardBoost : 0;
+              attempt.kg = (attempt.kg * (1 + c[0] * .01 + c[2] * .006 + card) * (risk ? recordKg : 1) / 5).round() * 5;
+              attempt.chance = min(.98, max(.12, attempt.chance + c[1] * .009 - (risk ? recordChancePenalty : 0)));
+              attempt.success = attempt.roll < attempt.chance;
               return attempt;
             }(),
         ],
@@ -145,7 +148,7 @@ extension WeightsLogic on GameController {
         if (id == state.selected) offerMove('weights', 1, 'Kaldır!');
       } else if (w.phase == 'push') {
         if (id == state.selected) {
-          attempt.success = attempt.success || moveQuality() > .7;
+          attempt.success = attempt.roll < min(.99, attempt.chance + moveQuality() * moveEffect['weights']!);
           clearMove();
         }
         w.phase = 'hold';
@@ -178,19 +181,23 @@ extension WeightsLogic on GameController {
   void finishWeights() {
     final results = [...race!.weights!.results];
     final player = results.firstWhere((r) => r.id == state.selected);
-    final place = player.success ? 1 + results.where((r) => r.success && r.kg > player.kg).length : results.length;
+    // Başarısız kaldırış, başarılı olanların hepsinin ardından sayılır (herkes başarısızsa ortak 1.);
+    // zafer, madalya, kupa ve sıra ödülü yine de başarılı kaldırış ister.
+    final successes = results.where((r) => r.success).length;
+    final place = player.success ? 1 + results.where((r) => r.success && r.kg > player.kg).length : 1 + successes;
+    final won = player.success && place == 1;
     state.races++;
-    state.xp += place == 1 ? 30 : 15;
-    if (player.success && place == 1) state.wins++;
-    if (player.success && place <= 3) state.medals++;
+    gainXp(won ? 30 : 15);
+    if (won) state.wins++;
+    if (player.success && isMedal('weights', place)) state.medals++;
     if (state.races % 5 == 0) {
       state.chests++;
       state.skillPoints++;
     }
     final record = player.success && player.kg > state.bestWeight;
     if (player.success) state.bestWeight = max(state.bestWeight, player.kg);
-    recordTournament('weights', place);
-    final reward = (_placeReward(place) * (1 + campusRank('stadium', 2) * .03)).round();
+    recordTournament('weights', place, success: player.success);
+    final reward = raceReward(player.success ? place : results.length);
     state.money += reward;
     race = null;
     positionWeightAvatars();
@@ -209,7 +216,7 @@ extension WeightsLogic on GameController {
         total: results.length,
         value: '${player.kg} KG',
         reward: reward,
-        xp: place == 1 ? 30 : 15,
+        xp: won ? 30 : 15,
         record: record,
         success: player.success,
       ),

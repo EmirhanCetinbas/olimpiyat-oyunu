@@ -1,3 +1,5 @@
+import 'data.dart';
+
 /// Aktif yarış / deneme verisi (game.js `race` nesnesi).
 class Race {
   Race({
@@ -93,9 +95,18 @@ class WeightsRound {
 }
 
 class ArcheryResult {
-  ArcheryResult(this.id, this.points);
+  ArcheryResult(this.id, this.points, [this.x = 0, this.rings = 0]);
   final int id;
   final int points;
+
+  /// Tam merkez (X) sayısı; eşit puanda sıralamayı belirler.
+  final int x;
+
+  /// Okların halka değerleri toplamı (merkeze yakınlık); X de eşitse sıralamayı belirler.
+  final double rings;
+
+  /// Sıralamada bu sonuç [other]'ın önünde mi: puan, sonra X, sonra merkeze yakınlık.
+  bool beats(ArcheryResult other) => points != other.points ? points > other.points : (x != other.x ? x > other.x : rings > other.rings);
 }
 
 class ArcheryRound {
@@ -108,7 +119,9 @@ class ArcheryRound {
   final List<int> levels;
   final List<int> campus;
   final List<ArcheryResult> results = [];
-  List<List<int>> shots;
+
+  /// Okların halkadaki değerleri (1–10,99); puan [archeryPoints] ile çıkar.
+  List<List<double>> shots;
   final List<List<int>> scores;
 }
 
@@ -161,4 +174,7 @@ class RaceResult {
 
   /// Halterde kaldırış başarılı mı.
   final bool success;
+
+  /// Madalya mı: katılımcıların ilk yarısı (bkz. [medalPlaces]).
+  bool get medal => success && place <= medalPlaces(total);
 }

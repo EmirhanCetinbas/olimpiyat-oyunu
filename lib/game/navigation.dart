@@ -87,7 +87,7 @@ extension NavigationLogic on GameController {
         ? 'Başarısız'
         : r.place == 1
         ? 'Zafer!'
-        : r.place <= 3
+        : r.medal
         ? 'Madalya!'
         : 'Yarış bitti';
     panel('result', title, arg: r);
@@ -105,7 +105,7 @@ extension NavigationLogic on GameController {
   }
 
   /// Yükseltme açıklaması: pencere açmadan kısa bildirim.
-  void showInfo(int i) => toast('${activeUpgrades[i].title}: ${activeUpgrades[i].desc}');
+  void showInfo(int i) => toast('${upgradeDef(i).title}: ${upgradeDef(i).desc}');
 
   void openSupport() => panel('support', 'Destek');
   void askReset() => panel('reset', 'Sıfırlansın mı?');

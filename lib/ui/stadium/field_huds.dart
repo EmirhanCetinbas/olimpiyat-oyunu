@@ -128,7 +128,7 @@ class JumpFlag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final r = c.jumpCompleted[index];
-    final p = jumpLanding(r.metres, index);
+    final p = jumpLanding(r.metres, index, c.jumpSpan);
     // 18×21 bayrak, 34pt dokunma alanının ortasında (web: translate(-3px,-100%)).
     return Positioned(
       left: layout.x(p.x) - 3 - 8,

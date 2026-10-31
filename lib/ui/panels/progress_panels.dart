@@ -26,7 +26,7 @@ class TournamentPanel extends StatelessWidget {
               height: 78,
               child: Center(
                 child: place != null
-                    ? MedalBadge(place: place, size: 58)
+                    ? MedalBadge(place: place, medal: isMedal(t!.branch, place), size: 58)
                     : Container(
                         width: 58,
                         height: 58,
@@ -64,7 +64,9 @@ class TournamentPanel extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  won ? 'Kupa kazanıldı: Kupa Çantası ve 1 SP alındı!' : 'Üç yarışta en az 2 kez ilk üçe gir: Kupa Çantası + 1 SP',
+                  won
+                      ? 'Kupa kazanıldı: Kupa Çantası ve 1 SP alındı!'
+                      : 'Üç yarışta en az 2 kez ${medalPlaces(fieldSize(t?.branch ?? c.state.branch)) == 2 ? 'ilk ikiye' : 'ilk üçe'} gir: Kupa Çantası + 1 SP',
                   style: gameText(13.5, color: GameColors.ink, height: 1.2),
                 ),
               ),

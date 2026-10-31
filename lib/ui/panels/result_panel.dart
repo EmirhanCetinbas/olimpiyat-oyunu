@@ -26,7 +26,7 @@ class ResultPanel extends StatelessWidget {
             scale: .4 + .6 * t,
             child: Transform.rotate(angle: (1 - t) * -.4, child: child),
           ),
-          child: MedalBadge(place: r.success ? r.place : r.total),
+          child: MedalBadge(place: r.place, medal: r.medal),
         ),
         const SizedBox(height: 6),
         Text(

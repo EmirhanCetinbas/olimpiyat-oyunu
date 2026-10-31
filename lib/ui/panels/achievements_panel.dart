@@ -77,6 +77,17 @@ class _AchievementCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             RewardPill(icon: 'money', label: '₺${fmt(a.reward)}'),
+            if (a.gems > 0 || a.chest) ...[
+              const SizedBox(height: 4),
+              // Ek ödül: elmas ve/veya Şampiyon Çantası.
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (a.gems > 0) RewardPill(icon: 'gem', label: '${a.gems}'),
+                  if (a.chest) ...[const SizedBox(width: 3), const RewardIcon('gift', size: 28)],
+                ],
+              ),
+            ],
             const SizedBox(height: 6),
             SizedBox(height: 38, child: Center(child: action)),
           ],

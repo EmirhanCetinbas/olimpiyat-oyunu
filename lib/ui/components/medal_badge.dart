@@ -4,10 +4,14 @@ import '../theme/theme.dart';
 import 'outlined_text.dart';
 import 'raised_surface.dart';
 
-/// Kurdeleli madalya: 1 altın, 2 gümüş, 3 bronz, diğerleri gri; ortada sıra numarası.
+/// Kurdeleli madalya: 1 altın, 2 gümüş, 3 bronz; madalya dışı sıralar gri, kurdelesiz.
+/// Ortada sıra numarası.
 class MedalBadge extends StatelessWidget {
-  const MedalBadge({super.key, required this.place, this.size = 96});
+  const MedalBadge({super.key, required this.place, required this.medal, this.size = 96});
   final int place;
+
+  /// Bu sıra madalya mı (100 m'de yalnızca ilk 2).
+  final bool medal;
   final double size;
 
   static const _tones = [
@@ -18,8 +22,8 @@ class MedalBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (color, shade) = place >= 1 && place <= 3 ? _tones[place - 1] : (GameColors.locked, GameColors.lockedShade);
-    final ribbon = place <= 3;
+    final ribbon = medal && place >= 1 && place <= 3;
+    final (color, shade) = ribbon ? _tones[place - 1] : (GameColors.locked, GameColors.lockedShade);
     Widget strap(double angle, Color c) => Transform.rotate(
       angle: angle,
       child: Container(

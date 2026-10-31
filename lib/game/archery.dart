@@ -3,16 +3,27 @@ part of 'controller.dart';
 ({double x, double y}) archeryBench(int i) => (x: 30.0 + i * 10, y: 87.0);
 double archeryRow(int i) => 31.4 + i * 9.1;
 
+/// Okun halkadaki değerinden puanı (1–10).
+int archeryPoints(double ring) => ring.floor().clamp(1, 10);
+
+/// Tam merkez (X): eşit puanda sıralamayı X sayısı belirler.
+bool archeryX(double ring) => ring >= 10.5;
+
 /// archery.js: arena görseli dekordur; oklar, portreler ve puanlar canlı arayüzdür.
 extension ArcheryLogic on GameController {
-  int archeryShot(int id, List<int> levels, [double? noise, List<int> campus = const [0, 0, 0], int arrow = 0]) {
-    final n = noise ?? rand();
-    final accuracy = .47 + (levels[0] - 1) * .014 + (levels[2] - 1) * .009 + (levels[3] - 1) * .006 + (specialty('archery', id) - 1) * 2;
+  /// İsabet (ok başına): yükseltme, kampüs ve uzmanlıktan doğrusal olarak gelir.
+  double archeryAim(int id, List<int> levels, [List<int> campus = const [0, 0, 0], int arrow = 0]) {
+    final accuracy = .47 + (levels[0] - 1) * .014 + (levels[2] - 1) * .009 + (levels[3] - 1) * .006 + (specialty('archery', id) - 1) * 6;
     final power = (levels[1] - 1) * .008;
-    final offset = (n - .5).abs() * 2;
-    return (10 - offset * 8 + accuracy * 2 + power * 4 + campus[0] * .32 + campus[1] * .3 + (arrow == 2 ? campus[2] * .42 : 0))
-        .round()
-        .clamp(1, 10);
+    return accuracy * 2 + power * 4 + campus[0] * .32 + campus[1] * .3 + (arrow == 2 ? campus[2] * .42 : 0);
+  }
+
+  /// Okun halkadaki değeri (1–10,99). İsabet arttıkça sapma daralır: oklar 10'a
+  /// giderek yaklaşır ama hiçbir seviyede her ok garanti 10 olmaz.
+  double archeryShot(int id, List<int> levels, [double? noise, List<int> campus = const [0, 0, 0], int arrow = 0]) {
+    final offset = ((noise ?? rand()) - .5).abs() * 2;
+    final spread = 9 / (1 + archeryAim(id, levels, campus, arrow) / 4);
+    return max(1, 10.99 - offset * spread);
   }
 
   void positionArcheryAvatars() {
@@ -68,7 +79,7 @@ extension ArcheryLogic on GameController {
     if (race != null || paused) return const UpgradeResult(false, reason: 'Yarış zaten sürüyor');
     resultDelay = 0;
     archeryCompleted = [];
-    final ids = lineup(), levels = [...state.archeryLevels];
+    final ids = lineup(shuffle: true), levels = [...state.archeryLevels];
     final campus = [for (var i = 0; i < 3; i++) campusRank('archery', i)];
     final trainingCard = consumeTrainingCard('archery');
     race = Race(
@@ -86,8 +97,8 @@ extension ArcheryLogic on GameController {
               for (var arrow = 0; arrow < 3; arrow++)
                 () {
                   final player = id == state.selected;
-                  final points = archeryShot(id, player ? levels : const [1, 1, 1, 1], rand(), player ? campus : const [0, 0, 0], arrow);
-                  return player && trainingCard ? min(10, points + 1) : points;
+                  final ring = archeryShot(id, player ? levels : rivalLevels(levels), rand(), player ? campus : rivalCampus(campus), arrow);
+                  return player && trainingCard ? min(10.99, ring + cardArchery) : ring;
                 }(),
             ],
         ],
@@ -117,7 +128,7 @@ extension ArcheryLogic on GameController {
         if (id == state.selected) offerMove('archery', a.duration, 'Nişanı bırak!');
       } else if (a.phase == 'aim') {
         if (id == state.selected) {
-          a.shots[a.turn][a.arrow] = min(10, a.shots[a.turn][a.arrow] + (moveQuality() * 2).round());
+          a.shots[a.turn][a.arrow] = min(10.99, a.shots[a.turn][a.arrow] + moveQuality() * moveEffect['archery']!);
           clearMove();
         }
         a.phase = 'flight';
@@ -126,9 +137,9 @@ extension ArcheryLogic on GameController {
       } else if (a.phase == 'flight') {
         a.phase = 'hit';
         a.duration = .55;
-        final points = a.shots[a.turn][a.arrow];
+        final ring = a.shots[a.turn][a.arrow], points = archeryPoints(ring);
         a.scores[a.turn].add(points);
-        raceStatus = '$name · $points puan · toplam ${a.scores[a.turn].reduce((n, v) => n + v)}';
+        raceStatus = '$name · $points puan${archeryX(ring) ? ' (X)' : ''} · toplam ${a.scores[a.turn].reduce((n, v) => n + v)}';
         beep(870, .1);
       } else if (a.phase == 'hit') {
         a.arrow++;
@@ -137,7 +148,10 @@ extension ArcheryLogic on GameController {
           a.duration = 1.5;
           if (id == state.selected) offerMove('archery', a.duration, 'Nişanı bırak!');
         } else {
-          a.results.add(ArcheryResult(id, a.scores[a.turn].reduce((n, v) => n + v)));
+          final shots = a.shots[a.turn];
+          a.results.add(
+            ArcheryResult(id, a.scores[a.turn].reduce((n, v) => n + v), shots.where(archeryX).length, shots.reduce((n, v) => n + v)),
+          );
           archeryCompleted = [...a.results];
           a.phase = 'return';
           a.duration = .7;
@@ -161,11 +175,11 @@ extension ArcheryLogic on GameController {
   void finishArchery() {
     final results = race!.archery!.results;
     final player = results.firstWhere((r) => r.id == state.selected);
-    final place = 1 + results.where((r) => r.points > player.points).length;
+    final place = 1 + results.where((r) => r.beats(player)).length;
     state.races++;
-    state.xp += place == 1 ? 30 : 15;
+    gainXp(place == 1 ? 30 : 15);
     if (place == 1) state.wins++;
-    if (place <= 3) state.medals++;
+    if (isMedal('archery', place)) state.medals++;
     if (state.races % 5 == 0) {
       state.chests++;
       state.skillPoints++;
@@ -173,14 +187,15 @@ extension ArcheryLogic on GameController {
     final record = player.points > state.bestArchery;
     state.bestArchery = max(state.bestArchery, player.points);
     recordTournament('archery', place);
-    final reward = (_placeReward(place) * (1 + campusRank('stadium', 2) * .03)).round();
+    final reward = raceReward(place);
     state.money += reward;
     race = null;
     positionArcheryAvatars();
     archeryArrowHidden = true;
     stadiumIdle = true;
     liveTagHidden = true;
-    final summary = '$place. sıra · ${player.points} puan';
+    final xs = player.x > 0 ? ' · ${player.x}X' : '';
+    final summary = '$place. sıra · ${player.points} puan$xs';
     raceStatus = '$summary · +₺${fmt(reward)}';
     raceCallHidden = false;
     raceCallText = summary;
@@ -191,7 +206,7 @@ extension ArcheryLogic on GameController {
         branch: 'archery',
         place: place,
         total: results.length,
-        value: '${player.points} / 30 puan',
+        value: '${player.points} / 30 puan$xs',
         reward: reward,
         xp: place == 1 ? 30 : 15,
         record: record,

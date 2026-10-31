@@ -5,7 +5,10 @@ const _jumpStartX = 10.3, _jumpTakeoffX = 60.6, _jumpTrackY = 64.0, _jumpPitX = 
 const jumpColors = [0xFFFFBE13, 0xFF27BDF6, 0xFFEF6955, 0xFFBF70EF, 0xFF18B87B, 0xFFFF8B27];
 
 ({double x, double y}) jumpBench(int i) => (x: 24.0 + i * 7, y: _jumpBenchY);
-({double x, double y}) jumpLanding(double metres, int i) => (x: _jumpPitX + metres / 10 * _jumpPitWidth, y: 52.0 + i * 5);
+
+/// [span]: kum havuzunun temsil ettiği metre; uzun atlayışlar havuzdan taşmasın diye büyür.
+({double x, double y}) jumpLanding(double metres, int i, [double span = 10]) =>
+    (x: _jumpPitX + metres / span * _jumpPitWidth, y: 52.0 + i * 5);
 
 /// longjump.js
 extension LongJumpLogic on GameController {
@@ -27,7 +30,7 @@ extension LongJumpLogic on GameController {
     final j = r.jump!, i = j.turn;
     if (i >= r.ids.length) return;
     final bench = jumpBench(i), start = (x: _jumpStartX, y: _jumpTrackY);
-    final land = jumpLanding(j.distances[i], i), t = (j.time / j.duration).clamp(0.0, 1.0);
+    final land = jumpLanding(j.distances[i], i, jumpSpan), t = (j.time / j.duration).clamp(0.0, 1.0);
     var p = bench;
     if (j.phase == 'ready') p = (x: bench.x + (start.x - bench.x) * t, y: bench.y + (start.y - bench.y) * t);
     if (j.phase == 'runup') p = (x: start.x + (_jumpTakeoffX - start.x) * t, y: start.y);
@@ -43,17 +46,17 @@ extension LongJumpLogic on GameController {
   double longJumpDistance(int id, List<int> levels, [double? noise]) {
     final n = noise ?? rand();
     final bonus = (levels[0] - 1) * .007 + (levels[1] - 1) * .009 + (levels[2] - 1) * .016 + (levels[3] - 1) * .011;
-    return (min(9.65, (4.7 + n * 1.3) * animals[id].speed * specialty('longjump', id) * (1 + bonus)) * 100).round() / 100;
+    return ((4.7 + n * 1.3) * specialty('longjump', id) * (1 + bonus) * 100).round() / 100;
   }
 
   UpgradeResult beginLongJump() {
     if (race != null || paused) return const UpgradeResult(false, reason: 'Yarış zaten sürüyor');
     resultDelay = 0;
     jumpCompleted = [];
-    final ids = lineup(), levels = [...state.longJumpLevels];
+    final ids = lineup(shuffle: true), levels = [...state.longJumpLevels];
     final campus = [for (var i = 0; i < 3; i++) campusRank('jump', i)];
     final trainingCard = consumeTrainingCard('longjump');
-    final campusSum = campus.fold(0, (n, v) => n + v);
+    double campusBonus(List<int> c) => 1 + c.fold(0, (n, v) => n + v) * .01;
     race = Race(
       branch: 'longjump',
       phase: 'jumping',
@@ -64,14 +67,14 @@ extension LongJumpLogic on GameController {
         campus: campus,
         distances: [
           for (final id in ids)
-            min(
-              9.95,
-              longJumpDistance(id, id == state.selected ? levels : const [1, 1, 1, 1]) *
-                  (id == state.selected ? 1 + campusSum * .01 + (trainingCard ? .03 : 0) : 1),
-            ),
+            id == state.selected
+                ? longJumpDistance(id, levels) * (campusBonus(campus) + (trainingCard ? cardBoost : 0))
+                : longJumpDistance(id, rivalLevels(levels)) * campusBonus(rivalCampus(campus)),
         ],
       ),
     );
+    // Kum havuzu ölçeği: en uzun atlayış (hamle payı dahil) havuzun sonuna yakın düşer; tur bitince de korunur.
+    jumpSpan = max(10, race!.jump!.distances.reduce(max) * 1.08);
     runners();
     stadiumIdle = false;
     raceCallHidden = true;
@@ -100,7 +103,7 @@ extension LongJumpLogic on GameController {
         raceStatus = '${animals[r.ids[j.turn]].name} yaklaşıyor · ${j.turn + 1}/6';
       } else if (j.phase == 'runup') {
         if (r.ids[j.turn] == state.selected) {
-          j.distances[j.turn] = min(9.95, j.distances[j.turn] * (1 + moveQuality() * .035));
+          j.distances[j.turn] *= 1 + moveQuality() * moveEffect['longjump']!;
           clearMove();
         }
         j.phase = 'flight';
@@ -109,7 +112,7 @@ extension LongJumpLogic on GameController {
       } else if (j.phase == 'flight') {
         j.phase = 'landed';
         j.duration = .85;
-        final result = JumpResult(r.ids[j.turn], (min(9.95, j.distances[j.turn]) * 100).round() / 100);
+        final result = JumpResult(r.ids[j.turn], (j.distances[j.turn] * 100).round() / 100);
         j.results.add(result);
         jumpCompleted = [...j.results];
         raceStatus = '${animals[result.id].name} · ${jumpMetres(result.metres)}';
@@ -150,9 +153,9 @@ extension LongJumpLogic on GameController {
       ..sort((a, b) => a.metres != b.metres ? b.metres.compareTo(a.metres) : results.indexOf(a).compareTo(results.indexOf(b)));
     final place = sorted.indexWhere((r) => r.id == state.selected) + 1;
     state.races++;
-    state.xp += place == 1 ? 30 : 15;
+    gainXp(place == 1 ? 30 : 15);
     if (place == 1) state.wins++;
-    if (place <= 3) state.medals++;
+    if (isMedal('longjump', place)) state.medals++;
     if (state.races % 5 == 0) {
       state.chests++;
       state.skillPoints++;
@@ -160,7 +163,7 @@ extension LongJumpLogic on GameController {
     final record = player.metres > state.bestJump;
     state.bestJump = max(state.bestJump, player.metres);
     recordTournament('longjump', place);
-    final reward = (_placeReward(place) * (1 + campusRank('stadium', 2) * .03)).round();
+    final reward = raceReward(place);
     state.money += reward;
     race = null;
     positionJumpAvatars();

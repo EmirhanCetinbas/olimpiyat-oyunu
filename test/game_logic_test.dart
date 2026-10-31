@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pati_sampiyonlari/game/controller.dart';
 import 'package:pati_sampiyonlari/game/data.dart';
 import 'package:pati_sampiyonlari/game/race.dart';
+import 'package:pati_sampiyonlari/game/state.dart';
 
 void main() {
   late MemoryStorage storage;
@@ -70,14 +71,14 @@ void main() {
     expect(saved()['races'], 1);
     game.state.money = 1000000;
     for (var i = 0; i < 4; i++) {
-      for (var star = 0; star < 3; star++) {
+      for (var star = 0; star < 5; star++) {
         expect(game.buyEquipment(i), true);
       }
       expect(game.buyEquipment(i), false);
     }
-    expect(game.state.equipmentStars.join(','), '3,3,3,3');
+    expect(game.state.equipmentStars.join(','), '5,5,5,5');
     game.beginRace();
-    expect(game.race!.equipmentStars.join(','), '3,3,3,3');
+    expect(game.race!.equipmentStars.join(','), '5,5,5,5');
     game.state.races = 4;
     game.race!.elapsed = 10;
     game.race!.times = [9, 10, 11, 12];
@@ -186,8 +187,10 @@ void main() {
     expect(game.roundText, '6 / 6');
     expect(seen, containsAll(['ready', 'runup', 'flight', 'landed', 'return']));
     for (var i = 0; i < 4; i++) {
-      expect(game.longJumpDistance(0, [for (var j = 0; j < 4; j++) j == i ? 2 : 1], .5),
-          greaterThan(game.longJumpDistance(0, [1, 1, 1, 1], .5)));
+      expect(
+        game.longJumpDistance(0, [for (var j = 0; j < 4; j++) j == i ? 2 : 1], .5),
+        greaterThan(game.longJumpDistance(0, [1, 1, 1, 1], .5)),
+      );
     }
     expect(game.raceStatus, contains('1. sıra'));
     expect(game.beginRace().ok, true);
@@ -207,9 +210,7 @@ void main() {
     expect(game.beginRace().ok, true);
     game.selectBranch('sprint');
     expect(game.state.branch, 'weights');
-    game.race!.weights!.attempts = [
-      for (var i = 0; i < 6; i++) WeightAttempt(kg: 100 - i * 5, chance: 1, success: true),
-    ];
+    game.race!.weights!.attempts = [for (var i = 0; i < 6; i++) WeightAttempt(kg: 100 - i * 5, chance: 1, success: true)];
     final phases = <String>{}, bars = <double>{};
     for (var i = 0; i < 500 && game.race != null; i++) {
       game.tick(.1);
@@ -250,7 +251,7 @@ void main() {
     expect(game.upgrade(0).ok, true);
     expect(game.beginRace().ok, true);
     game.race!.archery!.shots = [
-      for (var i = 0; i < 6; i++) [10 - i, 10 - i, 10 - i],
+      for (var i = 0; i < 6; i++) [10.0 - i, 10.0 - i, 10.0 - i],
     ];
     final phases = <String>{}, arrows = <double>{};
     for (var i = 0; i < 700 && game.race != null; i++) {
@@ -328,7 +329,13 @@ void main() {
     game.state.trainingCards['archery'] = 1;
     game.selectBranch('archery');
     game.beginRace();
+    expect(game.state.trainingCards['archery'], 1, reason: 'hazırlanmayan kart harcanmaz');
+    game.race = null;
+    game.toggleTrainingCard('archery');
+    expect(game.state.armedCards, ['archery']);
+    game.beginRace();
     expect(game.state.trainingCards['archery'], 0);
+    expect(game.state.armedCards, isEmpty);
     expect(game.beginRace().ok, false);
   });
 
@@ -377,14 +384,156 @@ void main() {
     game.state.hurdleLevels[1] = 3;
     expect(game.power, 124);
     game.selectBranch('archery');
-    expect(game.statValue(1, 1), '+0,1 puan');
+    expect(game.statValue(1, 1), '+0,03 isabet');
     // Kampüs satırları gerçek katsayıyla yazar.
     final hurdleRitm = campusFacilities.firstWhere((f) => f.id == 'hurdles').rows[0];
     expect(hurdleRitm.format(2), '+%5');
     final archeryLast = campusFacilities.firstWhere((f) => f.id == 'archery').rows[2];
-    expect(archeryLast.format(1), '+0,42 puan');
-    expect(specialtyLabel(0), '100 metre +%6');
-    expect(specialtyLabel(5), 'Yüzme +%4, Uzun atlama +%4, Okçuluk +0,24 puan/ok');
+    expect(archeryLast.format(1), '+0,42 isabet');
+    expect(specialtyLabel(0), '100 metre +%6, Uzun atlama +%3');
+    expect(specialtyLabel(1), 'Engelli koşu +%3, Okçuluk +0,72 isabet');
+  });
+
+  test('rivals keep up with the player: maxed upgrades do not guarantee wins', () {
+    game.state.auto = false;
+    game.state.weightLevels = [30, 30, 30, 30];
+    game.selectBranch('weights');
+    game.beginRace();
+    final attempts = game.race!.weights!.attempts;
+    expect(attempts.every((a) => a.chance == attempts[0].chance), true);
+    game.race = null;
+
+    game.state.hurdleLevels = [30, 30, 30, 30];
+    game.selectBranch('hurdles');
+    final wins = game.state.wins;
+    for (var i = 0; i < 20; i++) {
+      game.beginRace();
+      ticks(1800, until: () => game.race != null);
+    }
+    expect(game.state.races, 20);
+    expect(game.state.wins - wins, lessThan(20));
+  });
+
+  test('no record caps: upgrades keep paying off, ties are broken', () {
+    expect(game.longJumpDistance(0, [60, 60, 60, 60], .5), greaterThan(10));
+    expect(game.longJumpDistance(0, [61, 60, 60, 60], .5), greaterThan(game.longJumpDistance(0, [60, 60, 60, 60], .5)));
+    // Okçuluk: isabet sapmayı daraltır; en kötü ok yüksek seviyede bile 10 değildir.
+    expect(game.archeryShot(0, [30, 30, 30, 30], .8), greaterThan(game.archeryShot(0, [1, 1, 1, 1], .8)));
+    expect(game.archeryShot(0, [100, 100, 100, 100], .8), greaterThan(game.archeryShot(0, [99, 100, 100, 100], .8)));
+    expect(archeryPoints(game.archeryShot(0, [100, 100, 100, 100], 1)), lessThan(10));
+    expect(ArcheryResult(1, 30, 2, 31).beats(ArcheryResult(0, 30, 1, 32)), true);
+    expect(ArcheryResult(1, 30, 1, 31).beats(ArcheryResult(0, 30, 1, 30.5)), true);
+    expect(ArcheryResult(1, 29, 3, 31).beats(ArcheryResult(0, 30, 0, 30)), false);
+  });
+
+  test('100 m: medals for the top 2 of 4, rivals drawn from all athletes', () {
+    expect(isMedal('sprint', 2), true);
+    expect(isMedal('sprint', 3), false);
+    expect(isMedal('hurdles', 3), true);
+    expect(const RaceResult(branch: 'sprint', place: 3, total: 4, value: '', reward: 0, xp: 0).medal, false);
+    game.state.tournament = null;
+    game.startTournament();
+    game.recordTournament('sprint', 3);
+    expect(game.state.tournament!.podiums, 0);
+    game.recordTournament('sprint', 2);
+    expect(game.state.tournament!.podiums, 1);
+
+    final seen = <int>{};
+    for (var i = 0; i < 20; i++) {
+      game.beginRace();
+      expect(game.race!.ids.first, game.state.selected);
+      expect(game.runnerIds, game.race!.ids);
+      seen.addAll(game.race!.ids);
+      game.race = null;
+    }
+    expect(seen, {0, 1, 2, 3, 4, 5});
+  });
+
+  test('economy: shared reward formula, income upgrades in every branch, gem sinks', () {
+    // Ödül branştan bağımsız: sıra ödülü × branş gücü.
+    expect(game.raceReward(1), 1250);
+    game.selectBranch('archery');
+    expect(game.raceReward(1), 1250);
+    game.state.archeryLevels[0] = 11;
+    expect(game.raceReward(1), (1250 * game.power / 100).round());
+    // Gelir yükseltmeleri her branşta 4 ve 5. dizinde.
+    game.state.money = 100000;
+    expect(game.upgradeDef(4).title, 'Tribün');
+    final income = game.income();
+    expect(game.upgrade(4).ok, true);
+    expect(game.state.levels[4], 2);
+    expect(game.income(), income + 12);
+    // Elmas harcama yerleri.
+    game.state.gems = 26;
+    game.buyCoins();
+    expect(game.state.gems, 21);
+    game.buyChest();
+    expect(game.state.chests, 1);
+    game.buyTrainingCard();
+    expect(game.state.trainingCards['archery'], 1);
+    expect(game.state.gems, 0);
+    // Parça → çanta, 5 yıldız sınırı.
+    game.state.equipmentParts = 10;
+    expect(game.tradePartsForChest(), true);
+    expect(game.state.chests, 2);
+    expect(game.tradePartsForChest(), false);
+  });
+
+  test('boost, level rewards, weights failure, resume income', () {
+    game.activateBoost();
+    expect(game.boostActive, true);
+    clock += boostMs;
+    expect(game.boostActive, false);
+    expect(game.boostDisabled, true);
+    clock += boostCooldownMs - boostMs;
+    expect(game.boostDisabled, false);
+
+    final gems = game.state.gems, chests = game.state.chests;
+    // Seviye eğrisi: 100 + 125 + 150 + 175 = 550 XP'de 5. seviye.
+    expect(levelProgress(549).level, 4);
+    game.state.xp = 545;
+    game.gainXp(10);
+    expect(game.level, 5);
+    expect(game.levelInfo.into, 5);
+    expect(game.levelInfo.need, 200);
+    expect(game.state.gems, gems + levelGems);
+    expect(game.state.chests, chests + 1);
+
+    game.state.auto = false;
+    game.selectBranch('weights');
+    game.state.tournament = null;
+    game.startTournament();
+    game.beginRace();
+    game.race!.weights!.attempts = [for (var i = 0; i < 6; i++) WeightAttempt(kg: 100, chance: 0, roll: .5, success: false)];
+    final medals = game.state.medals;
+    ticks(3000, dt: .1, until: () => game.race != null);
+    expect(game.lastResult!.place, 1, reason: 'herkes başarısız: ortak 1.');
+    expect(game.lastResult!.medal, false);
+    expect(game.state.medals, medals);
+    expect(game.state.tournament!.podiums, 0);
+
+    final money = game.state.money;
+    game.appHidden();
+    clock += 120000;
+    game.appVisible();
+    expect(game.state.money, greaterThan(money));
+    expect(game.toastText, contains('Çevrimdışı gelir'));
+  });
+
+  test('perfect timing helps but does not decide the race alone', () {
+    for (final b in ['sprint', 'hurdles', 'swim', 'longjump', 'weights', 'archery']) {
+      expect(moveEffect[b], isNotNull, reason: b);
+    }
+    // Halter: kusursuz dokunuş başarı şansını artırır, garanti etmez.
+    game.selectBranch('weights');
+    game.state.auto = false;
+    game.beginRace();
+    game.race!.weights!.attempts[0] = WeightAttempt(kg: 100, chance: .3, roll: .9, success: false);
+    ticks(400, dt: .05, until: () => game.activeMove == null);
+    game.activeMove!.elapsed = game.activeMove!.duration * game.activeMove!.target;
+    game.tapMove();
+    ticks(400, dt: .05, until: () => game.weightCompleted.isEmpty);
+    expect(game.weightCompleted.first.success, false);
   });
 
   test('save and reload keeps progress', () {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../game/controller.dart';
 import '../components/components.dart';
 import '../theme/theme.dart';
 
@@ -11,6 +12,7 @@ class RaceStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
     final risk = c.state.branch == 'weights';
+    final cards = c.state.trainingCards[c.state.branch] ?? 0, armed = c.state.armedCards.contains(c.state.branch);
     return ConstrainedBox(
       // Mobil: düğmeler 44pt dokunma alanı alır; şerit yüksekliği onlara göre (web: 33px, 9px yazı).
       constraints: const BoxConstraints(minHeight: minTapTarget),
@@ -22,6 +24,19 @@ class RaceStrip extends StatelessWidget {
               child: Text(c.raceStatus, style: gameText(12, color: GameColors.ink, height: 1.15)),
             ),
             const SizedBox(width: 6),
+            // Antrenman kartı: elde kart varsa sonraki yarış için hazırlanır.
+            if (cards > 0) ...[
+              _ToggleChip(
+                icon: Icons.style_rounded,
+                label: '',
+                // Halterde üç anahtar yan yana: yalnız ikon + durum.
+                value: risk ? (armed ? '✓' : '×$cards') : (armed ? 'KART ✓' : 'KART ×$cards'),
+                on: armed,
+                onTap: () => c.toggleTrainingCard(c.state.branch),
+                semanticLabel: 'Antrenman kartı: ${armed ? 'sonraki yarışta kullanılacak' : '$cards kart, hazırla'}',
+              ),
+              const SizedBox(width: 6),
+            ],
             if (risk) ...[
               _ToggleChip(
                 icon: Icons.fitness_center_rounded,

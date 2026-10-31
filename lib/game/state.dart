@@ -2,6 +2,18 @@ import 'data.dart';
 
 const storageKey = 'pati-champions-v1';
 
+/// Seviye eğrisi: 1→2 için 100 XP, sonraki her seviye 25 XP daha fazla ister.
+/// Dönüş: (seviye, seviyedeki XP, sonraki seviyeye gereken XP).
+({int level, int into, int need}) levelProgress(int xp) {
+  var level = 1, need = 100;
+  while (xp >= need) {
+    xp -= need;
+    level++;
+    need += 25;
+  }
+  return (level: level, into: xp, need: need);
+}
+
 class ChestItem {
   ChestItem({required this.kind, this.amount = 0, this.branch, this.label = '', this.icon = '', this.index, this.extra});
 
@@ -120,6 +132,9 @@ class GameState {
   int championChests = 0;
   int equipmentParts = 0;
   Map<String, int> trainingCards = {};
+
+  /// Sonraki yarışta kullanılmak üzere hazırlanan kartların branşları.
+  List<String> armedCards = [];
   List<int> cosmetics = [];
   int selectedCosmetic = -1;
   PendingChest? pendingChest;
@@ -184,7 +199,7 @@ class GameState {
     s.equipment = oldEquipment;
     if (raw['equipmentStars'] is List) {
       final stars = raw['equipmentStars'] as List;
-      s.equipmentStars = [for (var i = 0; i < 4; i++) i < stars.length ? _int(stars[i]).clamp(0, 3) : 0];
+      s.equipmentStars = [for (var i = 0; i < 4; i++) i < stars.length ? _int(stars[i]).clamp(0, 5) : 0];
       s.equipmentLegacy = _int(raw['equipmentLegacy']).clamp(0, 1 << 31);
     } else {
       s.equipmentStars = [oldEquipment.clamp(0, 3), 0, 0, 0];
@@ -196,6 +211,8 @@ class GameState {
     s.equipmentParts = _int(raw['equipmentParts']).clamp(0, 1 << 31);
     final cards = raw['trainingCards'];
     if (cards is Map) cards.forEach((k, v) => s.trainingCards['$k'] = _int(v));
+    final armed = raw['armedCards'];
+    if (armed is List) s.armedCards = {for (final b in armed.whereType<String>().where(branches.contains)) b}.toList();
     if (raw['cosmetics'] is List) {
       s.cosmetics = {
         for (final c in raw['cosmetics'] as List)
@@ -264,6 +281,7 @@ class GameState {
     'championChests': championChests,
     'equipmentParts': equipmentParts,
     'trainingCards': trainingCards,
+    'armedCards': armedCards,
     'cosmetics': cosmetics,
     'selectedCosmetic': selectedCosmetic,
     'pendingChest': pendingChest?.toJson(),

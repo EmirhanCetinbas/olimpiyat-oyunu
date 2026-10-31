@@ -15,21 +15,15 @@ class UpgradeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
-    final count = c.activeUpgrades.length;
-    final athlete = [
-      for (var i = 0; i < count; i++)
-        if (c.activeUpgrades[i].income == null) i,
-    ];
-    final income = [
-      for (var i = 0; i < count; i++)
-        if (c.activeUpgrades[i].income != null) i,
-    ];
+    // Gelir yükseltmeleri (4–5) branştan bağımsız; her branşta görünür.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const _SectionTitle('SPORCU GELİŞİMİ'),
-        for (final i in athlete) UpgradeRow(index: i),
-        if (income.isNotEmpty) ...[const SizedBox(height: 4), const _SectionTitle('GELİR'), for (final i in income) UpgradeRow(index: i)],
+        for (var i = 0; i < c.activeUpgrades.length; i++) UpgradeRow(index: i),
+        const SizedBox(height: 4),
+        const _SectionTitle('GELİR'),
+        for (var i = c.activeUpgrades.length; i < GameController.upgradeCount; i++) UpgradeRow(index: i),
       ],
     );
   }
@@ -61,8 +55,8 @@ class UpgradeRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = GameScope.of(context);
-    final u = c.activeUpgrades[index];
-    final level = c.upgradeLevels[index];
+    final u = c.upgradeDef(index);
+    final level = c.upgradeLevel(index);
     final maxed = level >= 100;
     final affordable = c.canUpgrade(index);
     final compact = ScreenMetrics.of(context).compact;

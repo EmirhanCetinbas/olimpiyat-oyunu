@@ -106,7 +106,10 @@ extension ChestLogic on GameController {
     return item;
   }
 
+  /// Yalnızca oyuncunun hazırladığı kart harcanır (bkz. [toggleTrainingCard]).
   bool consumeTrainingCard(String branch) {
+    if (!state.armedCards.contains(branch)) return false;
+    state.armedCards.remove(branch);
     if ((state.trainingCards[branch] ?? 0) <= 0) return false;
     state.trainingCards[branch] = state.trainingCards[branch]! - 1;
     save();

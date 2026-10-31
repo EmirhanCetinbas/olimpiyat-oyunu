@@ -156,9 +156,46 @@
       ]
     },
     {
+      "name": "longjump-finished-pro",
+      "state": {
+        "branch": "longjump",
+        "longJumpLevels": [
+          30,
+          30,
+          30,
+          30
+        ]
+      },
+      "steps": [
+        [
+          "begin"
+        ],
+        [
+          "advance",
+          40
+        ],
+        [
+          "open",
+          "race"
+        ]
+      ]
+    },
+    {
       "name": "weights-idle",
       "state": {
         "branch": "weights"
+      }
+    },
+    {
+      "name": "weights-card-armed",
+      "state": {
+        "branch": "weights",
+        "trainingCards": {
+          "weights": 2
+        },
+        "armedCards": [
+          "weights"
+        ]
       }
     },
     {

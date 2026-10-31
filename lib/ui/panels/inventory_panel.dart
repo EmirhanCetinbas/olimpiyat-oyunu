@@ -52,7 +52,7 @@ class InventoryPanel extends StatelessWidget {
 
   List<Widget> _equipment() => [
     const PanelText(
-      'Her ekipman en fazla 3 yıldıza yükselir. Etkileri sonraki yarışta uygulanır.',
+      'Her ekipman en fazla $maxStars yıldıza yükselir. Etkileri sonraki yarışta uygulanır.',
       size: 12,
       color: GameColors.slate,
       bottom: 8,
@@ -62,18 +62,25 @@ class InventoryPanel extends StatelessWidget {
 
   List<Widget> _items() {
     final s = c.state;
-    final cards = s.trainingCards.entries.where((e) => e.value > 0).map((e) => '${branchLabel(e.key)} ×${e.value}').join(', ');
+    final cards = s.trainingCards.entries
+        .where((e) => e.value > 0)
+        .map((e) => '${branchLabel(e.key)} ×${e.value}${s.armedCards.contains(e.key) ? ' (hazır)' : ''}')
+        .join(', ');
+    final branchCards = s.trainingCards[s.branch] ?? 0, armed = s.armedCards.contains(s.branch);
     return [
       ItemCard(
         leading: const RewardKindIcon('parts'),
         title: 'Ekipman parçası ×${s.equipmentParts}',
-        small: '5 parça ile bir ekipmanı yıldızla geliştir',
+        small: '$partsPerStar parça ile bir ekipmanı yıldızla geliştir ya da $partsPerChest parçayı Spor Çantasına çevir',
+        actions: [_cardAction('Çanta', c.pressTradeParts, enabled: s.equipmentParts >= partsPerChest)],
       ),
       ItemCard(
         leading: const RewardKindIcon('card'),
         title: 'Antrenman kartları',
         small:
-            '${cards.isEmpty ? 'Henüz yok' : cards} · İlgili branşın sonraki yarışında otomatik: hız/mesafe/kilo +%3, okçulukta her oka +1 puan',
+            '${cards.isEmpty ? 'Henüz yok' : cards} · Hazırladığın kart, o branşın bir sonraki yarışında kullanılır: '
+            'hız/mesafe/kilo +%${trNumber(cardBoost * 100)}, okçulukta her oka +${trNumber(cardArchery, 1)}',
+        actions: [_cardAction(armed ? 'Beklet' : 'Hazırla', () => c.toggleTrainingCard(s.branch), enabled: armed || branchCards > 0)],
       ),
       ItemCard(
         leading: const RewardKindIcon('cosmetic'),
@@ -96,7 +103,7 @@ class InventoryPanel extends StatelessWidget {
       ItemCard(
         leading: const RewardKindIcon('boost'),
         title: '2x gelir kuponu ×${s.boostTokens}',
-        small: '30 saniye boyunca geliri ikiye katlar',
+        small: '3 dakika boyunca geliri ikiye katlar (2x sürüyorsa uzatır)',
         actions: [_cardAction('Kullan', c.useBoostToken, enabled: s.boostTokens >= 1)],
       ),
     ];
@@ -113,7 +120,7 @@ class EquipmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final item = equipmentItems[index];
     final stars = c.state.equipmentStars[index];
-    final parts = stars < 3 && c.state.equipmentParts >= 5;
+    final parts = stars < maxStars && c.state.equipmentParts >= partsPerStar;
     final compact = ScreenMetrics.of(context).compact;
     final gap = SizedBox(width: compact ? 4 : 7);
     Widget button(String label, VoidCallback onTap, {bool enabled = true}) =>
@@ -146,11 +153,11 @@ class EquipmentCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (parts) ...[button('5 parça', () => c.pressEquipment(index, useParts: true)), const SizedBox(height: 4)],
+                if (parts) ...[button('$partsPerStar parça', () => c.pressEquipment(index, useParts: true)), const SizedBox(height: 4)],
                 button(
-                  stars >= 3 ? 'MAKS.' : '₺${fmt(c.equipmentCost(index))}',
+                  stars >= maxStars ? 'MAKS.' : '₺${fmt(c.equipmentCost(index))}',
                   () => c.pressEquipment(index),
-                  enabled: stars < 3 && c.state.money >= c.equipmentCost(index),
+                  enabled: stars < maxStars && c.state.money >= c.equipmentCost(index),
                 ),
               ],
             ),
@@ -168,13 +175,13 @@ class _Stars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: '$stars / 3 yıldız',
+    label: '$stars / $maxStars yıldız',
     excludeSemantics: true,
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         // Dolu yıldız altın, boş yıldız gri: kaç yıldız olduğu bir bakışta okunur.
-        for (var i = 0; i < 3; i++)
+        for (var i = 0; i < maxStars; i++)
           Text(
             '★',
             style: TextStyle(
@@ -189,7 +196,7 @@ class _Stars extends StatelessWidget {
   );
 }
 
-/// Sporcu kartı: yüz, ad, hız ve uzmanlık etiketleri; seçili kart yeşil, kilitli kart açılma ilerlemesiyle.
+/// Sporcu kartı: yüz, ad, kimlik ve uzmanlık etiketleri; seçili kart yeşil, kilitli kart açılma ilerlemesiyle.
 class AthleteCard extends StatelessWidget {
   const AthleteCard({super.key, required this.c, required this.id});
   final GameController c;
@@ -244,7 +251,7 @@ class AthleteCard extends StatelessWidget {
                   Wrap(
                     spacing: 5,
                     runSpacing: 4,
-                    children: [tag(a.trait, const Color(0xFFDDEBFA)), for (final t in specialtyTags(id)) tag(t, const Color(0xFFFFEBB8))],
+                    children: [tag(a.role, const Color(0xFFDDEBFA)), for (final t in specialtyTags(id)) tag(t, const Color(0xFFFFEBB8))],
                   ),
               ],
             ),

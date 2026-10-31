@@ -1,5 +1,16 @@
 part of 'controller.dart';
 
+/// Kusursuz dokunuşun (kalite 1) etkisi; kalite düştükçe orantılı azalır. Katsayılar
+/// her branşta dokunuşun kazanma şansına benzer katkı yapacak şekilde ayarlandı.
+const moveEffect = <String, double>{
+  'sprint': .12, // ilk 25 m'de hız
+  'hurdles': .06, // engelden sonra yarışın kalanında hız
+  'swim': .04, // kulaçtan sonra yarışın kalanında hız
+  'longjump': .03, // mesafe
+  'weights': .2, // başarı şansı
+  'archery': .7, // okun halka değeri
+};
+
 /// moves.js: zamanlama düğmesi ve üç yarışlık kupa.
 extension MovesLogic on GameController {
   /// Kusursuz pencere: hedefin iki yanında sürenin %15'i (kalite > .7).
@@ -62,12 +73,13 @@ extension MovesLogic on GameController {
     moveFeedbackTime = .9;
   }
 
-  void recordTournament(String branch, int place) {
+  /// [success]: halterde başarısız kaldırış sırası ne olursa olsun madalya sayılmaz.
+  void recordTournament(String branch, int place, {bool success = true}) {
     final t = state.tournament;
     if (t == null || t.branch != branch || t.attempts >= 3) return;
     t.attempts++;
     t.places.add(place);
-    if (place <= 3) t.podiums++;
+    if (success && isMedal(branch, place)) t.podiums++;
     if (t.attempts == 3) {
       final won = t.podiums >= 2;
       if (won) {

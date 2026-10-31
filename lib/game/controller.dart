@@ -29,6 +29,7 @@ part 'inventory.dart';
 part 'settings.dart';
 part 'scene.dart';
 part 'running.dart';
+part 'rivals.dart';
 
 class UpgradeResult {
   const UpgradeResult(this.ok, {this.reason, this.level});
@@ -38,6 +39,12 @@ class UpgradeResult {
 }
 
 const offlineLimit = 8 * 3600;
+
+/// Bedava 2x gelir: süresi ve (başlattıktan sonra) yeniden kullanma beklemesi; kupon da bir süre ekler.
+const boostMs = 3 * 60 * 1000, boostCooldownMs = 15 * 60 * 1000;
+
+/// Antrenman kartının bir yarışlık etkisi: hız/mesafe/kilo çarpanı ve okçulukta oka eklenen halka değeri.
+const cardBoost = .05, cardArchery = 1.5;
 
 /// game.js'in tamamı: oyun durumu, yarış döngüsü ve tüm eylemler.
 /// DOM'a yazılan metinler burada alan olarak tutulur; arayüz bunları çizer.
@@ -87,6 +94,7 @@ class GameController extends ChangeNotifier {
   ActiveMove? activeMove;
   RaceResult? lastResult;
   List<JumpResult> jumpCompleted = [];
+  double jumpSpan = 10;
   List<WeightResult> weightCompleted = [];
   List<ArcheryResult> archeryCompleted = [];
 
@@ -124,6 +132,7 @@ class GameController extends ChangeNotifier {
 
   Timer? _toastTimer;
   Timer? _welcomeTimer;
+  Timer? _levelTimer;
   Timer? _musicTimer;
   int _musicStep = 0;
   bool hidden = false;
@@ -135,6 +144,7 @@ class GameController extends ChangeNotifier {
     _disposed = true;
     _toastTimer?.cancel();
     _welcomeTimer?.cancel();
+    _levelTimer?.cancel();
     _musicTimer?.cancel();
     super.dispose();
   }
@@ -162,8 +172,19 @@ class GameController extends ChangeNotifier {
     _ => state.levels,
   };
 
-  int cost(int i) => (activeUpgrades[i].base * pow(1.19, upgradeLevels[i] - 1)).round();
-  int get level => 1 + state.xp ~/ 100;
+  /// Yükseltme dizinleri: 0–3 seçili branşın yükseltmeleri, 4–5 gelir yükseltmeleri ([incomeUpgrades]).
+  static const upgradeCount = 6;
+
+  UpgradeDef upgradeDef(int i) => i < 4 ? activeUpgrades[i] : incomeUpgrades[i - 4];
+
+  /// Gelir seviyeleri `state.levels[4]` ve `[5]`te; branş seviyeleri branşın listesinde.
+  List<int> _levelList(int i) => i < 4 ? upgradeLevels : state.levels;
+
+  int upgradeLevel(int i) => _levelList(i)[i];
+
+  int cost(int i) => (upgradeDef(i).base * pow(1.19, upgradeLevel(i) - 1)).round();
+  ({int level, int into, int need}) get levelInfo => levelProgress(state.xp);
+  int get level => levelInfo.level;
 
   int campusRank(String id, int i) {
     final list = state.campusUpgrades[id];
@@ -173,20 +194,20 @@ class GameController extends ChangeNotifier {
 
   double passiveIncome() =>
       15 +
-      state.levels[4] * sprintUpgrades[4].income! * (1 + campusRank('stadium', 0) * .05) +
-      state.levels[5] * sprintUpgrades[5].income! * (1 + campusRank('stadium', 1) * .05);
+      state.levels[4] * incomeUpgrades[0].income! * (1 + campusRank('stadium', 0) * .05) +
+      state.levels[5] * incomeUpgrades[1].income! * (1 + campusRank('stadium', 1) * .05);
 
   int income() => (passiveIncome() * (now < state.boostUntil ? 2 : 1)).round();
 
   /// Yükseltme kartındaki değer: yükseltmenin yarıştaki gerçek, birikmiş etkisi
   /// (yarış formüllerindeki katsayılarla aynı; bkz. running/longjump/weights/archery).
   String statValue(int i, [int next = 0]) {
-    final lv = upgradeLevels[i] + next, n = lv - 1;
+    final lv = upgradeLevel(i) + next, n = lv - 1;
     String pct(num v) => '+%${trNumber(v, 1)}';
+    final income = upgradeDef(i).income;
+    if (income != null) return '+₺${fmt(income * lv * (1 + campusRank('stadium', i - 4) * .05))}/sn';
     switch (state.branch) {
       case 'sprint':
-        final income = sprintUpgrades[i].income;
-        if (income != null) return '+₺${fmt(income * lv * (1 + campusRank('stadium', i - 4) * .05))}/sn';
         return pct(n * const [2, 1, 1.5, 2][i]);
       case 'hurdles':
         // Engel Ritmi: engelin üstünde korunan hız oranı.
@@ -200,8 +221,8 @@ class GameController extends ChangeNotifier {
         // Kilo yüzdesi (Temel Güç, Son Hamle) ya da başarı şansı puanı (Kavrama, Denge).
         return pct(n * const [2.5, .8, .9, 1][i]);
       case 'archery':
-        // Üç okun toplamına ortalama eklenen puan: isabet × 2 (Nişan, Rüzgâr, Son Atış), güç × 4 (Yay).
-        return '+${trNumber(n * const [.084, .096, .054, .036][i], 2)} puan';
+        // Ok başına isabet: isabet × 2 (Nişan, Rüzgâr, Son Atış), güç × 4 (Yay); bkz. archeryAim.
+        return '+${trNumber(n * const [.028, .032, .018, .012][i], 2)} isabet';
     }
     return '';
   }
@@ -213,8 +234,7 @@ class GameController extends ChangeNotifier {
   /// Takım gücü: seçili branşın yükseltmelerinden, kampüs kademelerinden ve
   /// o branşta gerçekten etkili ekipman yıldızlarından oluşan gelişim puanı.
   int get power {
-    final levels = upgradeLevels;
-    final branchLevels = state.branch == 'sprint' ? levels.sublist(0, 4) : levels;
+    final branchLevels = upgradeLevels.sublist(0, 4);
     final equipment = switch (state.branch) {
       'sprint' => state.equipmentStars.reduce((a, b) => a + b) + state.equipmentLegacy,
       'hurdles' || 'swim' => state.equipmentStars[0] + state.equipmentLegacy,
@@ -256,8 +276,8 @@ class GameController extends ChangeNotifier {
 
   String get boostText {
     final remain = state.boostUntil - now, cool = state.boostReady - now;
-    if (remain > 0) return '2x · ${(remain / 1000).ceil()} sn';
-    if (cool > 0) return '2x · ${(cool / 1000).ceil()} sn';
+    if (remain > 0) return '2x · ${shortDuration(remain)}';
+    if (cool > 0) return '2x · ${shortDuration(cool)}';
     return '2x Aktif Et';
   }
 
@@ -271,7 +291,7 @@ class GameController extends ChangeNotifier {
   bool get inventoryBadge =>
       state.pendingChest != null ||
       state.chests + state.cupChests + state.championChests > 0 ||
-      (state.equipmentParts >= 5 && state.equipmentStars.any((s) => s < 3));
+      (state.equipmentParts >= partsPerStar && state.equipmentStars.any((s) => s < maxStars));
   bool get campusBadge => campusFacilities.any((f) => canUpgradeFacility(f.id));
 
   bool get achievementDot => achievements.any((a) => a.done(state) && !state.claims.contains(a.id));
@@ -361,8 +381,11 @@ class GameController extends ChangeNotifier {
   void appVisible() {
     hidden = false;
     if (_hiddenAt != 0 && !paused) {
-      state.money += min(offlineLimit, (now - _hiddenAt) / 1000) * passiveIncome();
+      final away = min(offlineLimit, (now - _hiddenAt) / 1000);
+      final earned = (away * passiveIncome()).floor();
+      state.money += earned;
       _hiddenAt = 0;
+      if (away > 60) toast('Tekrar hoş geldin! Çevrimdışı gelir: ₺${fmt(earned)}');
     }
     update();
     _changed();
@@ -370,8 +393,8 @@ class GameController extends ChangeNotifier {
 
   // ---- Yükseltmeler ----
   UpgradeResult upgrade(int i) {
-    if (i < 0 || i >= activeUpgrades.length) throw ArgumentError('Geçersiz yükseltme');
-    final levels = upgradeLevels, item = activeUpgrades[i];
+    if (i < 0 || i >= upgradeCount) throw ArgumentError('Geçersiz yükseltme');
+    final levels = _levelList(i), item = upgradeDef(i);
     if (levels[i] >= 100) return const UpgradeResult(false, reason: 'Maksimum seviye');
     final price = cost(i);
     if (state.money < price) {
@@ -380,7 +403,7 @@ class GameController extends ChangeNotifier {
     }
     state.money -= price;
     levels[i]++;
-    state.xp += 5;
+    gainXp(5);
     save();
     update();
     beep(820);
@@ -388,7 +411,7 @@ class GameController extends ChangeNotifier {
     return UpgradeResult(true, level: levels[i]);
   }
 
-  bool canUpgrade(int i) => state.money >= cost(i) && upgradeLevels[i] < 100;
+  bool canUpgrade(int i) => state.money >= cost(i) && upgradeLevel(i) < 100;
 
   /// game.js `update()`: yalnızca HUD sayaç metinleri; diğer değerler arayüzde türetilir.
   void update() {
@@ -443,7 +466,7 @@ class GameController extends ChangeNotifier {
           final move = activeMove;
           // Dokunulduğu an (ya da süre bitince) bonus uygulanır.
           if (move != null && move.tapped) {
-            r.manualBonus = moveQuality() * .06;
+            r.manualBonus = moveQuality() * moveEffect[state.branch]!;
             clearMove();
           }
           r.progress = [for (var i = 0; i < r.progress.length; i++) _advanceRunner(r, i, r.progress[i], dt)];
@@ -481,11 +504,11 @@ class GameController extends ChangeNotifier {
 
   void activateBoost() {
     if (now >= state.boostReady) {
-      state.boostUntil = now + 30000;
-      state.boostReady = now + 90000;
+      state.boostUntil = now + boostMs;
+      state.boostReady = now + boostCooldownMs;
       save();
       update();
-      toast('30 saniye boyunca gelir iki katı!');
+      toast('3 dakika boyunca gelir iki katı!');
     }
   }
 

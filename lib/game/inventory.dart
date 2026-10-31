@@ -1,5 +1,8 @@
 part of 'controller.dart';
 
+/// Ekipman: en çok yıldız, yıldız başına parça ve çantaya dönen parça sayısı.
+const maxStars = 5, partsPerStar = 5, partsPerChest = 10;
+
 /// Sporcu seçimi, ekipman, kamp, kupon ve kozmetikler.
 extension InventoryLogic on GameController {
   void selectAnimal(int i) {
@@ -18,23 +21,23 @@ extension InventoryLogic on GameController {
   }
 
   int equipmentCost(int i) {
-    final stars = state.equipmentStars[i];
-    return (equipmentItems[i].base * const [1, 2.5, 6, 6][stars]).round();
+    final stars = state.equipmentStars[i].clamp(0, maxStars - 1);
+    return (equipmentItems[i].base * const [1, 2.5, 6, 14, 30][stars]).round();
   }
 
   bool buyEquipment(int i, {bool useParts = false}) {
     if (i < 0 || i >= equipmentItems.length) return false;
-    if (state.equipmentStars[i] >= 3) return false;
+    if (state.equipmentStars[i] >= maxStars) return false;
     final price = equipmentCost(i);
     if (useParts) {
-      if (state.equipmentParts < 5) return false;
-      state.equipmentParts -= 5;
+      if (state.equipmentParts < partsPerStar) return false;
+      state.equipmentParts -= partsPerStar;
     } else {
       if (state.money < price) return false;
       state.money -= price;
     }
     state.equipmentStars[i]++;
-    state.xp += 5;
+    gainXp(5);
     save();
     update();
     toast('${equipmentItems[i].name} → ${state.equipmentStars[i]} yıldız');
@@ -48,12 +51,41 @@ extension InventoryLogic on GameController {
   void useBoostToken() {
     if (state.boostTokens > 0) {
       state.boostTokens--;
-      state.boostUntil = max(now, state.boostUntil) + 30000;
+      state.boostUntil = max(now, state.boostUntil) + boostMs;
       save();
       update();
       openPanel('inventory');
-      toast('2x gelir 30 saniye uzatıldı!');
+      toast('2x gelir 3 dakika uzatıldı!');
     }
+  }
+
+  /// Ekipmanı en üst yıldıza çıkmış ya da parçası birikmiş oyuncu için: parçalar çantaya döner.
+  bool tradePartsForChest() {
+    if (state.equipmentParts < partsPerChest) return false;
+    state.equipmentParts -= partsPerChest;
+    state.chests++;
+    save();
+    update();
+    toast('$partsPerChest parça → 1 Spor Çantası');
+    return true;
+  }
+
+  void pressTradeParts() {
+    if (tradePartsForChest()) openPanel('inventory');
+  }
+
+  /// Antrenman kartını o branşın bir sonraki yarışı için hazırlar ya da hazırlığı geri alır.
+  void toggleTrainingCard(String branch) {
+    if (state.armedCards.remove(branch)) {
+      toast('${branchLabel(branch)} kartı bekletiliyor.');
+    } else if ((state.trainingCards[branch] ?? 0) > 0) {
+      state.armedCards.add(branch);
+      toast('🎫 ${branchLabel(branch)} kartı sonraki yarışta kullanılacak.');
+    } else {
+      return;
+    }
+    save();
+    _changed();
   }
 
   void selectCosmetic(int i) {

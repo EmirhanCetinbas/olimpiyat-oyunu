@@ -2,6 +2,14 @@ import 'dart:ui' show Rect;
 
 const branches = ['sprint', 'hurdles', 'swim', 'longjump', 'weights', 'archery'];
 
+/// Yarıştaki sporcu sayısı (100 m pistinde 4 kulvar var).
+int fieldSize(String branch) => branch == 'sprint' ? 4 : 6;
+
+/// Madalya alan sıra sayısı: katılımcıların ilk yarısı (4 sporcuda ilk 2, 6 sporcuda ilk 3).
+int medalPlaces(int field) => field ~/ 2;
+
+bool isMedal(String branch, int place) => place <= medalPlaces(fieldSize(branch));
+
 String branchLabel(String id) =>
     const {
       'sprint': '100 metre',
@@ -13,24 +21,25 @@ String branchLabel(String id) =>
     }[id] ??
     'Yarış';
 
+/// Sporcu: genel bir üstünlüğü yok; gücü [specialties] tablosundaki iki branştan gelir
+/// (birinde +%6 uzman, birinde +%3 yardımcı). Her branşın bir uzmanı ve bir yardımcısı var.
 class Animal {
-  const Animal(this.name, this.art, this.speed, this.trait, this.unlock);
+  const Animal(this.name, this.art, this.role, this.unlock);
   final String name;
   final String art;
-  final double speed;
 
-  /// Gerçek etki: koşu, engelli, yüzme hızında ve uzun atlama mesafesinde çarpan ([speed]).
-  final String trait;
+  /// Kartta görünen kısa kimlik (uzman olduğu branş).
+  final String role;
   final int unlock;
 }
 
 const animals = [
-  Animal('Çita', 'cheetah', 1.04, '+%4 hız', 0),
-  Animal('Rakun', 'raccoon', 1.02, '+%2 hız', 2),
-  Animal('Ayı', 'bear', 1.015, '+%1,5 hız', 4),
-  Animal('Tavşan', 'rabbit', 1.045, '+%4,5 hız', 7),
-  Animal('Kaplumbağa', 'turtle', 1.03, '+%3 hız', 10),
-  Animal('Tilki', 'fox', 1.05, '+%5 hız', 15),
+  Animal('Çita', 'cheetah', 'Sprinter', 0),
+  Animal('Rakun', 'raccoon', 'Nişancı', 2),
+  Animal('Ayı', 'bear', 'Güç ustası', 4),
+  Animal('Tavşan', 'rabbit', 'Engel ustası', 7),
+  Animal('Kaplumbağa', 'turtle', 'Yüzücü', 10),
+  Animal('Tilki', 'fox', 'Atlayıcı', 15),
 ];
 
 class UpgradeDef {
@@ -47,6 +56,11 @@ const sprintUpgrades = [
   UpgradeDef('Maksimum Hız', 'speed', 950, 'Yarışın tamamında hızını artırır. Her seviye temel hıza %1 ekler.'),
   UpgradeDef('Dayanıklılık', 'stamina', 700, 'Son 50 metrede temponu korur. Her seviye bu bölümü %1,5 hızlandırır.'),
   UpgradeDef('Finiş Gücü', 'finish', 850, 'Son 20 metrede sprint bonusu sağlar. Her seviye finiş bölümünü %2 hızlandırır.'),
+];
+
+/// Branştan bağımsız gelir yükseltmeleri; her branşta görünür. Seviyeler `levels[4]` ve `levels[5]`te saklanır
+/// (eski kayıtlarla uyum için), yükseltme dizini de 4 ve 5'tir.
+const incomeUpgrades = [
   UpgradeDef('Tribün', 'stadium', 1600, 'Daha fazla seyirci çeker. Her seviye saniyelik geliri ₺12 artırır.', income: 12),
   UpgradeDef('Bilet', 'ticket', 2100, 'Bilet değerini yükseltir. Her seviye saniyelik geliri ₺18 artırır.', income: 18),
 ];
@@ -80,10 +94,15 @@ const weightUpgrades = [
   ),
 ];
 const archeryUpgrades = [
-  UpgradeDef('Nişan Alma', 'archery-aim', 1000, 'Her seviye üç okun toplamına ortalama +0,08 puan ekler.'),
-  UpgradeDef('Yay Gücü', 'archery-bow', 1100, 'Her seviye üç okun toplamına ortalama +0,10 puan ekler.'),
-  UpgradeDef('Rüzgâr Okuma', 'archery-wind', 950, 'Her seviye üç okun toplamına ortalama +0,05 puan ekler.'),
-  UpgradeDef('Son Atış', 'archery-last', 1200, 'Her seviye üç okun toplamına ortalama +0,04 puan ekler.'),
+  UpgradeDef(
+    'Nişan Alma',
+    'archery-aim',
+    1000,
+    'Her seviye isabeti +0,028 artırır. İsabet arttıkça oklar merkeze yaklaşır; 10 puana yaklaştıkça kazanç azalır.',
+  ),
+  UpgradeDef('Yay Gücü', 'archery-bow', 1100, 'Her seviye isabeti +0,032 artırır; oklar merkeze yaklaşır.'),
+  UpgradeDef('Rüzgâr Okuma', 'archery-wind', 950, 'Her seviye isabeti +0,018 artırır; oklar merkeze yaklaşır.'),
+  UpgradeDef('Son Atış', 'archery-last', 1200, 'Her seviye isabeti +0,012 artırır; oklar merkeze yaklaşır.'),
 ];
 
 class EquipmentItem {
@@ -133,13 +152,14 @@ const wheelPrizes = [
 const chestNames = {'normal': 'Spor Çantası', 'cup': 'Kupa Çantası', 'champion': 'Şampiyon Çantası'};
 const cosmeticNames = ['Altın Çerçeve', 'Mavi Şimşek Çerçeve', 'Yıldız Çerçeve', 'Pati Çerçeve'];
 
+/// Branş → sporcu sırasına göre çarpan (Çita, Rakun, Ayı, Tavşan, Kaplumbağa, Tilki).
 const specialties = {
   'sprint': [1.06, 1.0, 1.0, 1.03, 1.0, 1.0],
-  'hurdles': [1.0, 1.04, 1.0, 1.03, 1.0, 1.0],
-  'swim': [1.0, 1.0, 1.0, 1.0, 1.05, 1.04],
-  'longjump': [1.0, 1.0, 1.0, 1.05, 1.0, 1.04],
-  'weights': [1.0, 1.0, 1.06, 1.0, 1.0, 1.0],
-  'archery': [1.0, 1.04, 1.0, 1.0, 1.0, 1.06],
+  'hurdles': [1.0, 1.03, 1.0, 1.06, 1.0, 1.0],
+  'swim': [1.0, 1.0, 1.0, 1.0, 1.06, 1.03],
+  'longjump': [1.03, 1.0, 1.0, 1.0, 1.0, 1.06],
+  'weights': [1.0, 1.0, 1.06, 1.0, 1.03, 1.0],
+  'archery': [1.0, 1.06, 1.03, 1.0, 1.0, 1.0],
 };
 
 double specialty(String branch, int id) {
@@ -148,7 +168,7 @@ double specialty(String branch, int id) {
   return values[id];
 }
 
-/// Uzmanlık ve gerçek etkisi: hızda/mesafede/kiloda çarpan; okçulukta her oka eklenen puan.
+/// Uzmanlık ve gerçek etkisi: hızda/mesafede/kiloda çarpan; okçulukta her oka eklenen isabet.
 String specialtyLabel(int id) {
   final labels = specialtyTags(id);
   return labels.isEmpty ? 'Çok yönlü' : labels.join(', ');
@@ -160,7 +180,7 @@ List<String> specialtyTags(int id) {
     for (final entry in specialties.entries)
       if (entry.value[id] > 1)
         entry.key == 'archery'
-            ? '${branchLabel(entry.key)} +${_tr2((entry.value[id] - 1) * 4)} puan/ok'
+            ? '${branchLabel(entry.key)} +${_tr2((entry.value[id] - 1) * 12)} isabet'
             : '${branchLabel(entry.key)} +%${_tr1((entry.value[id] - 1) * 100)}',
   ];
 }
@@ -179,11 +199,11 @@ class CampusRow {
   final int base;
   final String icon;
 
-  /// '%' (yüzde) ya da 'puan' (okçulukta oka eklenen puan).
+  /// '%' (yüzde) ya da 'isabet' (okçulukta oka eklenen isabet).
   final String unit;
 
-  /// Verilen kademe sayısındaki toplam etki, ör. "+%2,5" ya da "+0,64 puan".
-  String format(int ranks) => unit == '%' ? '+%${_tr1(amount * ranks)}' : '+${_tr2(amount * ranks)} puan';
+  /// Verilen kademe sayısındaki toplam etki, ör. "+%2,5" ya da "+0,64 isabet".
+  String format(int ranks) => unit == '%' ? '+%${_tr1(amount * ranks)}' : '+${_tr2(amount * ranks)} $unit';
 }
 
 class CampusFacility {
@@ -295,9 +315,9 @@ const campusFacilities = [
     66,
     [76, 52, 18, 14],
     [
-      CampusRow('Nişan Tekniği', 'Her oka', .32, 2, 'medal', unit: 'puan'),
-      CampusRow('Yay Gücü', 'Her oka', .3, 3, 'stamina', unit: 'puan'),
-      CampusRow('Odaklanma', '3. oka', .42, 3, 'finish', unit: 'puan'),
+      CampusRow('Nişan Tekniği', 'Her oka', .32, 2, 'medal', unit: 'isabet'),
+      CampusRow('Yay Gücü', 'Her oka', .3, 3, 'stamina', unit: 'isabet'),
+      CampusRow('Odaklanma', '3. oka', .42, 3, 'finish', unit: 'isabet'),
     ],
   ),
 ];

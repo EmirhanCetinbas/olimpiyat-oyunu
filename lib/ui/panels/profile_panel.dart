@@ -64,10 +64,10 @@ class _ProfilePanelState extends State<ProfilePanel> {
         Row(
           children: [
             Expanded(
-              child: GameProgressBar(value: (c.state.xp % 100) / 100, label: 'Seviye ilerlemesi', height: 14),
+              child: GameProgressBar(value: c.levelInfo.into / c.levelInfo.need, label: 'Seviye ilerlemesi', height: 14),
             ),
             const SizedBox(width: 8),
-            Text('${c.state.xp % 100} / 100 XP', style: gameText(13, color: GameColors.ink, height: 1)),
+            Text('${c.levelInfo.into} / ${c.levelInfo.need} XP', style: gameText(13, color: GameColors.ink, height: 1)),
           ],
         ),
         const SizedBox(height: 10),
